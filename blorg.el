@@ -23,6 +23,7 @@
 ;;
 ;;; Code:
 
+(require 'ox-html)
 (require 'seq)
 (add-to-list 'load-path "~/src/github.com/clarete/templatel/")
 (require 'templatel)
@@ -33,15 +34,55 @@
   (let* ((opt (seq-partition options 2))
          (base-dir (--blorg-get opt :base-dir default-directory))
          (input-pattern (--blorg-get opt :input-pattern "org$"))
-         (output (--blorg-get opt :output "output"))
+         (output (--blorg-get opt :output "output/{{ slug }}/index.html"))
          (template (--blorg-get opt :template nil))
          (template-dir (--blorg-get opt :template-dir (file-name-directory template)))
          (env (templatel-env-new)))
     (dolist (tpl (blorg--find-source-files template-dir ".html$"))
-      (templatel-env-add-template env tpl (templatel-new-from-file tpl)))
+      (templatel-env-add-template env (file-name-nondirectory tpl) (templatel-new-from-file tpl)))
     (dolist (input-file (blorg--find-source-files base-dir input-pattern))
-      (templatel-env-render env template '())
-      (message "%s: %s" input-file output))))
+      (let* ((slug (blorg--slugify input-file))
+             (vars (blorg--parse-org input-file))
+             (template-name (file-name-nondirectory template))
+             (rendered (templatel-env-render env template-name vars))
+             (rendered-output (templatel-render-string output `(("slug" . ,slug))))
+             (final-output (format "%s%s" base-dir rendered-output)))
+        (message "writing: %s" final-output)
+        (mkdir (file-name-directory final-output) t)
+        (write-region rendered nil rendered-output)))))
+
+(defun blorg--slugify (s)
+  "Make slug of S."
+  (replace-regexp-in-string "\s" "-" (file-name-sans-extension (file-name-nondirectory s))))
+
+(defmacro blorg--prepend (seq item)
+  "ITEM SEQ."
+  `(setq ,seq (cons ,item ,seq)))
+
+(defun blorg--parse-org (input-file)
+  "Read the generated HTML of the body of INPUT-FILE."
+  (let (keywords)
+    (advice-add 'org-html-template :override #'(lambda(contents _i)  contents))
+    (advice-add
+     'org-html-keyword
+     :before
+     #'(lambda(keyword _c _i)
+         (blorg--prepend
+          keywords
+          (cons
+           (downcase (org-element-property :key keyword))
+           (org-element-property :value keyword)))))
+    (with-temp-buffer
+      (insert-file-contents input-file)
+      (org-html-export-as-html))
+    (ad-unadvise 'org-html-template)
+    (ad-unadvise 'org-html-keyword)
+
+    (let ((slug (blorg--slugify (or (cdr (assoc "title" keywords)) input-file))))
+      (with-current-buffer "*Org HTML Export*"
+        (blorg--prepend keywords (cons "slug" slug))
+        (blorg--prepend keywords (cons "html" (buffer-string)))
+        `(("post" . ,keywords))))))
 
 (defun blorg--find-source-files (directory match)
   "Find MATCH files to be exported recursively in DIRECTORY."
