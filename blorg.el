@@ -56,16 +56,17 @@
   (replace-regexp-in-string "\s" "-" (file-name-sans-extension (file-name-nondirectory s))))
 
 (defmacro blorg--prepend (seq item)
-  "ITEM SEQ."
+  "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
 
 (defun blorg--parse-org (input-file)
-  "Read the generated HTML of the body of INPUT-FILE."
-  (let (keywords)
-    (advice-add 'org-html-template :override #'(lambda(contents _i)  contents))
+  "Read the generated HTML & metadata of the body of INPUT-FILE."
+  (let (html keywords)
     (advice-add
-     'org-html-keyword
-     :before
+     'org-html-template :override
+     #'(lambda(contents _i) (setq html contents)))
+    (advice-add
+     'org-html-keyword :before
      #'(lambda(keyword _c _i)
          (blorg--prepend
           keywords
@@ -78,11 +79,9 @@
     (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
 
-    (let ((slug (blorg--slugify (or (cdr (assoc "title" keywords)) input-file))))
-      (with-current-buffer "*Org HTML Export*"
-        (blorg--prepend keywords (cons "slug" slug))
-        (blorg--prepend keywords (cons "html" (buffer-string)))
-        `(("post" . ,keywords))))))
+    (blorg--prepend keywords (cons "slug" (blorg--slugify (or (cdr (assoc "title" keywords)) input-file))))
+    (blorg--prepend keywords (cons "html" html))
+    `(("post" . ,keywords))))
 
 (defun blorg--find-source-files (directory match)
   "Find MATCH files to be exported recursively in DIRECTORY."
