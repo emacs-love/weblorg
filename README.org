@@ -2,9 +2,10 @@
 
   Generate Static HTML websites from Org-Mode files.
 
-  The most important thing to mastering blorg is to understand its
-  single entry point API. Behold the ~blorg-gen~ function.
-
+  The most important thing to mastering blorg is to understand that it
+  is not an interactive tool. It's a single function API that takes
+  Org files as an input and generate HTML files as an output.  Behold
+  the ~blorg-gen~ function.
 
 ** ~blorg-gen~ usage
 
