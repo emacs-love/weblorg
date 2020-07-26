@@ -1,1 +1,61 @@
 * blorg
+
+  Generate Static HTML websites from Org-Mode files.
+
+  The most important thing to mastering blorg is to understand its
+  single entry point API. Behold the ~blorg-gen~ function.
+
+
+** ~blorg-gen~ usage
+
+   You have one single Org-Mode file and you want to generate HTML off
+   it with blorg.  Here is the ~blorg-gen~ call that would get you
+   there:
+
+   #+begin_src emacs-lisp
+   (blorg-gen
+    :input-pattern "your-input-file.org$"
+    :template "page-template.html"
+    :output "output/{{ slug }}/index.html")
+   #+end_src
+
+   The three main parameters that must be passed to ~blorg-gen~ are:
+
+   1. ~input-pattern~: That's a regular expression that will be used
+      to match which files are included in the input list.
+   2. ~template~: Which HTML file will be picked as the template.
+   3. ~output~: Little template expression that allows customizing the
+      output file name. It takes a template expression and has all the
+      ~post~ variables available.  If your input expression matches
+      more than one file, this option allows you to name the diffent
+      output files based on data from the input file.  Also, if sub
+      directories that appear in the output path don't exist in the
+      file system, they will be created automatically.
+
+   One common thing between the three variables above is that they're
+   all relative to the ~:base-dir~.  Which also happens to be a
+   parameter to ~blorg-gen~ and defaults to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Names.html#index-default-directory_002c-of-a-buffer-1187][~default-directory~]].
+
+** Proposed file structure
+
+   If you're looking into creating a new blog or porting an existing
+   body of Org-Mode posts you can have a structure similar to this:
+
+   #+begin_src sh
+   $ tree your-new-blog
+   your-new-blog
+   ├─ publish.el
+   ├─ src/
+   │  └─ posts/
+   │     └─ welcome.org # (and other .org files)
+   └─ static/
+       ├─ css/
+       ├─ img/
+       └─ js/
+   #+end_src
+
+   The script ~./publish.el~ would have the call to ~blog-gen~ to
+   export the HTML to the configured output directory.  There is a
+   good example of a ~publish.el~ file that won't mess with your
+   default Emacs configuration. In fact, it tries to stay away from it
+   and run without any assumptions about the setup.
