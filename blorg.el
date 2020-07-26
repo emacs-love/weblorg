@@ -25,9 +25,12 @@
 
 (require 'ox-html)
 (require 'seq)
-(add-to-list 'load-path "~/src/github.com/clarete/templatel/")
 (require 'templatel)
 (setq debug-on-error t)
+
+(defmacro --blorg-prepend (seq item)
+  "Prepend ITEM to SEQ."
+  `(setq ,seq (cons ,item ,seq)))
 
 (defun blorg-gen (&rest options)
   "Generate HTML setup with OPTIONS."
@@ -41,7 +44,7 @@
     (dolist (tpl (blorg--find-source-files template-dir ".html$"))
       (templatel-env-add-template env (file-name-nondirectory tpl) (templatel-new-from-file tpl)))
     (dolist (input-file (blorg--find-source-files base-dir input-pattern))
-      (let* ((slug (blorg--slugify input-file))
+      (let* ((slug (--blorg-slugify input-file))
              (vars (blorg--parse-org input-file))
              (template-name (file-name-nondirectory template))
              (rendered (templatel-env-render env template-name vars))
@@ -50,14 +53,6 @@
         (message "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
         (write-region rendered nil rendered-output)))))
-
-(defun blorg--slugify (s)
-  "Make slug of S."
-  (replace-regexp-in-string "\s" "-" (file-name-sans-extension (file-name-nondirectory s))))
-
-(defmacro blorg--prepend (seq item)
-  "Prepend ITEM to SEQ."
-  `(setq ,seq (cons ,item ,seq)))
 
 (defun blorg--parse-org (input-file)
   "Read the generated HTML & metadata of the body of INPUT-FILE."
@@ -68,7 +63,7 @@
     (advice-add
      'org-html-keyword :before
      #'(lambda(keyword _c _i)
-         (blorg--prepend
+         (--blorg-prepend
           keywords
           (cons
            (downcase (org-element-property :key keyword))
@@ -79,8 +74,8 @@
     (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
 
-    (blorg--prepend keywords (cons "slug" (blorg--slugify (or (cdr (assoc "title" keywords)) input-file))))
-    (blorg--prepend keywords (cons "html" html))
+    (--blorg-prepend keywords (cons "slug" (--blorg-slugify (or (cdr (assoc "title" keywords)) input-file))))
+    (--blorg-prepend keywords (cons "html" html))
     `(("post" . ,keywords))))
 
 (defun blorg--find-source-files (directory match)
@@ -97,6 +92,10 @@
                    (blorg--find-source-files (car file) match)
                    output-files))))))
     output-files))
+
+(defun --blorg-slugify (s)
+  "Make slug of S."
+  (replace-regexp-in-string "\s" "-" (file-name-sans-extension (file-name-nondirectory s))))
 
 (defun --blorg-get (lst sym default)
   "Pick SYM from LST or return DEFAULT."
