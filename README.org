@@ -9,14 +9,16 @@
 
 ** ~blorg-gen~ usage
 
-   You have one single Org-Mode file and you want to generate HTML off
-   it with blorg.  Here is the ~blorg-gen~ call that would get you
-   there:
+   You need to define an input pattern to filter out which Org-Mode
+   files are part of your input, choose a template, then specify an
+   output and ~blorg-gen~ will make the HTML content and the metadata
+   of the Org-Mode file available to the template and finally generate
+   an HTML file and save it in a file:
 
    #+begin_src emacs-lisp
    (blorg-gen
-    :input-pattern "your-input-file.org$"
-    :template "page-template.html"
+    :input-pattern "posts/.*\\.org$"
+    :template "post.html"
     :output "output/{{ slug }}/index.html")
    #+end_src
 
