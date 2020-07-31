@@ -86,18 +86,18 @@
     (--blorg-prepend keywords (cons "html" html))
     `(("post" . ,keywords))))
 
-(defun blorg--find-source-files (directory match)
-  "Find MATCH files to be exported recursively in DIRECTORY."
+(defun blorg--find-source-files (directory pattern)
+  "Recursively find files that match with PATTERN within DIRECTORY."
   (let (output-files)
     (dolist (file (directory-files-and-attributes directory t))
       (cond
-       ((string-match match (car file))
+       ((string-match pattern (car file))
         (setq output-files (cons (car file) output-files)))
        ((eq t (car (cdr file)))
         (if (not (equal "." (substring (car file) -1)))
             (setq output-files
                   (append
-                   (blorg--find-source-files (car file) match)
+                   (blorg--find-source-files (car file) pattern)
                    output-files))))))
     output-files))
 
