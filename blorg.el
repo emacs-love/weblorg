@@ -32,6 +32,13 @@
   "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
 
+(defun --blorg-log-info (msg &rest vars)
+  "Report MSG (formatted with VARS) to log level info."
+  (message
+   "%s INFO %s"
+   (format-time-string "%Y-%m-%d %H:%M:%S")
+   (apply 'format (cons msg vars))))
+
 (defun blorg-gen (&rest options)
   "Generate HTML setup with OPTIONS."
   (let* ((opt (seq-partition options 2))
@@ -58,7 +65,7 @@
              (rendered (templatel-env-render env template-name vars))
              (rendered-output (templatel-render-string output `(("slug" . ,slug))))
              (final-output (format "%s%s" base-dir rendered-output)))
-        (message "writing: %s" final-output)
+        (--blorg-log-info "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
         (write-region rendered nil rendered-output)))))
 
