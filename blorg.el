@@ -40,9 +40,17 @@
          (output (--blorg-get opt :output "output/{{ slug }}/index.html"))
          (template (--blorg-get opt :template nil))
          (template-dir (--blorg-get opt :template-dir (file-name-directory template)))
-         (env (templatel-env-new)))
-    (dolist (tpl (blorg--find-source-files template-dir ".html$"))
-      (templatel-env-add-template env (file-name-nondirectory tpl) (templatel-new-from-file tpl)))
+         (env (templatel-env-new
+               :importfn #'(lambda(en name)
+                             (templatel-env-add-template
+                              en name
+                              (templatel-new-from-file (concat base-dir name)))))))
+    ;; Add output template to the environment
+    (templatel-env-add-template
+     env
+     (file-name-nondirectory template)
+     (templatel-new-from-file template))
+    ;; Process the Org files
     (dolist (input-file (blorg--find-source-files base-dir input-pattern))
       (let* ((slug (--blorg-slugify input-file))
              (vars (--blorg-parse-org input-file))
