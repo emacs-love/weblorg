@@ -26,7 +26,6 @@
 (require 'ox-html)
 (require 'seq)
 (require 'templatel)
-(setq debug-on-error t)
 
 (defmacro --blorg-prepend (seq item)
   "Prepend ITEM to SEQ."
