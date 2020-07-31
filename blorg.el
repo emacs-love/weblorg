@@ -45,7 +45,7 @@
       (templatel-env-add-template env (file-name-nondirectory tpl) (templatel-new-from-file tpl)))
     (dolist (input-file (blorg--find-source-files base-dir input-pattern))
       (let* ((slug (--blorg-slugify input-file))
-             (vars (blorg--parse-org input-file))
+             (vars (--blorg-parse-org input-file))
              (template-name (file-name-nondirectory template))
              (rendered (templatel-env-render env template-name vars))
              (rendered-output (templatel-render-string output `(("slug" . ,slug))))
@@ -54,7 +54,7 @@
         (mkdir (file-name-directory final-output) t)
         (write-region rendered nil rendered-output)))))
 
-(defun blorg--parse-org (input-file)
+(defun --blorg-parse-org (input-file)
   "Read the generated HTML & metadata of the body of INPUT-FILE."
   (let (html keywords)
     (advice-add
