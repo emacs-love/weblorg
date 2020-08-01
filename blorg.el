@@ -51,18 +51,33 @@
                              (templatel-env-add-template
                               en name
                               (templatel-new-from-file (concat base-dir name)))))))
+
     ;; Add output template to the environment
     (templatel-env-add-template
      env
      (file-name-nondirectory template)
      (templatel-new-from-file template))
-    ;; Process the Org files
+
+    (condition-case exc
+        (--blorg-process-org-files `((env . ,env)
+                                     (base-dir . ,base-dir)
+                                     (input-pattern . ,input-pattern)
+                                     (template . ,template)
+                                     (output . ,output)))
+      (templatel-error
+       (message "Syntax Error: %s" (cdr exc))))))
+
+(defun --blorg-process-org-files (blorg)
+  "BLORG."
+  (let ((base-dir (--blorg-get blorg 'base-dir))
+        (template (--blorg-get blorg 'template))
+        (output (--blorg-get blorg 'output))
+        (input-pattern (--blorg-get blorg 'input-pattern)))
     (dolist (input-file (blorg--find-source-files base-dir input-pattern))
-      (let* ((slug (--blorg-slugify input-file))
-             (vars (--blorg-parse-org input-file))
+      (let* ((vars (--blorg-parse-org input-file))
              (template-name (file-name-nondirectory template))
              (rendered (templatel-env-render env template-name vars))
-             (rendered-output (templatel-render-string output `(("slug" . ,slug))))
+             (rendered-output (templatel-render-string output (--blorg-get vars "post")))
              (final-output (format "%s%s" base-dir rendered-output)))
         (--blorg-log-info "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
@@ -111,7 +126,7 @@
   "Make slug of S."
   (replace-regexp-in-string "\s" "-" (file-name-sans-extension (file-name-nondirectory s))))
 
-(defun --blorg-get (lst sym default)
+(defun --blorg-get (lst sym &optional default)
   "Pick SYM from LST or return DEFAULT."
   (let ((val (assoc sym lst)))
     (if val
