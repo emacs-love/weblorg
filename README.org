@@ -16,10 +16,10 @@
    an HTML file and save it in a file:
 
    #+begin_src emacs-lisp
-   (blorg-gen
+   (blorg-cli
     :input-pattern "posts/.*\\.org$"
     :template "post.html"
-    :output "output/{{ slug }}/index.html")
+    :output "output/{{ slug }}.html")
    #+end_src
 
    The three main parameters that must be passed to ~blorg-gen~ are:
