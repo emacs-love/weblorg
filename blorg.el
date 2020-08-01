@@ -38,6 +38,15 @@
    (format-time-string "%Y-%m-%d %H:%M:%S")
    (apply 'format (cons msg vars))))
 
+(defun blorg-gen-cli (&rest options)
+  "OPTIONS."
+  (condition-case exc
+      (apply 'blorg-gen options)
+    (templatel-error
+     (message "Syntax Error: %s" (cdr exc)))
+    (file-missing
+     (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
+
 (defun blorg-gen (&rest options)
   "Generate HTML setup with OPTIONS."
   (let* ((opt (seq-partition options 2))
@@ -57,15 +66,12 @@
      env
      (file-name-nondirectory template)
      (templatel-new-from-file template))
-
-    (condition-case exc
-        (--blorg-process-org-files `((env ,env)
-                                     (base-dir ,base-dir)
-                                     (input-pattern ,input-pattern)
-                                     (template ,template)
-                                     (output ,output)))
-      (templatel-error
-       (message "Syntax Error: %s" (cdr exc))))))
+    ;; Find all input files and apply the template
+    (--blorg-process-org-files `((env ,env)
+                                 (base-dir ,base-dir)
+                                 (input-pattern ,input-pattern)
+                                 (template ,template)
+                                 (output ,output)))))
 
 (defun --blorg-process-org-files (blorg)
   "BLORG."
