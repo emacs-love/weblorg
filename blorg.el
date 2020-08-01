@@ -135,7 +135,9 @@ show them in a slightly nicer way."
 
 (defun --blorg-slugify (s)
   "Make slug of S."
-  (replace-regexp-in-string "\s" "-" (file-name-sans-extension (file-name-nondirectory s))))
+  (downcase
+   (replace-regexp-in-string
+    "\s" "-" (file-name-sans-extension (file-name-nondirectory s)))))
 
 (defun --blorg-get (lst sym &optional default)
   "Pick SYM from LST or return DEFAULT."
