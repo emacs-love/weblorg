@@ -39,7 +39,11 @@
    (apply 'format (cons msg vars))))
 
 (defun blorg-gen-cli (&rest options)
-  "OPTIONS."
+  "Generate HTML setup with OPTIONS.
+
+This function is very similar to `blorg-gen', but has the
+aditional feature of catching syntax and file-missing errors and
+show them in a slightly nicer way."
   (condition-case exc
       (apply 'blorg-gen options)
     (templatel-error
@@ -74,7 +78,7 @@
                                  (output ,output)))))
 
 (defun --blorg-process-org-files (blorg)
-  "BLORG."
+  "Fing input files and template them up with config in BLORG."
   (let ((env (--blorg-get blorg 'env))
         (base-dir (--blorg-get blorg 'base-dir))
         (template (--blorg-get blorg 'template))
