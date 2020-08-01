@@ -115,6 +115,11 @@ show them in a slightly nicer way."
     ;; Find all input files and apply the template
     (--blorg-process-org-files blorg)))
 
+(defun blorg-input-filter-drafts (blorg)
+  "Return nil if BLORG `post.draft` is true."
+  (ignore-errors
+    (not (cdr (assoc "draft" (cdr (assoc "post" blorg)))))))
+
 (defun --blorg-process-org-files (blorg)
   "Fing input files and template them up with config in BLORG."
   (let ((env (--blorg-get blorg 'env))
@@ -125,14 +130,16 @@ show them in a slightly nicer way."
         (input-filter (--blorg-get blorg 'input-filter))
         (output (--blorg-get blorg 'output)))
     (dolist (input-file (--blorg-find-source-files base-dir input-pattern input-exclude))
-      (let* ((vars (--blorg-parse-org input-file))
-             (template-name (file-name-nondirectory template))
-             (rendered (templatel-env-render env template-name vars))
-             (rendered-output (templatel-render-string output (cdr (assoc "post" vars))))
-             (final-output (format "%s%s" base-dir rendered-output)))
-        (--blorg-log-info "writing: %s" final-output)
-        (mkdir (file-name-directory final-output) t)
-        (write-region rendered nil rendered-output)))))
+      (let ((vars (--blorg-parse-org input-file)))
+        (if (or (null input-filter)
+                (funcall input-filter vars))
+            (let* ((template-name (file-name-nondirectory template))
+                   (rendered (templatel-env-render env template-name vars))
+                   (rendered-output (templatel-render-string output (cdr (assoc "post" vars))))
+                   (final-output (format "%s%s" base-dir rendered-output)))
+              (--blorg-log-info "writing: %s" final-output)
+              (mkdir (file-name-directory final-output) t)
+              (write-region rendered nil rendered-output)))))))
 
 (defun --blorg-parse-org (input-file)
   "Read the generated HTML & metadata of the body of INPUT-FILE."
