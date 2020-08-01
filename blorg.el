@@ -59,25 +59,26 @@
      (templatel-new-from-file template))
 
     (condition-case exc
-        (--blorg-process-org-files `((env . ,env)
-                                     (base-dir . ,base-dir)
-                                     (input-pattern . ,input-pattern)
-                                     (template . ,template)
-                                     (output . ,output)))
+        (--blorg-process-org-files `((env ,env)
+                                     (base-dir ,base-dir)
+                                     (input-pattern ,input-pattern)
+                                     (template ,template)
+                                     (output ,output)))
       (templatel-error
        (message "Syntax Error: %s" (cdr exc))))))
 
 (defun --blorg-process-org-files (blorg)
   "BLORG."
-  (let ((base-dir (--blorg-get blorg 'base-dir))
+  (let ((env (--blorg-get blorg 'env))
+        (base-dir (--blorg-get blorg 'base-dir))
         (template (--blorg-get blorg 'template))
-        (output (--blorg-get blorg 'output))
-        (input-pattern (--blorg-get blorg 'input-pattern)))
+        (input-pattern (--blorg-get blorg 'input-pattern))
+        (output (--blorg-get blorg 'output)))
     (dolist (input-file (blorg--find-source-files base-dir input-pattern))
       (let* ((vars (--blorg-parse-org input-file))
              (template-name (file-name-nondirectory template))
              (rendered (templatel-env-render env template-name vars))
-             (rendered-output (templatel-render-string output (--blorg-get vars "post")))
+             (rendered-output (templatel-render-string output (cdr (assoc "post" vars))))
              (final-output (format "%s%s" base-dir rendered-output)))
         (--blorg-log-info "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
@@ -94,7 +95,7 @@
      #'(lambda(keyword _c _i)
          (--blorg-prepend
           keywords
-          (cons
+          (list
            (downcase (org-element-property :key keyword))
            (org-element-property :value keyword)))))
     (with-temp-buffer
@@ -103,7 +104,7 @@
     (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
 
-    (--blorg-prepend keywords (cons "slug" (--blorg-slugify (or (cdr (assoc "title" keywords)) input-file))))
+    (--blorg-prepend keywords (cons "slug" (--blorg-slugify (--blorg-get keywords "title" input-file))))
     (--blorg-prepend keywords (cons "html" html))
     `(("post" . ,keywords))))
 
