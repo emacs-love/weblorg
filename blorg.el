@@ -83,6 +83,7 @@ show them in a slightly nicer way."
          ;; all parameters the entry point takes
          (base-dir (--blorg-get opt :base-dir default-directory))
          (input-pattern (--blorg-get opt :input-pattern "org$"))
+         (input-exclude (--blorg-get opt :input-exclude "^$"))
          (input-filter (--blorg-get opt :input-filter))
          (output (--blorg-get opt :output "output/{{ slug }}.html"))
          (template (--blorg-get opt :template nil))
@@ -100,6 +101,8 @@ show them in a slightly nicer way."
          (blorg `((env ,env)
                   (base-dir ,base-dir)
                   (input-pattern ,input-pattern)
+                  (input-exclude ,input-exclude)
+                  (input-filter ,input-filter)
                   (template ,template)
                   (template-dirs ,template-dirs)
                   (output ,output))))
@@ -118,8 +121,10 @@ show them in a slightly nicer way."
         (base-dir (--blorg-get blorg 'base-dir))
         (template (--blorg-get blorg 'template))
         (input-pattern (--blorg-get blorg 'input-pattern))
+        (input-exclude (--blorg-get blorg 'input-exclude))
+        (input-filter (--blorg-get blorg 'input-filter))
         (output (--blorg-get blorg 'output)))
-    (dolist (input-file (blorg--find-source-files base-dir input-pattern))
+    (dolist (input-file (--blorg-find-source-files base-dir input-pattern input-exclude))
       (let* ((vars (--blorg-parse-org input-file))
              (template-name (file-name-nondirectory template))
              (rendered (templatel-env-render env template-name vars))
@@ -154,18 +159,19 @@ show them in a slightly nicer way."
     (--blorg-prepend keywords (cons "html" html))
     `(("post" . ,keywords))))
 
-(defun blorg--find-source-files (directory pattern)
-  "Recursively find files that match with PATTERN within DIRECTORY."
+(defun --blorg-find-source-files (directory pattern exclude)
+  "Find files matching PATTERN but not EXCLUDE within DIRECTORY."
   (let (output-files)
     (dolist (file (directory-files-and-attributes directory t))
       (cond
-       ((string-match pattern (car file))
+       ((and (string-match pattern (car file))
+             (not (string-match exclude (car file))))
         (setq output-files (cons (car file) output-files)))
        ((eq t (car (cdr file)))
         (if (not (equal "." (substring (car file) -1)))
             (setq output-files
                   (append
-                   (blorg--find-source-files (car file) pattern)
+                   (--blorg-find-source-files (car file) pattern exclude)
                    output-files))))))
     output-files))
 
