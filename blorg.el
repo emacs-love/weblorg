@@ -105,7 +105,7 @@ show them in a slightly nicer way."
      #'(lambda(keyword _c _i)
          (--blorg-prepend
           keywords
-          (list
+          (cons
            (downcase (org-element-property :key keyword))
            (org-element-property :value keyword)))))
     (with-temp-buffer
@@ -114,7 +114,8 @@ show them in a slightly nicer way."
     (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
 
-    (--blorg-prepend keywords (cons "slug" (--blorg-slugify (--blorg-get keywords "title" input-file))))
+    (let ((slug (--blorg-get-cdr keywords "title" input-file)))
+      (--blorg-prepend keywords (cons "slug" (--blorg-slugify slug))))
     (--blorg-prepend keywords (cons "html" html))
     `(("post" . ,keywords))))
 
@@ -139,12 +140,13 @@ show them in a slightly nicer way."
    (replace-regexp-in-string
     "\s" "-" (file-name-sans-extension (file-name-nondirectory s)))))
 
-(defun --blorg-get (lst sym &optional default)
-  "Pick SYM from LST or return DEFAULT."
-  (let ((val (assoc sym lst)))
-    (if val
-        (cadr val)
-      default)))
+(defun --blorg-get (seq item &optional default)
+  "Pick ITEM from SEQ or return DEFAULT from list of cons."
+  (or (cadr (assoc item seq)) default))
+
+(defun --blorg-get-cdr (seq item &optional default)
+  "Pick ITEM from SEQ or return DEFAULT from list of cons."
+  (or (cdr (assoc item seq)) default))
 
 (provide 'blorg)
 ;;; blorg.el ends here
