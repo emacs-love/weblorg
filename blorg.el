@@ -38,7 +38,7 @@
    (format-time-string "%Y-%m-%d %H:%M:%S")
    (apply 'format (cons msg vars))))
 
-(defun blorg-gen-cli (&rest options)
+(defun blorg-cli (&rest options)
   "Generate HTML setup with OPTIONS.
 
 This function is very similar to `blorg-gen', but has the
