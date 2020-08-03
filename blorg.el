@@ -87,25 +87,31 @@ show them in a slightly nicer way."
          (input-filter (--blorg-get opt :input-filter))
          (output (--blorg-get opt :output "output/{{ slug }}.html"))
          (template (--blorg-get opt :template nil))
-         (template-dirs (cons
-                         (expand-file-name "templates" base-dir)
-                         (--blorg-get opt :template-dirs (--blorg-template-base))))
-         ;; template environment with import function attached
-         (env (templatel-env-new
-               :importfn #'(lambda(en name)
-                             (templatel-env-add-template
-                              en name
-                              (templatel-new-from-file
-                               (--blorg-template-find template-dirs name))))))
+         (template-dirs
+          (cons
+           ;; Notice the templates directory close to `base-dir` has
+           ;; higher precedence over the templates directory within
+           ;; blorg's source code.
+           (expand-file-name "templates" base-dir)
+           (--blorg-get opt :template-dirs (--blorg-template-base))))
+         ;; template environment with import function attached.
+         (env
+          (templatel-env-new
+           :importfn #'(lambda(en name)
+                         (templatel-env-add-template
+                          en name
+                          (templatel-new-from-file
+                           (--blorg-template-find template-dirs name))))))
          ;; all the variables passed down the pipe
-         (blorg `((env ,env)
-                  (base-dir ,base-dir)
-                  (input-pattern ,input-pattern)
-                  (input-exclude ,input-exclude)
-                  (input-filter ,input-filter)
-                  (template ,template)
-                  (template-dirs ,template-dirs)
-                  (output ,output))))
+         (blorg
+          `((env ,env)
+            (base-dir ,base-dir)
+            (input-pattern ,input-pattern)
+            (input-exclude ,input-exclude)
+            (input-filter ,input-filter)
+            (template ,template)
+            (template-dirs ,template-dirs)
+            (output ,output))))
 
     ;; Add output template to the environment
     (templatel-env-add-template
