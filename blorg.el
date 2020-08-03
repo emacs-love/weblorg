@@ -41,7 +41,7 @@
    (apply 'format (cons msg vars))))
 
 (defun blorg-cli (&rest options)
-  "Generate HTML setup with OPTIONS.
+  "Generate HTML documents off Org-Mode files using OPTIONS.
 
 This function is very similar to `blorg-gen', but has the
 aditional feature of catching syntax and file-missing errors and
@@ -78,7 +78,7 @@ show them in a slightly nicer way."
         path)))))
 
 (defun blorg-gen (&rest options)
-  "Generate HTML setup with OPTIONS."
+  "Generate HTML documents off Org-Mode files using OPTIONS."
   (let* ((opt (seq-partition options 2))
          ;; all parameters the entry point takes
          (base-dir (--blorg-get opt :base-dir default-directory))
