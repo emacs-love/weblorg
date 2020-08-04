@@ -85,6 +85,7 @@ show them in a slightly nicer way."
          (input-pattern (--blorg-get opt :input-pattern "org$"))
          (input-exclude (--blorg-get opt :input-exclude "^$"))
          (input-filter (--blorg-get opt :input-filter))
+         (input-aggregate (--blorg-get opt :input-aggregate #'blorg-input-aggregate-none))
          (output (--blorg-get opt :output "output/{{ slug }}.html"))
          (template (--blorg-get opt :template nil))
          (template-dirs
@@ -109,6 +110,7 @@ show them in a slightly nicer way."
             (input-pattern ,input-pattern)
             (input-exclude ,input-exclude)
             (input-filter ,input-filter)
+            (input-aggregate ,input-aggregate)
             (template ,template)
             (template-dirs ,template-dirs)
             (output ,output))))
@@ -119,33 +121,83 @@ show them in a slightly nicer way."
      (templatel-new-from-file
       (--blorg-template-find template-dirs template)))
     ;; Find all input files and apply the template
-    (--blorg-process-org-files blorg)))
+    (--blorg-run-pipeline blorg)))
 
-(defun blorg-input-filter-drafts (blorg)
-  "Return nil if BLORG `post.draft` is true."
+(defun blorg-input-filter-drafts (post)
+  "Return nil if POST `draft` is true."
   (ignore-errors
-    (not (cdr (assoc "draft" (cdr (assoc "post" blorg)))))))
+    (not (cdr (assoc "draft" post)))))
 
-(defun --blorg-process-org-files (blorg)
+(defun blorg-input-aggregate-none (_blorg posts)
+  "Passthrough aggregator just return POSTS disregard BLORG."
+  (mapcar #'(lambda(p) `(("post" . ,p))) posts))
+
+(defun blorg-input-aggregate-by-category (_blorg posts)
+  "Aggregate POSTS by date.
+
+BLORG is the databag passed through `blog-gen'."
+  (let (output
+        (ht (make-hash-table :test 'equal)))
+    (dolist (post posts)
+      (dolist (tag (or (seq-filter
+                        (lambda(x) (not (equal x "")))
+                        (split-string
+                         (or (cdr (assoc "filetags" post)) "") ":"))
+                       '("none")))
+        ;; Append post to the list under each tag
+        (puthash (downcase tag)
+                 (cons post (gethash (downcase tag) ht))
+                 ht)))
+    ;; Make a list of list off the hash we just built
+    (maphash
+     #'(lambda(k v)
+         (--blorg-prepend
+          output
+          `(("category" . (("name" . ,k)
+                           ("posts" . ,v))))))
+     ht)
+    ;; `(("categories" . ,output))
+    output))
+
+(defun --blorg-run-pipeline (blorg)
   "Fing input files and template them up with config in BLORG."
-  (let ((env (--blorg-get blorg 'env))
-        (base-dir (--blorg-get blorg 'base-dir))
-        (template (--blorg-get blorg 'template))
-        (input-pattern (--blorg-get blorg 'input-pattern))
-        (input-exclude (--blorg-get blorg 'input-exclude))
-        (input-filter (--blorg-get blorg 'input-filter))
-        (output (--blorg-get blorg 'output)))
-    (dolist (input-file (--blorg-find-source-files base-dir input-pattern input-exclude))
-      (let ((vars (--blorg-parse-org input-file)))
-        (if (or (null input-filter)
-                (funcall input-filter vars))
-            (let* ((template-name (file-name-nondirectory template))
-                   (rendered (templatel-env-render env template-name vars))
-                   (rendered-output (templatel-render-string output (cdr (assoc "post" vars))))
-                   (final-output (format "%s%s" base-dir rendered-output)))
-              (--blorg-log-info "writing: %s" final-output)
-              (mkdir (file-name-directory final-output) t)
-              (write-region rendered nil rendered-output)))))))
+  (let* ((input-filter (--blorg-get blorg 'input-filter))
+         ;; Find all files that match input pattern and don't match
+         ;; exclude pattern
+         (input-files
+          (--blorg-find-source-files
+           (--blorg-get blorg 'base-dir)
+           (--blorg-get blorg 'input-pattern)
+           (--blorg-get blorg 'input-exclude)))
+         ;; Parse Org-mode files
+         (parsed-files
+          (mapcar #'--blorg-parse-org input-files))
+         ;; Apply filters that depend on data read from parser
+         (filtered-files
+          (if (null input-filter) parsed-files
+            (seq-filter input-filter parsed-files)))
+         ;; Aggregate the input list into either a single group with
+         ;; all the files or multiple groups
+         (aggregated-data
+          (funcall (--blorg-get blorg 'input-aggregate) blorg filtered-files)))
+
+    (dolist (data aggregated-data)
+      (let* (;; Render the template
+             (rendered
+              (templatel-env-render
+               (--blorg-get blorg 'env)
+               (--blorg-get blorg 'template) data))
+             ;; Render the relative output path
+             (rendered-output
+              (templatel-render-string
+               (--blorg-get blorg 'output)
+               (cdar data)))
+             ;; Render the full path
+             (final-output
+              (expand-file-name rendered-output (--blorg-get blorg 'base-dir))))
+        (--blorg-log-info "writing: %s" final-output)
+        (mkdir (file-name-directory final-output) t)
+        (write-region rendered nil rendered-output)))))
 
 (defun --blorg-parse-org (input-file)
   "Read the generated HTML & metadata of the body of INPUT-FILE."
@@ -170,7 +222,8 @@ show them in a slightly nicer way."
     (let ((slug (--blorg-get-cdr keywords "title" input-file)))
       (--blorg-prepend keywords (cons "slug" (--blorg-slugify slug))))
     (--blorg-prepend keywords (cons "html" html))
-    `(("post" . ,keywords))))
+    (--blorg-prepend keywords (cons "file" input-file))
+    keywords))
 
 (defun --blorg-find-source-files (directory pattern exclude)
   "Find files matching PATTERN but not EXCLUDE within DIRECTORY."
