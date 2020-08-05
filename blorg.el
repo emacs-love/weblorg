@@ -139,6 +139,10 @@ show them in a slightly nicer way."
   "Passthrough aggregator just return POSTS disregard BLORG."
   (mapcar #'(lambda(p) `(("post" . ,p))) posts))
 
+(defun blorg-input-aggregate-all (_blorg posts)
+  "Aggregate all POSTS and disregard BLORG."
+  `((("posts" . ,posts))))
+
 (defun blorg-input-aggregate-by-category (_blorg posts)
   "Aggregate POSTS by date.
 
