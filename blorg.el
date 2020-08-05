@@ -191,21 +191,21 @@ We use the DRAFT file property to define if an Org-Mode file is a
 draft or not."
   (ignore-errors (not (cdr (assoc "draft" post)))))
 
-(defun blorg-input-aggregate-none (_blorg posts)
+(defun blorg-input-aggregate-none (posts)
   "Aggregate each post within POSTS as a single collection.
 
 This is the default aggregation function used by `blorg-gen' and
 generate one collection per input file."
   (mapcar #'(lambda(p) `(("post" . ,p))) posts))
 
-(defun blorg-input-aggregate-all (_blorg posts)
+(defun blorg-input-aggregate-all (posts)
   "Aggregate all POSTS within a single collection.
 
 This aggregation function generate a single collection for all
 the input files.  It is useful for index pages, RSS pages, etc."
   `((("posts" . ,posts))))
 
-(defun blorg-input-aggregate-by-category (_blorg posts)
+(defun blorg-input-aggregate-by-category (posts)
   "Aggregate POSTS by category.
 
 This function reads the FILETAGS file property and put the file
@@ -252,7 +252,7 @@ within each tag found there."
          ;; Aggregate the input list into either a single group with
          ;; all the files or multiple groups
          (aggregated-data
-          (funcall (--blorg-get blorg 'input-aggregate) blorg filtered-files)))
+          (funcall (--blorg-get blorg 'input-aggregate) filtered-files)))
 
     (dolist (data aggregated-data)
       (let* (;; Render the template
