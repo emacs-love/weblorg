@@ -167,7 +167,6 @@ BLORG is the databag passed through `blog-gen'."
           `(("category" . (("name" . ,k)
                            ("posts" . ,v))))))
      ht)
-    ;; `(("categories" . ,output))
     output))
 
 (defun --blorg-run-pipeline (blorg)

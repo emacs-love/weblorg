@@ -47,11 +47,11 @@
    #+begin_src sh
    $ tree your-new-blog
    your-new-blog
-   ├─ publish.el
    ├─ src/
+   │  ├─ publish.el
    │  └─ posts/
    │     └─ welcome.org # (and other .org files)
-   └─ static/
+   └─ public/
        ├─ css/
        ├─ img/
        └─ js/
