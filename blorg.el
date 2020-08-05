@@ -48,9 +48,8 @@
 (defun blorg-cli (&rest options)
   "Generate HTML documents off Org-Mode files using OPTIONS.
 
-This function is very similar to `blorg-gen', but has the
-aditional feature of catching syntax and file-missing errors and
-show them in a slightly nicer way."
+This function wraps `blorg-gen' and handle known errors and
+report them in a nicer way."
   (condition-case exc
       (apply 'blorg-gen options)
     (templatel-error
@@ -59,11 +58,27 @@ show them in a slightly nicer way."
      (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
 
 (defun --blorg-template-base ()
-  "Base template directory."
+  "Base template directory.
+
+The template system of blorg will search for a given template
+name in a list of different environments, similar to the PATH
+variable a shell.  This function returns the entry that usually
+sits in the bottom of that list with the lowest priority.  It
+contains the `template` directory bundled with the code of the
+blorg module."
   (list (expand-file-name "templates" blorg-module-dir)))
 
 (defun --blorg-template-find (directories name)
-  "Find template NAME within DIRECTORIES."
+  "Find template NAME within DIRECTORIES.
+
+This function implements a search for templates within the
+provided list of directories.  The search happens from left to
+right and returns on the first successful match.
+
+This behavior, which is intentionally similar to the PATH
+variable in a shell, allows the user to override just the
+templates they're interested in but still take advantage of other
+default templates."
   (if (null directories)
       ;; didn't find it. Signal an error upwards:
       (signal
@@ -83,7 +98,46 @@ show them in a slightly nicer way."
         path)))))
 
 (defun blorg-gen (&rest options)
-  "Generate HTML documents off Org-Mode files using OPTIONS."
+  "Generate HTML documents off Org-Mode files using OPTIONS.
+
+The OPTIONS parameter is a list of pairs of symbol value and
+support the following pairs:
+
+* `:base-dir': Base path for `:input-pattern' and `:output';
+
+* `:input-pattern': Regular expression for selecting files within
+   path `:base-dir';
+
+* `:input-exclude': Regular expression for excluding files from
+   the input list;
+
+* `:input-filter': Function for filtering out files after they
+  were parsed.  This allows using data from within the Org-Mode
+  file to decide if it should be included or not in the input
+  list.
+
+* `:input-aggregate': Function for grouping files into
+  collections.  Templates are applied to collections, not to
+  files from the input list.  The variables available for the
+  template come from the return of this function.
+
+* `:output': String with a template for generating the output
+  file name.  The variables available are the variables of each
+  item of a collection returned by `:input-aggregate'.
+
+* `:template': Name of the template that should be used to render
+  a collection of files.  Notice that this is the name of the
+  template, not its path (neither relative or absolute).  The
+  value provided here will be searched within 1. the directory
+  *template* within `:base-dir' 2. the directory *templates*
+  within blorg's source code.
+
+* `:template-vars': Association list of extra variables to be
+  passed down to the template.
+
+
+This function will not handle errors gracefully.  Please refer to
+`blorg-cli' if you don't want to handle any errors yourself."
   (let* ((opt (seq-partition options 2))
          ;; all parameters the entry point takes
          (base-dir (--blorg-get opt :base-dir default-directory))
@@ -131,22 +185,31 @@ show them in a slightly nicer way."
     (--blorg-run-pipeline blorg)))
 
 (defun blorg-input-filter-drafts (post)
-  "Return nil if POST `draft` is true."
-  (ignore-errors
-    (not (cdr (assoc "draft" post)))))
+  "Exclude POST from input list if it is a draft.
+
+We use the DRAFT file property to define if an Org-Mode file is a
+draft or not."
+  (ignore-errors (not (cdr (assoc "draft" post)))))
 
 (defun blorg-input-aggregate-none (_blorg posts)
-  "Passthrough aggregator just return POSTS disregard BLORG."
+  "Aggregate each post within POSTS as a single collection.
+
+This is the default aggregation function used by `blorg-gen' and
+generate one collection per input file."
   (mapcar #'(lambda(p) `(("post" . ,p))) posts))
 
 (defun blorg-input-aggregate-all (_blorg posts)
-  "Aggregate all POSTS and disregard BLORG."
+  "Aggregate all POSTS within a single collection.
+
+This aggregation function generate a single collection for all
+the input files.  It is useful for index pages, RSS pages, etc."
   `((("posts" . ,posts))))
 
 (defun blorg-input-aggregate-by-category (_blorg posts)
-  "Aggregate POSTS by date.
+  "Aggregate POSTS by category.
 
-BLORG is the databag passed through `blog-gen'."
+This function reads the FILETAGS file property and put the file
+within each tag found there."
   (let (output
         (ht (make-hash-table :test 'equal)))
     (dolist (post posts)
