@@ -38,13 +38,6 @@
   "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
 
-(defun --blorg-log-info (msg &rest vars)
-  "Report MSG (formatted with VARS) to log level info."
-  (message
-   "%s INFO %s"
-   (format-time-string "%Y-%m-%d %H:%M:%S")
-   (apply 'format (cons msg vars))))
-
 (defun blorg-cli (&rest options)
   "Generate HTML documents off Org-Mode files using OPTIONS.
 
@@ -57,46 +50,6 @@ report them in a nicer way."
     (file-missing
      (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
 
-(defun --blorg-template-base ()
-  "Base template directory.
-
-The template system of blorg will search for a given template
-name in a list of different environments, similar to the PATH
-variable a shell.  This function returns the entry that usually
-sits in the bottom of that list with the lowest priority.  It
-contains the `template` directory bundled with the code of the
-blorg module."
-  (list (expand-file-name "templates" blorg-module-dir)))
-
-(defun --blorg-template-find (directories name)
-  "Find template NAME within DIRECTORIES.
-
-This function implements a search for templates within the
-provided list of directories.  The search happens from left to
-right and returns on the first successful match.
-
-This behavior, which is intentionally similar to the PATH
-variable in a shell, allows the user to override just the
-templates they're interested in but still take advantage of other
-default templates."
-  (if (null directories)
-      ;; didn't find it. Signal an error upwards:
-      (signal
-       'file-missing
-       (list "" "File not found" (format "Template `%s' doesn't exist" name)))
-    ;; Let's see if we can find it in the next directory
-    (let* ((path (expand-file-name name (car directories)))
-           (attrs (file-attributes path)))
-      (cond
-       ;; doesn't exist; try next dir
-       ((null attrs) (--blorg-template-find (cdr directories) name))
-       ;; is a directory
-       ((not (null (file-attribute-type attrs))) nil)
-       ;; we found it
-       ((null (file-attribute-type attrs))
-        (--blorg-log-info "template %s found at %s" name path)
-        path)))))
-
 (defun blorg-gen (&rest options)
   "Generate HTML documents off Org-Mode files using OPTIONS.
 
@@ -106,10 +59,10 @@ support the following pairs:
 * `:base-dir': Base path for `:input-pattern' and `:output';
 
 * `:input-pattern': Regular expression for selecting files within
-   path `:base-dir';
+   path `:base-dir'.  It defaults to \"org$\";
 
 * `:input-exclude': Regular expression for excluding files from
-   the input list;
+   the input list.  Defaults to \"^$\";
 
 * `:input-filter': Function for filtering out files after they
   were parsed.  This allows using data from within the Org-Mode
@@ -232,6 +185,46 @@ within each tag found there."
      ht)
     output))
 
+(defun --blorg-template-base ()
+  "Base template directory.
+
+The template system of blorg will search for a given template
+name in a list of different environments, similar to the PATH
+variable a shell.  This function returns the entry that usually
+sits in the bottom of that list with the lowest priority.  It
+contains the `template` directory bundled with the code of the
+blorg module."
+  (list (expand-file-name "templates" blorg-module-dir)))
+
+(defun --blorg-template-find (directories name)
+  "Find template NAME within DIRECTORIES.
+
+This function implements a search for templates within the
+provided list of directories.  The search happens from left to
+right and returns on the first successful match.
+
+This behavior, which is intentionally similar to the PATH
+variable in a shell, allows the user to override just the
+templates they're interested in but still take advantage of other
+default templates."
+  (if (null directories)
+      ;; didn't find it. Signal an error upwards:
+      (signal
+       'file-missing
+       (list "" "File not found" (format "Template `%s' doesn't exist" name)))
+    ;; Let's see if we can find it in the next directory
+    (let* ((path (expand-file-name name (car directories)))
+           (attrs (file-attributes path)))
+      (cond
+       ;; doesn't exist; try next dir
+       ((null attrs) (--blorg-template-find (cdr directories) name))
+       ;; is a directory
+       ((not (null (file-attribute-type attrs))) nil)
+       ;; we found it
+       ((null (file-attribute-type attrs))
+        (--blorg-log-info "template %s found at %s" name path)
+        path)))))
+
 (defun --blorg-run-pipeline (blorg)
   "Fing input files and template them up with config in BLORG."
   (let* ((input-filter (--blorg-get blorg 'input-filter))
@@ -328,6 +321,13 @@ within each tag found there."
 (defun --blorg-get-cdr (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."
   (or (cdr (assoc item seq)) default))
+
+(defun --blorg-log-info (msg &rest vars)
+  "Report MSG (formatted with VARS) to log level info."
+  (message
+   "%s INFO %s"
+   (format-time-string "%Y-%m-%d %H:%M:%S")
+   (apply 'format (cons msg vars))))
 
 (provide 'blorg)
 ;;; blorg.el ends here
