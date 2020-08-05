@@ -100,7 +100,7 @@ show them in a slightly nicer way."
            ;; higher precedence over the templates directory within
            ;; blorg's source code.
            (expand-file-name "templates" base-dir)
-           (--blorg-get opt :template-dirs (--blorg-template-base))))
+           (--blorg-template-base)))
          ;; template environment with import function attached.
          (env
           (templatel-env-new
