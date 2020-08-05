@@ -29,6 +29,11 @@
 
 (defvar blorg-module-dir (file-name-directory load-file-name))
 
+(defvar blorg-version "0.1.0")
+
+(defvar blorg-meta
+  `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version)))))
+
 (defmacro --blorg-prepend (seq item)
   "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
@@ -88,6 +93,7 @@ show them in a slightly nicer way."
          (input-aggregate (--blorg-get opt :input-aggregate #'blorg-input-aggregate-none))
          (output (--blorg-get opt :output "output/{{ slug }}.html"))
          (template (--blorg-get opt :template nil))
+         (template-vars (--blorg-get opt :template-vars nil))
          (template-dirs
           (cons
            ;; Notice the templates directory close to `base-dir` has
@@ -112,6 +118,7 @@ show them in a slightly nicer way."
             (input-filter ,input-filter)
             (input-aggregate ,input-aggregate)
             (template ,template)
+            (template-vars ,template-vars)
             (template-dirs ,template-dirs)
             (output ,output))))
 
@@ -186,7 +193,8 @@ BLORG is the databag passed through `blog-gen'."
              (rendered
               (templatel-env-render
                (--blorg-get blorg 'env)
-               (--blorg-get blorg 'template) data))
+               (--blorg-get blorg 'template)
+               (append (--blorg-get blorg 'template-vars) blorg-meta data)))
              ;; Render the relative output path
              (rendered-output
               (templatel-render-string
