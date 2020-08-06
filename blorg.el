@@ -56,45 +56,45 @@ report them in a nicer way."
 The OPTIONS parameter is a list of pairs of symbol value and
 support the following pairs:
 
-* `:base-dir': Base path for `:input-pattern' and `:output';
+ * `:base-dir': Base path for `:input-pattern' and `:output';
 
-* `:input-pattern': Regular expression for selecting files within
-   path `:base-dir'.  It defaults to \"org$\";
+ * `:input-pattern': Regular expression for selecting files
+    within path `:base-dir'.  It defaults to \"org$\";
 
-* `:input-exclude': Regular expression for excluding files from
-   the input list.  Defaults to \"^$\";
+ * `:input-exclude': Regular expression for excluding files from
+    the input list.  Defaults to \"^$\";
 
-* `:input-filter': Function for filtering out files after they
-  were parsed.  This allows using data from within the Org-Mode
-  file to decide if it should be included or not in the input
-  list.
+ * `:input-filter': Function for filtering out files after they
+   were parsed.  This allows using data from within the Org-Mode
+   file to decide if it should be included or not in the input
+   list.
 
-* `:input-aggregate': Function for grouping files into
-  collections.  Templates are applied to collections, not to
-  files from the input list.  The variables available for the
-  template come from the return of this function.
+ * `:input-aggregate': Function for grouping files into
+   collections.  Templates are applied to collections, not to
+   files from the input list.  The variables available for the
+   template come from the return of this function.
 
-* `:input-source': List of collections of data to be writtend
-  directly to templates.  In other words, this parameter replaces
-  the pipeline `pattern` > `exclude` > `filter` > `aggregate` and
-  will feed data directly into the function that writes down
-  templates.  This is useful for generating HTML files off
-  template variables read from whatever source you want.
+ * `:input-source': List of collections of data to be writtend
+   directly to templates.  In other words, this parameter
+   replaces the pipeline `pattern` > `exclude` > `filter` >
+   `aggregate` and will feed data directly into the function that
+   writes down templates.  This is useful for generating HTML
+   files off template variables read from whatever source you
+   want.
 
-* `:output': String with a template for generating the output
-  file name.  The variables available are the variables of each
-  item of a collection returned by `:input-aggregate'.
+ * `:output': String with a template for generating the output
+   file name.  The variables available are the variables of each
+   item of a collection returned by `:input-aggregate'.
 
-* `:template': Name of the template that should be used to render
-  a collection of files.  Notice that this is the name of the
-  template, not its path (neither relative or absolute).  The
-  value provided here will be searched within 1. the directory
-  *template* within `:base-dir' 2. the directory *templates*
-  within blorg's source code.
+ * `:template': Name of the template that should be used to
+   render a collection of files.  Notice that this is the name of
+   the template, not its path (neither relative or absolute).
+   The value provided here will be searched within 1. the
+   directory *template* within `:base-dir' 2. the directory
+   *templates* within blorg's source code.
 
-* `:template-vars': Association list of extra variables to be
-  passed down to the template.
-
+ * `:template-vars': Association list of extra variables to be
+   passed down to the template.
 
 This function will not handle errors gracefully.  Please refer to
 `blorg-cli' if you don't want to handle any errors yourself."
