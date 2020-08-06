@@ -74,6 +74,13 @@ support the following pairs:
   files from the input list.  The variables available for the
   template come from the return of this function.
 
+* `:input-source': List of collections of data to be writtend
+  directly to templates.  In other words, this parameter replaces
+  the pipeline `pattern` > `exclude` > `filter` > `aggregate` and
+  will feed data directly into the function that writes down
+  templates.  This is useful for generating HTML files off
+  template variables read from whatever source you want.
+
 * `:output': String with a template for generating the output
   file name.  The variables available are the variables of each
   item of a collection returned by `:input-aggregate'.
@@ -94,6 +101,7 @@ This function will not handle errors gracefully.  Please refer to
   (let* ((opt (seq-partition options 2))
          ;; all parameters the entry point takes
          (base-dir (--blorg-get opt :base-dir default-directory))
+         (input-source (--blorg-get opt :input-source))
          (input-pattern (--blorg-get opt :input-pattern "org$"))
          (input-exclude (--blorg-get opt :input-exclude "^$"))
          (input-filter (--blorg-get opt :input-filter))
@@ -134,8 +142,11 @@ This function will not handle errors gracefully.  Please refer to
      env template
      (templatel-new-from-file
       (--blorg-template-find template-dirs template)))
-    ;; Find all input files and apply the template
-    (--blorg-run-pipeline blorg)))
+    ;; Apply pipeline
+    (--blorg-write-collections
+     blorg
+     (cond ((not (null input-source)) input-source)
+           (t (--blorg-run-pipeline blorg))))))
 
 (defun blorg-input-filter-drafts (post)
   "Exclude POST from input list if it is a draft.
@@ -246,25 +257,31 @@ default templates."
          ;; all the files or multiple groups
          (aggregated-data
           (funcall (--blorg-get blorg 'input-aggregate) filtered-files)))
+    aggregated-data))
 
-    (dolist (data aggregated-data)
-      (let* (;; Render the template
-             (rendered
-              (templatel-env-render
-               (--blorg-get blorg 'env)
-               (--blorg-get blorg 'template)
-               (append (--blorg-get blorg 'template-vars) blorg-meta data)))
-             ;; Render the relative output path
-             (rendered-output
-              (templatel-render-string
-               (--blorg-get blorg 'output)
-               (cdar data)))
-             ;; Render the full path
-             (final-output
-              (expand-file-name rendered-output (--blorg-get blorg 'base-dir))))
-        (--blorg-log-info "writing: %s" final-output)
-        (mkdir (file-name-directory final-output) t)
-        (write-region rendered nil rendered-output)))))
+(defun --blorg-write-collections (blorg collections)
+  "Walk through COLLECTIONS & render a template for each item on it.
+
+The settings for generating the template, like output file name,
+can be found in the BLORG variable."
+  (dolist (data collections)
+    (let* (;; Render the template
+           (rendered
+            (templatel-env-render
+             (--blorg-get blorg 'env)
+             (--blorg-get blorg 'template)
+             (append (--blorg-get blorg 'template-vars) blorg-meta data)))
+           ;; Render the relative output path
+           (rendered-output
+            (templatel-render-string
+             (--blorg-get blorg 'output)
+             (cdar data)))
+           ;; Render the full path
+           (final-output
+            (expand-file-name rendered-output (--blorg-get blorg 'base-dir))))
+      (--blorg-log-info "writing: %s" final-output)
+      (mkdir (file-name-directory final-output) t)
+      (write-region rendered nil rendered-output))))
 
 (defun --blorg-parse-org (input-file)
   "Read the generated HTML & metadata of the body of INPUT-FILE."
