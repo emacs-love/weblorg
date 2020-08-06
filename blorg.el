@@ -248,7 +248,7 @@ default templates."
            (--blorg-get blorg 'input-exclude)))
          ;; Parse Org-mode files
          (parsed-files
-          (mapcar #'--blorg-parse-org input-files))
+          (mapcar #'--blorg-parse-org-file input-files))
          ;; Apply filters that depend on data read from parser
          (filtered-files
           (if (null input-filter) parsed-files
@@ -283,12 +283,31 @@ can be found in the BLORG variable."
       (mkdir (file-name-directory final-output) t)
       (write-region rendered nil rendered-output))))
 
-(defun --blorg-parse-org (input-file)
-  "Read the generated HTML & metadata of the body of INPUT-FILE."
+(defun --blorg-parse-org-file (input-path)
+  "Parse an Org-Mode file located at INPUT-PATH."
+  (let* ((input-data (with-temp-buffer
+                       (insert-file-contents input-path)
+                       (buffer-string)))
+         (keywords (--blorg-parse-org input-data))
+         (slug (--blorg-get-cdr keywords "title" input-path)))
+    (--blorg-prepend keywords (cons "file" input-path))
+    (--blorg-prepend keywords (cons "slug" (--blorg-slugify slug)))
+    keywords))
+
+(defun --blorg-parse-org (input-data)
+  "Parse INPUT-DATA as an Org-Mode file & generate its HTML.
+
+An assoc will be returned with all the file properties collected
+from the file, like TITLE, OPTIONS etc.  The generated HTML will
+be added ad an entry to the returned assoc."
   (let (html keywords)
+    ;; Replace the HTML generation code to prevent ox-html from adding
+    ;; headers and stuff around the HTML generated for the `body` tag.
     (advice-add
      'org-html-template :override
      #'(lambda(contents _i) (setq html contents)))
+    ;; Watch collection of keywords, which are file-level properties,
+    ;; like #+TITLE, #+FILETAGS, etc.
     (advice-add
      'org-html-keyword :before
      #'(lambda(keyword _c _i)
@@ -297,16 +316,16 @@ can be found in the BLORG variable."
           (cons
            (downcase (org-element-property :key keyword))
            (org-element-property :value keyword)))))
+    ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
-      (insert-file-contents input-file)
+      (insert input-data)
       (org-html-export-as-html))
+    ;; Uninstall advices
     (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
-
-    (let ((slug (--blorg-get-cdr keywords "title" input-file)))
-      (--blorg-prepend keywords (cons "slug" (--blorg-slugify slug))))
+    ;; Add the generated HTML as a property to the collected keywords
+    ;; as well
     (--blorg-prepend keywords (cons "html" html))
-    (--blorg-prepend keywords (cons "file" input-file))
     keywords))
 
 (defun --blorg-find-source-files (directory pattern exclude)
