@@ -196,6 +196,28 @@ within each tag found there."
      ht)
     output))
 
+(defun blorg-input-source-autodoc (pattern)
+  "Pull metadata from Emacs-Lisp symbols that match PATTERN."
+  `((("symbols" . ,(mapcar
+                    #'(lambda(sym)
+                        (cons
+                         "symbol"
+                         (cond ((functionp sym)
+                                `(("type" . "function")
+                                  ("name" . ,sym)
+                                  ("docs" . ,(--blorg-input-source-autodoc-documentation sym))
+                                  ("args" . ,(help-function-arglist sym t))))
+                               (t
+                                `(("type" . "variable")
+                                  ("name" . ,sym))))))
+                    (apropos-internal pattern))))))
+
+(defun --blorg-input-source-autodoc-documentation (sym)
+  "Generate HTML documentation of the docstring of a symbol SYM."
+  (let* ((doc (documentation sym))
+         (doc (replace-regexp-in-string "\n\n(fn[^)]*)$" "" doc)))
+    (cdr (assoc "html" (--blorg-parse-org doc)))))
+
 (defun --blorg-template-base ()
   "Base template directory.
 
