@@ -247,7 +247,7 @@ default templates."
       ;; didn't find it. Signal an error upwards:
       (signal
        'file-missing
-       (list "" "File not found" (format "Template `%s' doesn't exist" name)))
+       (list "" "File not found" (format "Template `%s' not found" name)))
     ;; Let's see if we can find it in the next directory
     (let* ((path (expand-file-name name (car directories)))
            (attrs (file-attributes path)))
