@@ -27,12 +27,15 @@
 (require 'seq)
 (require 'templatel)
 
-(defvar blorg-module-dir (file-name-directory load-file-name))
+(defvar blorg-module-dir (file-name-directory load-file-name)
+  "Directory that points to the directory of blorgs source code.")
 
-(defvar blorg-version "0.1.0")
+(defvar blorg-version "0.1.0"
+  "The blorg's library version.")
 
 (defvar blorg-meta
-  `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version)))))
+  `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version))))
+  "Collection of variables that always get added to templates.")
 
 (defmacro --blorg-prepend (seq item)
   "Prepend ITEM to SEQ."
