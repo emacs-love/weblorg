@@ -215,6 +215,16 @@ within each tag found there."
                                   ("name" . ,sym))))))
                     (apropos-internal pattern))))))
 
+(defun blorg-input-source-autodoc-sections (sections)
+  "Run `blorg-input-source-autodoc' for various SECTIONS."
+  `((("sections" . ,(mapcar
+                     #'(lambda(section)
+                         (cons "section"
+                               `(("name" . ,(car section))
+                                 ("slug" . ,(--blorg-slugify (car section)))
+                                 ,@(car (blorg-input-source-autodoc (cdr section))))))
+                     sections)))))
+
 (defun --blorg-input-source-autodoc-documentation (sym)
   "Generate HTML documentation of the docstring of a symbol SYM."
   (let* ((doc (documentation sym))
