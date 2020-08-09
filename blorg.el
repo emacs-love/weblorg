@@ -1,6 +1,9 @@
 ;;; blorg.el --- Static Site Generator for org-mode; -*- lexical-binding: t -*-
 ;;
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
+;; URL: http://clarete.li/blorg
+;; Version: 0.1.0
+;; Package-Requires: ((templatel "0.1.0"))
 ;;
 ;; Copyright (C) 2020  Lincoln Clarete
 ;;
