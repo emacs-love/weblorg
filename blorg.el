@@ -23,6 +23,7 @@
 ;;
 ;;; Code:
 
+(require 'org)
 (require 'ox-html)
 (require 'seq)
 (require 'templatel)
@@ -399,6 +400,11 @@ be added ad an entry to the returned assoc."
    "%s INFO %s"
    (format-time-string "%Y-%m-%d %H:%M:%S")
    (apply 'format (cons msg vars))))
+
+(org-link-set-parameters
+ "anchor"
+ :export (lambda(path desc _backend)
+           (format "<a href=\"#%s\">%s</a>" path desc)))
 
 (provide 'blorg)
 ;;; blorg.el ends here
