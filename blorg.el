@@ -272,7 +272,6 @@ default templates."
        ((not (null (file-attribute-type attrs))) nil)
        ;; we found it
        ((null (file-attribute-type attrs))
-        (--blorg-log-info "template %s found at %s" name path)
         path)))))
 
 (defun --blorg-run-pipeline (blorg)
