@@ -41,7 +41,7 @@
   `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version))))
   "Collection of variables that always get added to templates.")
 
-(defmacro --blorg-prepend (seq item)
+(defmacro blorg--prepend (seq item)
   "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
 
@@ -107,22 +107,22 @@ This function will not handle errors gracefully.  Please refer to
 `blorg-cli' if you don't want to handle any errors yourself."
   (let* ((opt (seq-partition options 2))
          ;; all parameters the entry point takes
-         (base-dir (--blorg-get opt :base-dir default-directory))
-         (input-source (--blorg-get opt :input-source))
-         (input-pattern (--blorg-get opt :input-pattern "org$"))
-         (input-exclude (--blorg-get opt :input-exclude "^$"))
-         (input-filter (--blorg-get opt :input-filter))
-         (input-aggregate (--blorg-get opt :input-aggregate #'blorg-input-aggregate-none))
-         (output (--blorg-get opt :output "output/{{ slug }}.html"))
-         (template (--blorg-get opt :template nil))
-         (template-vars (--blorg-get opt :template-vars nil))
+         (base-dir (blorg--get opt :base-dir default-directory))
+         (input-source (blorg--get opt :input-source))
+         (input-pattern (blorg--get opt :input-pattern "org$"))
+         (input-exclude (blorg--get opt :input-exclude "^$"))
+         (input-filter (blorg--get opt :input-filter))
+         (input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-none))
+         (output (blorg--get opt :output "output/{{ slug }}.html"))
+         (template (blorg--get opt :template nil))
+         (template-vars (blorg--get opt :template-vars nil))
          (template-dirs
           (cons
            ;; Notice the templates directory close to `base-dir` has
            ;; higher precedence over the templates directory within
            ;; blorg's source code.
            (expand-file-name "templates" base-dir)
-           (--blorg-template-base)))
+           (blorg--template-base)))
          ;; template environment with import function attached.
          (env
           (templatel-env-new
@@ -130,7 +130,7 @@ This function will not handle errors gracefully.  Please refer to
                        (templatel-env-add-template
                         en name
                         (templatel-new-from-file
-                         (--blorg-template-find template-dirs name))))))
+                         (blorg--template-find template-dirs name))))))
          ;; all the variables passed down the pipe
          (blorg
           `((env ,env)
@@ -148,12 +148,12 @@ This function will not handle errors gracefully.  Please refer to
     (templatel-env-add-template
      env template
      (templatel-new-from-file
-      (--blorg-template-find template-dirs template)))
+      (blorg--template-find template-dirs template)))
     ;; Apply pipeline
-    (--blorg-write-collections
+    (blorg--write-collections
      blorg
      (cond ((not (null input-source)) input-source)
-           (t (--blorg-run-pipeline blorg))))))
+           (t (blorg--run-pipeline blorg))))))
 
 (defun blorg-input-filter-drafts (post)
   "Exclude POST from input list if it is a draft.
@@ -196,7 +196,7 @@ within each tag found there."
     ;; Make a list of list off the hash we just built
     (maphash
      (lambda(k v)
-       (--blorg-prepend
+       (blorg--prepend
         output
         `(("category" . (("name" . ,k)
                          ("posts" . ,v))))))
@@ -212,7 +212,7 @@ within each tag found there."
                        (cond ((functionp sym)
                               `(("type" . "function")
                                 ("name" . ,sym)
-                                ("docs" . ,(--blorg-input-source-autodoc-documentation sym))
+                                ("docs" . ,(blorg--input-source-autodoc-documentation sym))
                                 ("args" . ,(help-function-arglist sym t))))
                              (t
                               `(("type" . "variable")
@@ -225,17 +225,17 @@ within each tag found there."
                      (lambda(section)
                        (cons "section"
                              `(("name" . ,(car section))
-                               ("slug" . ,(--blorg-slugify (car section)))
+                               ("slug" . ,(blorg--slugify (car section)))
                                ,@(car (blorg-input-source-autodoc (cdr section))))))
                      sections)))))
 
-(defun --blorg-input-source-autodoc-documentation (sym)
+(defun blorg--input-source-autodoc-documentation (sym)
   "Generate HTML documentation of the docstring of a symbol SYM."
   (let* ((doc (documentation sym))
          (doc (replace-regexp-in-string "\n\n(fn[^)]*)$" "" doc)))
-    (cdr (assoc "html" (--blorg-parse-org doc)))))
+    (cdr (assoc "html" (blorg--parse-org doc)))))
 
-(defun --blorg-template-base ()
+(defun blorg--template-base ()
   "Base template directory.
 
 The template system of blorg will search for a given template
@@ -246,7 +246,7 @@ contains the `template` directory bundled with the code of the
 blorg module."
   (list (expand-file-name "templates" blorg-module-dir)))
 
-(defun --blorg-template-find (directories name)
+(defun blorg--template-find (directories name)
   "Find template NAME within DIRECTORIES.
 
 This function implements a search for templates within the
@@ -267,26 +267,26 @@ default templates."
            (attrs (file-attributes path)))
       (cond
        ;; doesn't exist; try next dir
-       ((null attrs) (--blorg-template-find (cdr directories) name))
+       ((null attrs) (blorg--template-find (cdr directories) name))
        ;; is a directory
        ((not (null (file-attribute-type attrs))) nil)
        ;; we found it
        ((null (file-attribute-type attrs))
         path)))))
 
-(defun --blorg-run-pipeline (blorg)
+(defun blorg--run-pipeline (blorg)
   "Fing input files and template them up with config in BLORG."
-  (let* ((input-filter (--blorg-get blorg 'input-filter))
+  (let* ((input-filter (blorg--get blorg 'input-filter))
          ;; Find all files that match input pattern and don't match
          ;; exclude pattern
          (input-files
-          (--blorg-find-source-files
-           (--blorg-get blorg 'base-dir)
-           (--blorg-get blorg 'input-pattern)
-           (--blorg-get blorg 'input-exclude)))
+          (blorg--find-source-files
+           (blorg--get blorg 'base-dir)
+           (blorg--get blorg 'input-pattern)
+           (blorg--get blorg 'input-exclude)))
          ;; Parse Org-mode files
          (parsed-files
-          (mapcar #'--blorg-parse-org-file input-files))
+          (mapcar #'blorg--parse-org-file input-files))
          ;; Apply filters that depend on data read from parser
          (filtered-files
           (if (null input-filter) parsed-files
@@ -294,10 +294,10 @@ default templates."
          ;; Aggregate the input list into either a single group with
          ;; all the files or multiple groups
          (aggregated-data
-          (funcall (--blorg-get blorg 'input-aggregate) filtered-files)))
+          (funcall (blorg--get blorg 'input-aggregate) filtered-files)))
     aggregated-data))
 
-(defun --blorg-write-collections (blorg collections)
+(defun blorg--write-collections (blorg collections)
   "Walk through COLLECTIONS & render a template for each item on it.
 
 The settings for generating the template, like output file name,
@@ -306,33 +306,33 @@ can be found in the BLORG variable."
     (let* (;; Render the template
            (rendered
             (templatel-env-render
-             (--blorg-get blorg 'env)
-             (--blorg-get blorg 'template)
-             (append (--blorg-get blorg 'template-vars) blorg-meta data)))
+             (blorg--get blorg 'env)
+             (blorg--get blorg 'template)
+             (append (blorg--get blorg 'template-vars) blorg-meta data)))
            ;; Render the relative output path
            (rendered-output
             (templatel-render-string
-             (--blorg-get blorg 'output)
+             (blorg--get blorg 'output)
              (cdar data)))
            ;; Render the full path
            (final-output
-            (expand-file-name rendered-output (--blorg-get blorg 'base-dir))))
-      (--blorg-log-info "writing: %s" final-output)
+            (expand-file-name rendered-output (blorg--get blorg 'base-dir))))
+      (blorg--log-info "writing: %s" final-output)
       (mkdir (file-name-directory final-output) t)
       (write-region rendered nil rendered-output))))
 
-(defun --blorg-parse-org-file (input-path)
+(defun blorg--parse-org-file (input-path)
   "Parse an Org-Mode file located at INPUT-PATH."
   (let* ((input-data (with-temp-buffer
                        (insert-file-contents input-path)
                        (buffer-string)))
-         (keywords (--blorg-parse-org input-data))
-         (slug (--blorg-get-cdr keywords "title" input-path)))
-    (--blorg-prepend keywords (cons "file" input-path))
-    (--blorg-prepend keywords (cons "slug" (--blorg-slugify slug)))
+         (keywords (blorg--parse-org input-data))
+         (slug (blorg--get-cdr keywords "title" input-path)))
+    (blorg--prepend keywords (cons "file" input-path))
+    (blorg--prepend keywords (cons "slug" (blorg--slugify slug)))
     keywords))
 
-(defun --blorg-parse-org (input-data)
+(defun blorg--parse-org (input-data)
   "Parse INPUT-DATA as an Org-Mode file & generate its HTML.
 
 An assoc will be returned with all the file properties collected
@@ -349,7 +349,7 @@ be added ad an entry to the returned assoc."
     (advice-add
      'org-html-keyword :before
      (lambda(keyword _c _i)
-       (--blorg-prepend
+       (blorg--prepend
         keywords
         (cons
          (downcase (org-element-property :key keyword))
@@ -363,10 +363,10 @@ be added ad an entry to the returned assoc."
     (ad-unadvise 'org-html-keyword)
     ;; Add the generated HTML as a property to the collected keywords
     ;; as well
-    (--blorg-prepend keywords (cons "html" html))
+    (blorg--prepend keywords (cons "html" html))
     keywords))
 
-(defun --blorg-find-source-files (directory pattern exclude)
+(defun blorg--find-source-files (directory pattern exclude)
   "Find files matching PATTERN but not EXCLUDE within DIRECTORY."
   (let (output-files)
     (dolist (file (directory-files-and-attributes directory t))
@@ -378,25 +378,25 @@ be added ad an entry to the returned assoc."
         (if (not (equal "." (substring (car file) -1)))
             (setq output-files
                   (append
-                   (--blorg-find-source-files (car file) pattern exclude)
+                   (blorg--find-source-files (car file) pattern exclude)
                    output-files))))))
     output-files))
 
-(defun --blorg-slugify (s)
+(defun blorg--slugify (s)
   "Make slug of S."
   (downcase
    (replace-regexp-in-string
     "\s" "-" (file-name-sans-extension (file-name-nondirectory s)))))
 
-(defun --blorg-get (seq item &optional default)
+(defun blorg--get (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."
   (or (cadr (assoc item seq)) default))
 
-(defun --blorg-get-cdr (seq item &optional default)
+(defun blorg--get-cdr (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."
   (or (cdr (assoc item seq)) default))
 
-(defun --blorg-log-info (msg &rest vars)
+(defun blorg--log-info (msg &rest vars)
   "Report MSG (formatted with VARS) to log level info."
   (message
    "%s INFO %s"
