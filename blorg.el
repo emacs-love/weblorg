@@ -126,11 +126,11 @@ This function will not handle errors gracefully.  Please refer to
          ;; template environment with import function attached.
          (env
           (templatel-env-new
-           :importfn #'(lambda(en name)
-                         (templatel-env-add-template
-                          en name
-                          (templatel-new-from-file
-                           (--blorg-template-find template-dirs name))))))
+           :importfn (lambda(en name)
+                       (templatel-env-add-template
+                        en name
+                        (templatel-new-from-file
+                         (--blorg-template-find template-dirs name))))))
          ;; all the variables passed down the pipe
          (blorg
           `((env ,env)
@@ -167,7 +167,7 @@ draft or not."
 
 This is the default aggregation function used by `blorg-gen' and
 generate one collection per input file."
-  (mapcar #'(lambda(p) `(("post" . ,p))) posts))
+  (mapcar (lambda(p) `(("post" . ,p))) posts))
 
 (defun blorg-input-aggregate-all (posts)
   "Aggregate all POSTS within a single collection.
@@ -195,38 +195,38 @@ within each tag found there."
                  ht)))
     ;; Make a list of list off the hash we just built
     (maphash
-     #'(lambda(k v)
-         (--blorg-prepend
-          output
-          `(("category" . (("name" . ,k)
-                           ("posts" . ,v))))))
+     (lambda(k v)
+       (--blorg-prepend
+        output
+        `(("category" . (("name" . ,k)
+                         ("posts" . ,v))))))
      ht)
     output))
 
 (defun blorg-input-source-autodoc (pattern)
   "Pull metadata from Emacs-Lisp symbols that match PATTERN."
   `((("symbols" . ,(mapcar
-                    #'(lambda(sym)
-                        (cons
-                         "symbol"
-                         (cond ((functionp sym)
-                                `(("type" . "function")
-                                  ("name" . ,sym)
-                                  ("docs" . ,(--blorg-input-source-autodoc-documentation sym))
-                                  ("args" . ,(help-function-arglist sym t))))
-                               (t
-                                `(("type" . "variable")
-                                  ("name" . ,sym))))))
+                    (lambda(sym)
+                      (cons
+                       "symbol"
+                       (cond ((functionp sym)
+                              `(("type" . "function")
+                                ("name" . ,sym)
+                                ("docs" . ,(--blorg-input-source-autodoc-documentation sym))
+                                ("args" . ,(help-function-arglist sym t))))
+                             (t
+                              `(("type" . "variable")
+                                ("name" . ,sym))))))
                     (apropos-internal pattern))))))
 
 (defun blorg-input-source-autodoc-sections (sections)
   "Run `blorg-input-source-autodoc' for various SECTIONS."
   `((("sections" . ,(mapcar
-                     #'(lambda(section)
-                         (cons "section"
-                               `(("name" . ,(car section))
-                                 ("slug" . ,(--blorg-slugify (car section)))
-                                 ,@(car (blorg-input-source-autodoc (cdr section))))))
+                     (lambda(section)
+                       (cons "section"
+                             `(("name" . ,(car section))
+                               ("slug" . ,(--blorg-slugify (car section)))
+                               ,@(car (blorg-input-source-autodoc (cdr section))))))
                      sections)))))
 
 (defun --blorg-input-source-autodoc-documentation (sym)
@@ -343,17 +343,17 @@ be added ad an entry to the returned assoc."
     ;; headers and stuff around the HTML generated for the `body` tag.
     (advice-add
      'org-html-template :override
-     #'(lambda(contents _i) (setq html contents)))
+     (lambda(contents _i) (setq html contents)))
     ;; Watch collection of keywords, which are file-level properties,
     ;; like #+TITLE, #+FILETAGS, etc.
     (advice-add
      'org-html-keyword :before
-     #'(lambda(keyword _c _i)
-         (--blorg-prepend
-          keywords
-          (cons
-           (downcase (org-element-property :key keyword))
-           (org-element-property :value keyword)))))
+     (lambda(keyword _c _i)
+       (--blorg-prepend
+        keywords
+        (cons
+         (downcase (org-element-property :key keyword))
+         (org-element-property :value keyword)))))
     ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
       (insert input-data)
