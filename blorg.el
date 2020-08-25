@@ -1,9 +1,9 @@
 ;;; blorg.el --- Static Site Generator for org-mode; -*- lexical-binding: t -*-
 ;;
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
-;; URL: http://clarete.li/blorg
+;; URL: https://clarete.li/blorg
 ;; Version: 0.1.0
-;; Package-Requires: ((templatel "0.1.0"))
+;; Package-Requires: ((templatel "0.1.0") (emacs "26.1"))
 ;;
 ;; Copyright (C) 2020  Lincoln Clarete
 ;;
@@ -18,7 +18,7 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ;;
 ;;; Commentary:
 ;;
