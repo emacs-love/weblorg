@@ -28,6 +28,7 @@
 
 (require 'org)
 (require 'ox-html)
+(require 'ox-slimhtml)
 (require 'seq)
 (require 'templatel)
 
@@ -339,11 +340,6 @@ An assoc will be returned with all the file properties collected
 from the file, like TITLE, OPTIONS etc.  The generated HTML will
 be added ad an entry to the returned assoc."
   (let (html keywords)
-    ;; Replace the HTML generation code to prevent ox-html from adding
-    ;; headers and stuff around the HTML generated for the `body` tag.
-    (advice-add
-     'org-html-template :override
-     (lambda(contents _i) (setq html contents)))
     ;; Watch collection of keywords, which are file-level properties,
     ;; like #+TITLE, #+FILETAGS, etc.
     (advice-add
@@ -355,14 +351,12 @@ be added ad an entry to the returned assoc."
          (downcase (org-element-property :key keyword))
          (org-element-property :value keyword)))))
     ;; Trigger Org-Mode to generate the HTML off of the input data
-    (with-temp-buffer
-      (insert input-data)
-      (org-html-export-as-html))
+    (setq html (org-export-string-as input-data 'slimhtml t))
     ;; Uninstall advices
-    (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
     ;; Add the generated HTML as a property to the collected keywords
     ;; as well
+    (message "WAT: %s" keywords)
     (blorg--prepend keywords (cons "html" html))
     keywords))
 
