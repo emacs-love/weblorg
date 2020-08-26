@@ -1,9 +1,9 @@
 {% extends "base_layout.html" %} {% block main %}
 <article class="post">
-  <h1 class="post__title">
-    {{ post.title }}
+  <h1 class="post-title">
+    <a href="">{{ post.title }}</a>
   </h1>
-  <section class="post__meta">
+  <section class="post-meta">
     {{ post.date }}
   </section>
   <section>

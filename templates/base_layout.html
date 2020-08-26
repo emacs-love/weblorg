@@ -14,18 +14,17 @@
   </head>
   <body>
     {# Top navigation bar #}
+
     {% block nav %}
-    <header class="logo">
-      <h1>
+    <header>
+      <h1 class="logo">
         <a href="/">My personal blorg</a>
-        {% block title %}{% endblock %}
       </h1>
       <a href="#main" class="visually-hidden">jump to main content</a>
       <nav>
         <ul class="menu">
-          <li><a href="/about">about</a></li>
-          <li><a href="/blog">blog</a></li>
-          <li><a href="/slides">about</a></li>
+          <li class="menu__item"><a class="menu__link" href="/about">about</a></li>
+          <li class="menu__item"><a class="menu__link" href="/blog">blog</a></li>
         </ul>
         <ul class="social">
           <li><a class="social github" href="http://github.com/">

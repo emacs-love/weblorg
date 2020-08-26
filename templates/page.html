@@ -1,11 +1,8 @@
 {% extends "base_layout.html" %} {% block main %}
-<article class="post">
-  <h1 class="post__title">
+<article class="page">
+  <h1 class="page__title">
     {{ post.title }}
   </h1>
-  <section class="post__meta">
-    {{ post.date }}
-  </section>
   <section>
     {{ post.html }}
   </section>

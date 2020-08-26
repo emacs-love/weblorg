@@ -1,5 +1,12 @@
-#+TITLE: My First Post
+#+TITLE: Welcome to blorg
 #+DATE: <2020-08-19 qua>
-#+AUTHOR: John Coltrane
+#+AUTHOR: Guilherme Guerra
+#+OPTIONS: toc:nil num:nil
+#+OPTIONS: ^:nil
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl.
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam xcvestibulum accumsan nisl.
+
+** Markups
+You can do markups on your post just follow this cheatsheet
+- *bold* `*bold*`
+- /italic/ `/italic/`
