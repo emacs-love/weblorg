@@ -39,7 +39,7 @@
   display: none;
 }
 
-nav ul li{
+nav ul li {
   display: inline;
 }
 
@@ -126,6 +126,12 @@ a {
 .note {
   background: var(--cl-note);
   padding: 15px 20px;
+}
+
+/* -- Page -- */
+
+li.post-title {
+  margin-bottom: 20px;
 }
 
 /* -- Code Blocks -- */
