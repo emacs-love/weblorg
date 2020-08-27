@@ -26,13 +26,8 @@
 (require 'cl-lib)
 (require 'blorg)
 
-(ert-deftest blorg-read-params ()
-  (should (equal
-           (--blorg-get (--blorg-read-options (list :base-dir "expected"))
-                        :base-dir
-                        "wrong")
-           "expected")))
-
-;; --- Renderer --
+(ert-deftest test-blorg--get ()
+  (should (equal (blorg--get '((:base-dir "expected")) :base-dir "wrong") "expected"))
+  (should (equal (blorg--get '() :base-dir "expected") "expected")))
 
 ;;; blorg-tests.el ends here
