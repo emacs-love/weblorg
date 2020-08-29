@@ -39,10 +39,6 @@
   display: none;
 }
 
-nav ul li {
-  display: inline;
-}
-
 body                  {
   /* Reset */
   margin: 0;
@@ -63,23 +59,51 @@ header {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--cl-border);
-  padding: 0 30px;
+  padding: 10px 30px;
 }
 
+.logo {
+  margin: 0;
+}
 
 .logo a {
-  font-size: 20px;
+  background: url('https://api.adorable.io/avatars/100/blorg.png');
+  height: 65px;
+  width: 65px;
+  text-indent: -1000px;
+  display: block;
+  background-size: contain;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
-.menu__item {
+.menu__item, .social__item {
   padding-right: 50px;
   cursor: pointer;
 }
 
-.menu__link {
-    color: var(--cl-foreground);
+.menu__link, .social__link {
+  color: var(--cl-foreground);
   font-size: 16px;
   font-weight: bold;
+}
+
+.social__link {
+  font-size: 30px;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+}
+
+header nav ul {
+  margin: 0;
+  padding: 0;
+}
+
+header nav ul li {
+  display: inline;
 }
 
 /* -- main content -- */
@@ -133,6 +157,7 @@ a {
 li.post-title {
   margin-bottom: 20px;
 }
+
 
 /* -- Code Blocks -- */
 .org-builtin          { color: var(--cl-code-builtin); }

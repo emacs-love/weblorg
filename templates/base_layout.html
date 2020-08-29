@@ -10,6 +10,7 @@
     <meta name="description" content="my personal blog" />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="/public/style.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
     {% endblock %}
   </head>
   <body>
@@ -27,18 +28,12 @@
           <li class="menu__item"><a class="menu__link" href="/blog">blog</a></li>
         </ul>
         <ul class="social">
-          <li><a class="social github" href="http://github.com/">
-            <i class="fas fa-home" aria-hidden="true"></i>
-             <span class="visually-hidden">github</span>
-          </a></li>
-          <li><a class="social rss" href="rss"></a>
-            <i class="fas fa-rss" aria-hidden="true"></i>
-            <span class="visually-hidden">rss</span>
+          <li class="social__item">
+            <a class="social__link github" href="http://github.com/clarete/blorg">
+              <i class="fa fa-github" aria-hidden="true"></i>
+              <span class="visually-hidden">github</span>
+            </a>
           </li>
-          <li><a class="social email" href="mailto:johncoltrane@jazz.com">
-            <i class="fas fa-email" aria-hidden="true"></i>
-            <span class="visually-hidden">email</span>
-          </a></li>
         </ul>
       </nav>
     </header>
