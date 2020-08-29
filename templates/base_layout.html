@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    {% block head %}
+    <meta charset="utf-8">
+    <title>My personal blorg - {% block title %}Home{% endblock %}</title>
+    <meta name="description" content="{% block description %}{% endblock %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="John Coltrane" />
+    <meta name="description" content="my personal blog" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="/public/style.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    {% endblock %}
+  </head>
+  <body>
+    {# Top navigation bar #}
+
+    {% block nav %}
+    <header>
+      <h1 class="logo">
+        <a href="/">My personal blorg</a>
+      </h1>
+      <a href="#main" class="visually-hidden">jump to main content</a>
+      <nav>
+        <ul class="menu">
+          <li class="menu__item"><a class="menu__link" href="/about">about</a></li>
+          <li class="menu__item"><a class="menu__link" href="/blog">blog</a></li>
+        </ul>
+        <ul class="social">
+          <li class="social__item">
+            <a class="social__link github" href="http://github.com/clarete/blorg">
+              <i class="fa fa-github" aria-hidden="true"></i>
+              <span class="visually-hidden">github</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    {% endblock %}
+
+    {# Probably where most of the action will happen #}
+    <main id="main">
+      {% block main %}{% endblock %}
+    </main>
+
+
+    {# Links, copyright notice, etc #}
+    {% block footer %}
+    <footer class="footer">
+      <div class="ack">
+        Made with &#x2665; by
+        <a href="https://github.com/clarete/blorg" target="_blank">
+          blorg
+        </a>
+      </div>
+    </footer>
+    {% endblock %}
+
+  </body>
+</html>

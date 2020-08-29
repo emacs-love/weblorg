@@ -1,0 +1,9 @@
+{% extends "base_layout.html" %} {% block main %}
+<ul class="posts">
+{% for post in posts %}
+  <li class="post-title">
+    <a href="posts/{{ post.slug }}.html">{{ post.title }}</a>
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}

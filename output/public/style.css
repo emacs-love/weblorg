@@ -1,0 +1,188 @@
+:root {
+  /* colors */
+  --cl-border: #E7E7E7;
+  --cl-foreground: rgba(0, 0, 0, 0.87);
+  --cl-background: #FFFFFF;
+  --cl-gray: #828282;
+  --cl-note: #F2FFDD;
+  --cl-link: #E49619;
+
+  /* -- Code Block Colors -- */
+
+  /* --- Monokai Theme */
+  --cl-code-monokai-background:   #272822;
+  --cl-code-monokai-foreground:   #F8F8F2;
+  --cl-code-monokai-comment:      #75715E;
+  --cl-code-monokai-red:          #F92672;
+  --cl-code-monokai-orange:       #FD971F;
+  --cl-code-monokai-light-orange: #E69F66;
+  --cl-code-monokai-yellow:       #E6DB74;
+  --cl-code-monokai-green:        #A6E22E;
+  --cl-code-monokai-blue:         #66D9EF;
+  --cl-code-monokai-purple:       #AE81FF;
+
+  /* --- Theme Variables */
+  --cl-code-background:           var(--cl-code-monokai-background);
+  --cl-code-foreground:           var(--cl-code-monokai-foreground);
+  --cl-code-builtin:              var(--cl-code-monokai-green);
+  --cl-code-comment:              var(--cl-code-monokai-comment);
+  --cl-code-function-name:        var(--cl-code-monokai-green);
+  --cl-code-keyword:              var(--cl-code-monokai-red);
+  --cl-code-string:               var(--cl-code-monokai-yellow);
+  --cl-code-type:                 var(--cl-code-monokai-blue);
+  --cl-code-variable-name:        var(--cl-code-monokai-orange);
+
+}
+
+/* helper classes */
+.visually-hidden {
+  display: none;
+}
+
+body                  {
+  /* Reset */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-size: 22px;
+  font-family: sans;
+
+  /* Colors */
+  background: var(--cl-background);
+  color: var(--cl-foreground);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--cl-border);
+  padding: 10px 30px;
+}
+
+.logo {
+  margin: 0;
+}
+
+.logo a {
+  background: url('https://api.adorable.io/avatars/100/blorg.png');
+  height: 65px;
+  width: 65px;
+  text-indent: -1000px;
+  display: block;
+  background-size: contain;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.menu__item, .social__item {
+  padding-right: 50px;
+  cursor: pointer;
+}
+
+.menu__link, .social__link {
+  color: var(--cl-foreground);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.social__link {
+  font-size: 30px;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+}
+
+header nav ul {
+  margin: 0;
+  padding: 0;
+}
+
+header nav ul li {
+  display: inline;
+}
+
+/* -- main content -- */
+a {
+  text-decoration: none;
+  color: var(--cl-link);
+  font-weight: bold;
+}
+
+.post h1 {
+    font-size: 55px;
+}
+.post h2 {
+    font-size: 26px;
+}
+.post h3 {
+    font-size: 20px;
+}
+.post h4 {
+  font-size: 18px;
+}
+.post h5 {
+  font-size: 15px;
+}
+.post h6 {
+  font-size: 12px;
+}
+
+#main {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex: 1;
+}
+
+.post__title {
+    font-weight: normal;
+}
+
+.post__meta {
+  color: var(--cl-gray)
+}
+
+.note {
+  background: var(--cl-note);
+  padding: 15px 20px;
+}
+
+/* -- Page -- */
+
+li.post-title {
+  margin-bottom: 20px;
+}
+
+
+/* -- Code Blocks -- */
+.org-builtin          { color: var(--cl-code-builtin); }
+.org-doc              { color: var(--cl-code-doc); }
+.org-function-name    { color: var(--cl-code-function-name); }
+.org-keyword          { color: var(--cl-code-keyword); }
+.org-string           { color: var(--cl-code-string); }
+.org-type             { color: var(--cl-code-type); }
+.org-variable-name    { color: var(--cl-code-variable-name); }
+.org-comment, .org-comment-delimiter { color: var(--cl-code-comment); }
+.org-src-container    { color: var(--cl-code-foreground);
+                        background: var(--cl-code-background);
+                        border: 1px solid var(--cl-border-src);
+                        padding: 0px 15px;
+                        max-width: 100%;
+                        overflow-y: scroll;
+                        border-radius: 5px; }
+
+
+/* -- Footer --*/
+footer {
+  background: var(--cl-foreground);
+  color: var(--cl-background);
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
