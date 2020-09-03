@@ -63,8 +63,6 @@ report them in a nicer way."
 The OPTIONS parameter is a list of pairs of symbol value and
 support the following pairs:
 
- * `:base-dir': Base path for `:input-pattern' and `:output';
-
  * `:input-pattern': Regular expression for selecting files
     within path `:base-dir'.  It defaults to \"org$\";
 
@@ -102,6 +100,9 @@ support the following pairs:
 
  * `:template-vars': Association list of extra variables to be
    passed down to the template.
+
+ * `:base-dir': Base path for `:input-pattern' and `:output'; If
+    not provided, will default to the `:base-dir' of the website;
 
 This function will not handle errors gracefully.  Please refer to
 `blorg-cli' if you don't want to handle any errors yourself."
