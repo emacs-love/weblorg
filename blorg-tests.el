@@ -26,7 +26,59 @@
 (require 'cl-lib)
 (require 'blorg)
 
-(ert-deftest test-blorg--get ()
+;; Make sure we can register routes in a site and then retrieve them
+;; later.
+(ert-deftest blorg--site-route--add-and-retrieve ()
+  ;; An implicit site gets created by this route that doesn't have a
+  ;; site parameter
+  (blorg-route
+   :name "docs"
+   :input-pattern ".*\\.org$"
+   :input-exclude "index.org$"
+   :template "post.html"
+   :url "/{{ slug }}.html")
+
+  ;; The site instance is being explicitly added to another site, so
+  ;; this new route should not impact the previously defined one
+  (blorg-route
+   :site (blorg-site :base-url "https://example.com")
+   :name "docs"
+   :input-pattern "docs/.*\\.org$"
+   :input-exclude "index.org$"
+   :template "docs.html"
+   :url "docs/{{ slug }}.html")
+
+  (let* ((site (blorg--site-get))
+         (route (blorg--site-route site "docs")))
+    (should (equal (gethash :name route) "docs"))
+    (should (equal (gethash :input-pattern route) ".*\\.org$"))
+    (should (equal (gethash :template route) "post.html"))
+    (should (equal (gethash :url route) "/{{ slug }}.html"))
+    (should (equal (gethash :input-exclude route) "index.org$")))
+
+  (let* ((site (blorg--site-get "https://example.com"))
+         (route (blorg--site-route site "docs")))
+    (should (equal (gethash :name route) "docs"))
+    (should (equal (gethash :input-pattern route) "docs/.*\\.org$"))
+    (should (equal (gethash :template route) "docs.html"))
+    (should (equal (gethash :url route) "docs/{{ slug }}.html"))
+    (should (equal (gethash :input-exclude route) "index.org$")))
+
+  ;; reset the global to its initial state
+  (clrhash blorg--sites))
+
+;; Make sure that registering a new site works and that data
+;; associated with it can be retrieved
+(ert-deftest blorg--site-get--success ()
+  (blorg-site :base-url "http://localhost:9000" :theme "stuff")
+  (let ((the-same-blorg (blorg--site-get "http://localhost:9000")))
+    (should (equal (gethash :base-url the-same-blorg) "http://localhost:9000"))
+    (should (equal (gethash :theme the-same-blorg) "stuff")))
+  ;; reset the global to its initial state
+  (clrhash blorg--sites))
+
+;; Make sure this lil helper works
+(ert-deftest blorg--get--with-and-without-default ()
   (should (equal (blorg--get '((:base-dir "expected")) :base-dir "wrong") "expected"))
   (should (equal (blorg--get '() :base-dir "expected") "expected")))
 

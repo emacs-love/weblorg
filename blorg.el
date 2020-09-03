@@ -41,9 +41,71 @@
   `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version))))
   "Collection of variables that always get added to templates.")
 
+(defconst blorg--default-url "http://localhost:8000/"
+  "Default URL for a blorg.")
+
+(defconst blorg--sites (make-hash-table :test 'equal)
+  "Hashtable with site metadata indexed by their URL.")
+
 (defmacro blorg--prepend (seq item)
   "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
+
+(defun blorg-site (&rest options)
+  "Create a new blorg site.
+
+OPTIONS can contain the following parameters:
+
+ * ~:base-url~: Website's base URL.  Can be protocol followed by
+   domain and optionally by path.  Notice that each site is
+   registered within a global hash table `blorg--sites'.  If one
+   tries to register two sites with the same ~:base-url~, an
+   error will be raised."
+  (let* ((opt (seq-partition options 2))
+         (base-url (blorg--get opt :base-url nil))
+         (theme (blorg--get opt :theme "default"))
+         (site (blorg--site-get base-url)))
+    (if (null site)
+        ;; Shape of the blorg object is the following:
+        ;;
+        ;; 0. Hashtable where the routes are saved.  The key comes
+        ;;    from the :name of the route, and the value is all the
+        ;;    parameters of the route.
+        (let ((new-site (make-hash-table :size 3)))
+          (puthash :base-url base-url new-site)
+          (puthash :theme theme new-site)
+          (puthash :routes (make-hash-table :test 'equal) new-site)
+          (puthash base-url new-site blorg--sites))
+      ;; Already exists
+      site)))
+
+(defun blorg-route (&rest options)
+  "Add a new route defined by OPTIONS to a site."
+  (let* ((opt (seq-partition options 2))
+         (route (make-hash-table))
+         ;; all parameters the entry point takes
+         (name (blorg--get opt :name))
+         (url (blorg--get opt :url "/{{ slug }}.html"))
+         (base-dir (blorg--get opt :base-dir default-directory))
+         (site (or (blorg--get opt :site)
+                   (blorg-site :base-url blorg--default-url))))
+    (puthash :name name route)
+    (puthash :site site route)
+    (puthash :url url route)
+    (puthash :base-dir base-dir route)
+    (puthash :input-source (blorg--get opt :input-source) route)
+    (puthash :input-pattern (blorg--get opt :input-pattern "org$") route)
+    (puthash :input-exclude (blorg--get opt :input-exclude "^$") route)
+    (puthash :input-filter (blorg--get opt :input-filter) route)
+    (puthash :input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-none) route)
+    (puthash :output (blorg--get opt :output url) route)
+    (puthash :template (blorg--get opt :template nil) route)
+    (puthash :template-vars (blorg--get opt :template-vars nil) route)
+    (puthash name route (gethash :routes site))))
+
+
+
+;; ---- Pipeline Entry Points ----
 
 (defun blorg-cli (&rest options)
   "Generate HTML documents off Org-Mode files using OPTIONS.
@@ -156,12 +218,21 @@ This function will not handle errors gracefully.  Please refer to
      (cond ((not (null input-source)) input-source)
            (t (blorg--run-pipeline blorg))))))
 
+
+
+;; ---- Input Filter functions ----
+
 (defun blorg-input-filter-drafts (post)
   "Exclude POST from input list if it is a draft.
 
 We use the DRAFT file property to define if an Org-Mode file is a
 draft or not."
   (ignore-errors (not (cdr (assoc "draft" post)))))
+
+
+
+;; ---- Aggregation functions ----
+
 
 (defun blorg-input-aggregate-none (posts)
   "Aggregate each post within POSTS as a single collection.
@@ -204,6 +275,10 @@ within each tag found there."
      ht)
     output))
 
+
+
+;; ---- Input Source: autodoc ----
+
 (defun blorg-input-source-autodoc (pattern)
   "Pull metadata from Emacs-Lisp symbols that match PATTERN."
   `((("symbols" . ,(mapcar
@@ -235,6 +310,22 @@ within each tag found there."
   (let* ((doc (documentation sym))
          (doc (replace-regexp-in-string "\n\n(fn[^)]*)$" "" doc)))
     (cdr (assoc "html" (blorg--parse-org doc)))))
+
+
+
+;; ---- Private Functions ----
+
+(defun blorg--site-get (&optional base-url)
+  "Retrieve a site with key BASE-URL from `blorg--sites'."
+  (gethash (or base-url blorg--default-url) blorg--sites))
+
+(defun blorg--site-route (site route-name)
+  "Retrieve ROUTE-NAME from SITE."
+  (gethash route-name (gethash :routes site)))
+
+(defun blorg--site-route-add (site route-name route-params)
+  "Add ROUTE-PARAMS under ROUTE-NAME to SITE."
+  (puthash route-name route-params (gethash :routes site)))
 
 (defun blorg--template-base ()
   "Base template directory.
