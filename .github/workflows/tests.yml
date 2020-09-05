@@ -15,6 +15,10 @@ jobs:
       with:
         version: ${{ matrix.emacs_version }}
 
+    - uses: conao3/setup-cask@master
+      with:
+        version: 'snapshot'
+
     - uses: actions/checkout@v2
 
     - name: Run tests

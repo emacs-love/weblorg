@@ -28,7 +28,7 @@
 
 (ert-deftest blorg--collect-n-aggr ()
   (blorg-route
-   :base-dir (expand-file-name "fixtures/test1/" default-directory)
+   :base-dir (expand-file-name "t/fixtures/test1/" default-directory)
    :name "route"
    :input-pattern ".*\\.org$"
    :input-exclude "index.org$"

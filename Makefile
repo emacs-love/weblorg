@@ -1,15 +1,20 @@
 .POSIX:
-EMACS = emacs
+EMACS ?= cask exec emacs
 
 SRC = blorg.el
-TESTSRC = blorg-tests.el
+TESTSRC = t/blorg-tests.el
 
 OBJ = blorg.elc
-TESTOBJ = blorg-tests.elc
-TEMPLATEL = "(add-to-list 'load-path \"~/src/github.com/clarete/templatel/\")"
+TESTOBJ = t/blorg-tests.elc
+ALLOBJS = $(OBJ) $(TESTOBJ)
 
-ALLOBJS = $(OBJ)
-#$(TESTOBJ)
+# NOTE: This is meant to accelerate local development.  Although
+# templatel is being installed via Cask, this generic path is still
+# being injected into `load-path' so if there's a copy of templatel
+# there, it will be prioritized over the one installed by Cask.
+TEMPLATEL = --eval "(add-to-list 'load-path \"~/src/github.com/clarete/templatel/\")"
+
+CASK_MARK = .cask/done
 
 all: $(ALLOBJS)
 
@@ -18,12 +23,15 @@ $(TESTOBJ): $(OBJ) $(TESTSRC)
 
 clean:; rm -f $(ALLOBJS)
 
-check: $(TESTOBJ)
-	$(EMACS) -batch -Q -L . --eval $(TEMPLATEL) -l $(TESTOBJ) -f ert-run-tests-batch-and-exit
+$(CASK_MARK):; cask install && touch .cask/done
+deps: $(CASK_MARK)
+
+check: deps $(TESTOBJ)
+	$(EMACS) -batch -Q -L . $(TEMPLATEL) -l $(TESTOBJ) -f ert-run-tests-batch-and-exit
 
 check-one: $(TESTOBJ)
-	$(EMACS) -batch -Q -L . --eval $(TEMPLATEL) -l $(TESTOBJ) --eval "(ert-run-tests-batch-and-exit '(member ${TEST}))"
+	$(EMACS) -batch -Q -L . $(TEMPLATEL) -l $(TESTOBJ) --eval "(ert-run-tests-batch-and-exit '(member ${TEST}))"
 
 .SUFFIXES: .el .elc
 .el.elc:
-	$(EMACS) -batch -Q -L . --eval $(TEMPLATEL) -f batch-byte-compile $<
+	$(EMACS) -batch -Q -L . $(TEMPLATEL) -f batch-byte-compile $<
