@@ -135,67 +135,7 @@ OPTIONS can contain the following parameters:
       site)))
 
 (defun blorg-route (&rest options)
-  "Add a new route defined by OPTIONS to a site."
-  (let* ((opt (seq-partition options 2))
-         (route (make-hash-table))
-         ;; all parameters the entry point takes
-         (name (blorg--get opt :name))
-         ;; It's also the default for :output
-         (url (blorg--get opt :url "/{{ slug }}.html"))
-         ;; Not using the `default' parameter in `blorg--get' because
-         ;; it doesn't give the short circiut given by `or'.
-         (site (or (blorg--get opt :site)
-                   (blorg-site :base-url blorg--default-url)))
-         ;; Prefix path for most file operations within a route
-         (base-dir (blorg--get opt :base-dir default-directory))
-         ;; Notice the templates directory close to `base-dir` has
-         ;; higher precedence over the templates directory within
-         ;; blorg's source code.
-         (template-dirs (cons (expand-file-name "templates" base-dir)
-                              (blorg--template-base))))
-    (puthash :name name route)
-    (puthash :site site route)
-    (puthash :url url route)
-    (puthash :base-dir base-dir route)
-    (puthash :input-source (blorg--get opt :input-source) route)
-    (puthash :input-pattern (blorg--get opt :input-pattern "org$") route)
-    (puthash :input-exclude (blorg--get opt :input-exclude "^$") route)
-    (puthash :input-filter (blorg--get opt :input-filter) route)
-    (puthash :input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-none) route)
-    (puthash :output (blorg--get opt :output url) route)
-    (puthash :template (blorg--get opt :template nil) route)
-    (puthash :template-vars (blorg--get opt :template-vars nil) route)
-    (puthash :template-dirs template-dirs route)
-    (puthash :template-env (templatel-env-new :importfn (blorg--route-importfn route)) route)
-    (puthash name route (gethash :routes site))))
-
-(defun blorg-export ()
-  "Export all sites."
-  ;; Iterate over each site available in our global registry
-  (maphash (lambda(_ site)
-     ;; Iterate over each route of a given site
-     (maphash (lambda(_ route) (blorg--export-site-route site route))
-              (gethash :routes site)))
-   blorg--sites))
-
-
-
-;; ---- Pipeline Entry Points ----
-
-(defun blorg-cli (&rest options)
-  "Generate HTML documents off Org-Mode files using OPTIONS.
-
-This function wraps `blorg-gen' and handle known errors and
-report them in a nicer way."
-  (condition-case exc
-      (apply 'blorg-gen options)
-    (templatel-error
-     (message "Syntax Error: %s" (cdr exc)))
-    (file-missing
-     (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
-
-(defun blorg-gen (&rest options)
-  "Generate HTML documents off Org-Mode files using OPTIONS.
+  "Add a new route defined with parameters within OPTIONS.
 
 The OPTIONS parameter is a list of pairs of symbol value and
 support the following pairs:
@@ -241,57 +181,58 @@ support the following pairs:
  * `:base-dir': Base path for `:input-pattern' and `:output'; If
     not provided, will default to the `:base-dir' of the website;
 
-This function will not handle errors gracefully.  Please refer to
-`blorg-cli' if you don't want to handle any errors yourself."
+ * `:site': Instance of a blorg site created by the function
+   [[anchor:symbol-blorg-site][blorg-site]].  If not provided, it
+   will use a default value.  The most valuable information a
+   site carries is its base URL, and that's why it's relevant for
+   routes.  That way one can have multiple sites in one single
+   program."
   (let* ((opt (seq-partition options 2))
+         (route (make-hash-table))
          ;; all parameters the entry point takes
+         (name (blorg--get opt :name))
+         ;; It's also the default for :output
+         (url (blorg--get opt :url "/{{ slug }}.html"))
+         ;; Not using the `default' parameter in `blorg--get' because
+         ;; it doesn't give the short circiut given by `or'.
+         (site (or (blorg--get opt :site)
+                   (blorg-site :base-url blorg--default-url)))
+         ;; Prefix path for most file operations within a route
          (base-dir (blorg--get opt :base-dir default-directory))
-         (input-source (blorg--get opt :input-source))
-         (input-pattern (blorg--get opt :input-pattern "org$"))
-         (input-exclude (blorg--get opt :input-exclude "^$"))
-         (input-filter (blorg--get opt :input-filter))
-         (input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-none))
-         (output (blorg--get opt :output "output/{{ slug }}.html"))
-         (template (blorg--get opt :template nil))
-         (template-vars (blorg--get opt :template-vars nil))
-         (template-dirs
-          (cons
-           ;; Notice the templates directory close to `base-dir` has
-           ;; higher precedence over the templates directory within
-           ;; blorg's source code.
-           (expand-file-name "templates" base-dir)
-           (blorg--template-base)))
-         ;; template environment with import function attached.
-         (env
-          (templatel-env-new
-           :importfn (lambda(en name)
-                       (templatel-env-add-template
-                        en name
-                        (templatel-new-from-file
-                         (blorg--template-find template-dirs name))))))
-         ;; all the variables passed down the pipe
-         (blorg
-          `((env ,env)
-            (base-dir ,base-dir)
-            (input-pattern ,input-pattern)
-            (input-exclude ,input-exclude)
-            (input-filter ,input-filter)
-            (input-aggregate ,input-aggregate)
-            (template ,template)
-            (template-vars ,template-vars)
-            (template-dirs ,template-dirs)
-            (output ,output))))
+         ;; Notice the templates directory close to `base-dir` has
+         ;; higher precedence over the templates directory within
+         ;; blorg's source code.
+         (template-dirs (cons (expand-file-name "templates" base-dir)
+                              (blorg--template-base))))
+    (puthash :name name route)
+    (puthash :site site route)
+    (puthash :url url route)
+    (puthash :base-dir base-dir route)
+    (puthash :input-source (blorg--get opt :input-source) route)
+    (puthash :input-pattern (blorg--get opt :input-pattern "org$") route)
+    (puthash :input-exclude (blorg--get opt :input-exclude "^$") route)
+    (puthash :input-filter (blorg--get opt :input-filter) route)
+    (puthash :input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-none) route)
+    (puthash :output (blorg--get opt :output url) route)
+    (puthash :template (blorg--get opt :template nil) route)
+    (puthash :template-vars (blorg--get opt :template-vars nil) route)
+    (puthash :template-dirs template-dirs route)
+    (puthash :template-env (templatel-env-new :importfn (blorg--route-importfn route)) route)
+    (puthash name route (gethash :routes site))))
 
-    ;; Add output template to the environment
-    (templatel-env-add-template
-     env template
-     (templatel-new-from-file
-      (blorg--template-find template-dirs template)))
-    ;; Apply pipeline
-    (blorg--write-collections
-     blorg
-     (cond ((not (null input-source)) input-source)
-           (t (blorg--run-pipeline blorg))))))
+(defun blorg-export ()
+  "Export all sites."
+  (condition-case exc
+      ;; Iterate over each site available in our global registry
+      (maphash (lambda(_ site)
+                 ;; Iterate over each route of a given site
+                 (maphash (lambda(_ route) (blorg--export-site-route site route))
+                          (gethash :routes site)))
+               blorg--sites)
+    (templatel-error
+     (message "Syntax Error: %s" (cdr exc)))
+    (file-missing
+     (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
 
 
 
@@ -587,55 +528,6 @@ can be found in the ROUTE."
      (if (null input-source)
          (blorg--route-collect-and-aggregate route)
        input-source))))
-
-;; Pipeline
-
-(defun blorg--run-pipeline (blorg)
-  "Fing input files and template them up with config in BLORG."
-  (let* ((input-filter (blorg--get blorg 'input-filter))
-         ;; Find all files that match input pattern and don't match
-         ;; exclude pattern
-         (input-files
-          (blorg--find-source-files
-           (blorg--get blorg 'base-dir)
-           (blorg--get blorg 'input-pattern)
-           (blorg--get blorg 'input-exclude)))
-         ;; Parse Org-mode files
-         (parsed-files
-          (mapcar #'blorg--parse-org-file input-files))
-         ;; Apply filters that depend on data read from parser
-         (filtered-files
-          (if (null input-filter) parsed-files
-            (seq-filter input-filter parsed-files)))
-         ;; Aggregate the input list into either a single group with
-         ;; all the files or multiple groups
-         (aggregated-data
-          (funcall (blorg--get blorg 'input-aggregate) filtered-files)))
-    aggregated-data))
-
-(defun blorg--write-collections (blorg collections)
-  "Walk through COLLECTIONS & render a template for each item on it.
-
-The settings for generating the template, like output file name,
-can be found in the BLORG variable."
-  (dolist (data collections)
-    (let* (;; Render the template
-           (rendered
-            (templatel-env-render
-             (blorg--get blorg 'env)
-             (blorg--get blorg 'template)
-             (append (blorg--get blorg 'template-vars) blorg-meta data)))
-           ;; Render the relative output path
-           (rendered-output
-            (templatel-render-string
-             (blorg--get blorg 'output)
-             (cdar data)))
-           ;; Render the full path
-           (final-output
-            (expand-file-name rendered-output (blorg--get blorg 'base-dir))))
-      (blorg--log-info "writing: %s" final-output)
-      (mkdir (file-name-directory final-output) t)
-      (write-region rendered nil rendered-output))))
 
 (defun blorg--parse-org-file (input-path)
   "Parse an Org-Mode file located at INPUT-PATH."
