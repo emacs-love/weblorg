@@ -26,6 +26,26 @@
 (require 'cl-lib)
 (require 'blorg)
 
+(ert-deftest blorg--resolve-link ()
+  ;; An implicit site gets created by this route that doesn't have a
+  ;; site parameter
+  (blorg-route
+   :name "docs"
+   :input-pattern ".*\\.org$"
+   :input-exclude "index.org$"
+   :template "post.html"
+   :url "/documentation/{{ slug }}-{{ stuff }}.html"
+   :site (blorg-site :base-url "https://example.com"))
+
+  ;; When an URL for a given route is requested, then it should use
+  ;; the `url' field of the route to interpolate the variables
+  (should
+   (equal (blorg--url-for "docs,slug=overview,stuff=10" (blorg-site :base-url "https://example.com"))
+          "https://example.com/documentation/overview-10.html"))
+
+  ;; reset the global to its initial state
+  (clrhash blorg--sites))
+
 ;; Make sure we can register routes in a site and then retrieve them
 ;; later.
 (ert-deftest blorg--site-route--add-and-retrieve ()

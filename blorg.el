@@ -315,6 +315,8 @@ within each tag found there."
 
 ;; ---- Private Functions ----
 
+;; Site object
+
 (defun blorg--site-get (&optional base-url)
   "Retrieve a site with key BASE-URL from `blorg--sites'."
   (gethash (or base-url blorg--default-url) blorg--sites))
@@ -326,6 +328,54 @@ within each tag found there."
 (defun blorg--site-route-add (site route-name route-params)
   "Add ROUTE-PARAMS under ROUTE-NAME to SITE."
   (puthash route-name route-params (gethash :routes site)))
+
+;; Crossreference
+
+(defun blorg--url-parse (link)
+  "Parse LINK components.
+
+The LINK string has the following syntax:
+
+   Link    <- Route ',' Vars
+   Route   <- Identifier
+   Vars    <- NamedParams
+
+These are inherited from templatel's parser:
+
+   NamedParams <- NamedParam (',' NamedParam)*
+   NamedParam  <- Identifier '=' Expr
+   Identifier  <- [A-Za-z_][0-9A-Za-z_]*
+
+With the above rules, we're able to parse entries like these:
+  * index
+  * docs,slug=overview
+  * route,param1=val,param2=10
+
+Notice: We're using an API that isn't really intended for public
+consumption from templatel."
+  (let* ((scanner (templatel--scanner-new link "<string>"))
+         (route (cdr (templatel--parser-identifier scanner)))
+         (vars (templatel--scanner-optional
+                scanner
+                (lambda()
+                  (templatel--token-comma scanner)
+                  (mapcar
+                   (lambda(np)
+                     (cons (cdar np)
+                           (cdadar (cdadr np))))
+                   (cdar (templatel--parser-namedparams scanner)))))))
+    (cons route vars)))
+
+(defun blorg--url-for (link &optional site)
+  "Find route within SITE and interpolate variables found in LINK."
+  (let* ((site (or site (blorg-site :base-url blorg--default-url)))
+         (parsed (blorg--url-parse link))
+         (route (blorg--site-route site (car parsed))))
+    (concat (gethash :base-url site)
+            (templatel-render-string (gethash :url route)
+                                     (cdr parsed)))))
+
+;; Template Resolution
 
 (defun blorg--template-base ()
   "Base template directory.
@@ -365,6 +415,8 @@ default templates."
        ;; we found it
        ((null (file-attribute-type attrs))
         path)))))
+
+;; Pipeline
 
 (defun blorg--run-pipeline (blorg)
   "Fing input files and template them up with config in BLORG."
