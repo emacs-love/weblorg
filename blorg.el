@@ -386,14 +386,18 @@ consumption from templatel."
                    (cdar (templatel--parser-namedparams scanner)))))))
     (cons route vars)))
 
+(defun blorg--url-for-v (route-name vars site)
+  "Find ROUTE-NAME within SITE and interpolate route url with VARS."
+  (concat (gethash :base-url site)
+          (templatel-render-string
+           (gethash :url (blorg--site-route site route-name))
+           vars)))
+
 (defun blorg--url-for (link &optional site)
   "Find route within SITE and interpolate variables found in LINK."
   (let* ((site (or site (blorg-site :base-url blorg--default-url)))
-         (parsed (blorg--url-parse link))
-         (route (blorg--site-route site (car parsed))))
-    (concat (gethash :base-url site)
-            (templatel-render-string (gethash :url route)
-                                     (cdr parsed)))))
+         (parsed (blorg--url-parse link)))
+    (blorg--url-for-v (car parsed) (cdr parsed) site)))
 
 ;; Template Resolution
 
@@ -511,6 +515,16 @@ can be found in the ROUTE."
   (funcall (blorg--route-importfn route)
            (gethash :template-env route)
            (gethash :template route))
+  ;; Install link handlers
+  (org-link-set-parameters
+   "url_for"
+   :export (lambda(path desc _backend)
+             (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
+  (templatel-env-add-filter
+   (gethash :template-env route)
+   "url_for"
+   (lambda(route-name &optional vars)
+     (blorg--url-for-v route-name vars site)))
   ;; Collect -> Aggregate -> Template -> Write
   (let ((input-source (gethash :input-source route)))
     (blorg--route-export
