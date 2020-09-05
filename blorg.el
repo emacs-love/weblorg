@@ -85,10 +85,19 @@ OPTIONS can contain the following parameters:
          (route (make-hash-table))
          ;; all parameters the entry point takes
          (name (blorg--get opt :name))
+         ;; It's also the default for :output
          (url (blorg--get opt :url "/{{ slug }}.html"))
-         (base-dir (blorg--get opt :base-dir default-directory))
+         ;; Not using the `default' parameter in `blorg--get' because
+         ;; it doesn't give the short circiut given by `or'.
          (site (or (blorg--get opt :site)
-                   (blorg-site :base-url blorg--default-url))))
+                   (blorg-site :base-url blorg--default-url)))
+         ;; Prefix path for most file operations within a route
+         (base-dir (blorg--get opt :base-dir default-directory))
+         ;; Notice the templates directory close to `base-dir` has
+         ;; higher precedence over the templates directory within
+         ;; blorg's source code.
+         (template-dirs (cons (expand-file-name "templates" base-dir)
+                              (blorg--template-base))))
     (puthash :name name route)
     (puthash :site site route)
     (puthash :url url route)
@@ -101,7 +110,18 @@ OPTIONS can contain the following parameters:
     (puthash :output (blorg--get opt :output url) route)
     (puthash :template (blorg--get opt :template nil) route)
     (puthash :template-vars (blorg--get opt :template-vars nil) route)
+    (puthash :template-dirs template-dirs route)
+    (puthash :template-env (templatel-env-new :importfn (blorg--route-importfn route)) route)
     (puthash name route (gethash :routes site))))
+
+(defun blorg-export ()
+  "Export all sites."
+  ;; Iterate over each site available in our global registry
+  (maphash (lambda(_ site)
+     ;; Iterate over each route of a given site
+     (maphash (lambda(_ route) (blorg--export-site-route site route))
+              (gethash :routes site)))
+   blorg--sites))
 
 
 
@@ -415,6 +435,89 @@ default templates."
        ;; we found it
        ((null (file-attribute-type attrs))
         path)))))
+
+(defun blorg--route-importfn (route)
+  "Build the import function for ROUTE.
+
+The extension system provided by templatel takes a function which
+going to be called any time one needs to find a template.  There
+are mainly two good places for calling this function:
+
+ 0. An import function is needed in order to create template
+    environments that support extending templates.  The provided
+    function will be called once for every ~{% extends \"path\" %}~
+    statement found.
+
+ 1. When a new route is added and we need to find the template
+    that will be used to render the route files."
+  (lambda(en name)
+    (templatel-env-add-template
+     en name
+     (templatel-new-from-file
+      (blorg--template-find (gethash :template-dirs route) name)))))
+
+;; Exporting pipeline
+
+(defun blorg--route-collect-and-aggregate (route)
+  "Fing input files apply templates for a ROUTE."
+  (let* ((input-filter (gethash :input-filter route))
+         ;; Find all files that match input pattern and don't match
+         ;; exclude pattern
+         (input-files
+          (blorg--find-source-files
+           (gethash :base-dir route)
+           (gethash :input-pattern route)
+           (gethash :input-exclude route)))
+         ;; Parse Org-mode files
+         (parsed-files
+          (mapcar #'blorg--parse-org-file input-files))
+         ;; Apply filters that depend on data read from parser
+         (filtered-files
+          (if (null input-filter) parsed-files
+            (seq-filter input-filter parsed-files)))
+         ;; Aggregate the input list into either a single group with
+         ;; all the files or multiple groups
+         (aggregated-data
+          (funcall (gethash :input-aggregate route) filtered-files)))
+    aggregated-data))
+
+(defun blorg--route-export (route collections)
+  "Walk through COLLECTIONS & render a template for each item on it.
+
+The settings for generating the template, like output file name,
+can be found in the ROUTE."
+  (dolist (data collections)
+    (let* (;; Render the template
+           (rendered
+            (templatel-env-render
+             (gethash :template-env route)
+             (gethash :template route)
+             (append (gethash :template-vars route) blorg-meta data)))
+           ;; Render the relative output path
+           (rendered-output
+            (templatel-render-string
+             (gethash :output route)
+             (cdar data)))
+           ;; Render the full path
+           (final-output
+            (expand-file-name rendered-output (gethash :base-dir route))))
+      (blorg--log-info "writing: %s" final-output)
+      (mkdir (file-name-directory final-output) t)
+      (write-region rendered nil rendered-output))))
+
+(defun blorg--export-site-route (site route)
+  "Export a single ROUTE of a SITE."
+  ;; Add the route's main template to the environment
+  (funcall (blorg--route-importfn route)
+           (gethash :template-env route)
+           (gethash :template route))
+  ;; Collect -> Aggregate -> Template -> Write
+  (let ((input-source (gethash :input-source route)))
+    (blorg--route-export
+     route
+     (if (null input-source)
+         (blorg--route-collect-and-aggregate route)
+       input-source))))
 
 ;; Pipeline
 

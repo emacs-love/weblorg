@@ -26,6 +26,26 @@
 (require 'cl-lib)
 (require 'blorg)
 
+(ert-deftest blorg--collect-n-aggr ()
+  (blorg-route
+   :base-dir (expand-file-name "fixtures/test1/" default-directory)
+   :name "route"
+   :input-pattern ".*\\.org$"
+   :input-exclude "index.org$"
+   :template "post.html"
+   :url "/{{ slug }}.html")
+
+  ;; When the collection and aggregation happen
+  (let* ((route (blorg--site-route (blorg--site-get) "route"))
+         (collection (blorg--route-collect-and-aggregate route))
+         (posts (mapcar #'cdar collection)))
+    (should (equal (length collection) 2))
+    (should (equal (mapcar (lambda(p) (blorg--get-cdr p "slug")) posts)
+                   (list "a-simple-post" "a-draft-post"))))
+
+  ;; reset the global to its initial state
+  (clrhash blorg--sites))
+
 (ert-deftest blorg--resolve-link ()
   ;; An implicit site gets created by this route that doesn't have a
   ;; site parameter
@@ -63,6 +83,7 @@
   (blorg-route
    :site (blorg-site :base-url "https://example.com")
    :name "docs"
+   :base-dir "/tmp/site"
    :input-pattern "docs/.*\\.org$"
    :input-exclude "index.org$"
    :template "docs.html"
@@ -82,7 +103,9 @@
     (should (equal (gethash :input-pattern route) "docs/.*\\.org$"))
     (should (equal (gethash :template route) "docs.html"))
     (should (equal (gethash :url route) "docs/{{ slug }}.html"))
-    (should (equal (gethash :input-exclude route) "index.org$")))
+    (should (equal (gethash :input-exclude route) "index.org$"))
+    (should (equal (gethash :template-dirs route)
+                   (cons "/tmp/site/templates" (blorg--template-base)))))
 
   ;; reset the global to its initial state
   (clrhash blorg--sites))
