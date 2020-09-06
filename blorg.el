@@ -204,8 +204,8 @@ support the following pairs:
          ;; Notice the templates directory close to `base-dir` has
          ;; higher precedence over the templates directory within
          ;; blorg's source code.
-         (template-dirs (cons (expand-file-name "templates" base-dir)
-                              (blorg--template-base theme))))
+         (template-dirs (list (expand-file-name "templates" base-dir)
+                              (blorg--theme-dir theme "templates"))))
     (puthash :name name route)
     (puthash :site site route)
     (puthash :url url route)
@@ -400,19 +400,15 @@ consumption from templatel."
 
 ;; Template Resolution
 
-(defun blorg--template-base (theme)
-  "Base template directory of a THEME.
+(defun blorg--theme-dir (theme dir)
+  "Path for DIR within a THEME.
 
-The template system of blorg will search for a given template
-name in a list of different environments, similar to the PATH
-variable a shell.  This function returns the entry that usually
-sits in the bottom of that list with the lowest priority.  It
-contains the `template` directory bundled with the code of the
-blorg module."
-  (list (expand-file-name "templates"
-                          (expand-file-name theme
-                                            (expand-file-name "themes"
-                                                              blorg-module-dir)))))
+The blorg ships with a gallery of themes.  This function returns
+the absolute path for THEME."
+  (expand-file-name
+   dir (expand-file-name
+        theme (expand-file-name
+               "themes" blorg-module-dir))))
 
 (defun blorg--template-find (directories name)
   "Find template NAME within DIRECTORIES.
