@@ -19,13 +19,13 @@
     {% block nav %}
     <header>
       <h1 class="logo">
-        <a href="/">My personal blorg</a>
+        <a href="{{ url_for("index") }}">My personal blorg</a>
       </h1>
       <a href="#main" class="visually-hidden">jump to main content</a>
       <nav>
         <ul class="menu">
-          <li class="menu__item"><a class="menu__link" href="/about">about</a></li>
-          <li class="menu__item"><a class="menu__link" href="/blog">blog</a></li>
+          <li class="menu__item"><a class="menu__link" href="{{ url_for("pages", slug="about") }}">about</a></li>
+          <li class="menu__item"><a class="menu__link" href="{{ url_for("index") }}">blog</a></li>
         </ul>
         <ul class="social">
           <li class="social__item">

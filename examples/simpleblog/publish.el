@@ -31,7 +31,7 @@
  :input-pattern "posts/.*\\.org$"
  :template "post.html"
  :output "output/posts/{{ slug }}.html"
- :url "posts/{{ slug }}.html")
+ :url "/posts/{{ slug }}.html")
 
 ;; Generate pages
 (blorg-route
@@ -39,7 +39,7 @@
  :input-pattern "pages/.*\\.org$"
  :template "page.html"
  :output "output/{{ slug }}/index.html"
- :url "posts/{{ slug }}")
+ :url "/{{ slug }}")
 
 ;; Generate posts summary
 (blorg-route

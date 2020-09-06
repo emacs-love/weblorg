@@ -96,7 +96,7 @@
   `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version))))
   "Collection of variables that always get added to templates.")
 
-(defconst blorg--default-url "http://localhost:8000/"
+(defconst blorg--default-url "http://localhost:8000"
   "Default URL for a blorg.")
 
 (defconst blorg--sites (make-hash-table :test 'equal)
