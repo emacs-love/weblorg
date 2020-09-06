@@ -2,12 +2,12 @@
 
   Generate Static HTML websites from Org-Mode files.
 
-  The most important thing to mastering blorg is to understand that it
-  is not an interactive tool. It's a single function API that takes
-  Org files as an input and generate HTML files as an output.  Behold
-  the ~blorg-gen~ function.
+  The blorg an Emacs-Lisp API rather than a command line tool.  The
+  use of the API becomes the description of a pipeline that takes
+  lists of Org-Mode files as input, templatize them and generate HTML
+  files as an output.
 
-** ~blorg-gen~ usage
+** Usage
 
    You need to define an input pattern to filter out which Org-Mode
    files are part of your input, choose a template, then specify an
@@ -16,13 +16,24 @@
    an HTML file and save it in a file:
 
    #+begin_src emacs-lisp
-   (blorg-cli
+   (blorg-route
+    :name "posts"
     :input-pattern "posts/.*\\.org$"
     :template "post.html"
-    :output "output/{{ slug }}.html")
+    :output "{{ slug }}.html"
+    :url "/{{ slug }}.html")
+   (blorg-route
+    :name "posts"
+    :input-pattern "posts/.*\\.org$"
+    :input-aggregate #'blorg-input-aggregate-all
+    :template "blog.html"
+    :output "index.html"
+    :url "/")
+   (blorg-export)
    #+end_src
 
-   The three main parameters that must be passed to ~blorg-gen~ are:
+   The most important parameters that must be passed to ~blorg-route~
+   are:
 
    1. ~input-pattern~: That's a regular expression that will be used
       to match which files are included in the input list.
@@ -34,10 +45,12 @@
       output files based on data from the input file.  Also, if sub
       directories that appear in the output path don't exist in the
       file system, they will be created automatically.
+   4. ~url~: Similar to the ~output~ variable, but is used to render
+      the URL of a link to a given document under a route.
 
    One common thing between the three variables above is that they're
    all relative to the ~:base-dir~.  Which also happens to be a
-   parameter to ~blorg-gen~ and defaults to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Names.html#index-default-directory_002c-of-a-buffer-1187][~default-directory~]].
+   parameter to ~blorg-route~ and defaults to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Names.html#index-default-directory_002c-of-a-buffer-1187][~default-directory~]].
 
 ** Proposed file structure
 
