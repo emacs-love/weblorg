@@ -137,8 +137,41 @@ OPTIONS can contain the following parameters:
 (defun blorg-route (&rest options)
   "Add a new route defined with parameters within OPTIONS.
 
-The OPTIONS parameter is a list of pairs of symbol value and
-support the following pairs:
+A route is an abstraction to manage how Org-Mode files are found
+and how they are transformed in HTML.
+
+Examples:
+
+ 1. Route that finds all the Org-Mode files within the ~posts~
+    directory, aggregate them all in one single collection made
+    available to the also template called ~posts~ so it can be
+    used to build summary pages
+
+    #+BEGIN_SRC emacs-lisp
+    (blorg-route
+     :name \"index\"
+     :input-pattern \"posts/.*\\.org$\"
+     :input-aggregate #'blorg-input-aggregate-all
+     :template \"blog.html\"
+     :output \"output/index.html\"
+     :url \"/\")
+    #+END_SRC
+
+ 2. Route for rendering each Org-Mode file under the directory
+    ~pages~ as a separate HTML using the template ~page.html~.
+    Notice the ~:output~ parameter will create all the
+    directories in the path that don't exist
+
+    #+BEGIN_SRC emacs-lisp
+    (blorg-route
+     :name \"pages\"
+     :input-pattern \"pages/.*\\.org$\"
+     :template \"page.html\"
+     :output \"output/{{ slug }}/index.html\"
+     :url \"/{{ slug }}\")
+    #+END_SRC
+
+Parameters in ~OPTIONS~:
 
  * `:input-pattern': Regular expression for selecting files
     within path `:base-dir'.  It defaults to \"org$\";
@@ -167,6 +200,10 @@ support the following pairs:
  * `:output': String with a template for generating the output
    file name.  The variables available are the variables of each
    item of a collection returned by `:input-aggregate'.
+
+ * `:url': Similarly to the `:output' parameter, it takes a
+   template string as input and returns the URL of an entry of a
+   given entry in this route.
 
  * `:template': Name of the template that should be used to
    render a collection of files.  Notice that this is the name of
