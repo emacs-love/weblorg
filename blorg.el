@@ -199,11 +199,13 @@ support the following pairs:
                    (blorg-site :base-url blorg--default-url)))
          ;; Prefix path for most file operations within a route
          (base-dir (blorg--get opt :base-dir default-directory))
+         ;; The default theme of the site is the defacto "default"
+         (theme (blorg--get opt :theme (gethash :theme site)))
          ;; Notice the templates directory close to `base-dir` has
          ;; higher precedence over the templates directory within
          ;; blorg's source code.
          (template-dirs (cons (expand-file-name "templates" base-dir)
-                              (blorg--template-base))))
+                              (blorg--template-base theme))))
     (puthash :name name route)
     (puthash :site site route)
     (puthash :url url route)
@@ -217,6 +219,7 @@ support the following pairs:
     (puthash :template (blorg--get opt :template nil) route)
     (puthash :template-vars (blorg--get opt :template-vars nil) route)
     (puthash :template-dirs template-dirs route)
+    (puthash :theme theme route)
     (puthash :template-env (templatel-env-new :importfn (blorg--route-importfn route)) route)
     (puthash name route (gethash :routes site))))
 
@@ -397,8 +400,8 @@ consumption from templatel."
 
 ;; Template Resolution
 
-(defun blorg--template-base ()
-  "Base template directory.
+(defun blorg--template-base (theme)
+  "Base template directory of a THEME.
 
 The template system of blorg will search for a given template
 name in a list of different environments, similar to the PATH
@@ -406,7 +409,10 @@ variable a shell.  This function returns the entry that usually
 sits in the bottom of that list with the lowest priority.  It
 contains the `template` directory bundled with the code of the
 blorg module."
-  (list (expand-file-name "templates" blorg-module-dir)))
+  (list (expand-file-name "templates"
+                          (expand-file-name theme
+                                            (expand-file-name "themes"
+                                                              blorg-module-dir)))))
 
 (defun blorg--template-find (directories name)
   "Find template NAME within DIRECTORIES.

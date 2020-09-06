@@ -84,6 +84,7 @@
    :site (blorg-site :base-url "https://example.com")
    :name "docs"
    :base-dir "/tmp/site"
+   :theme "stuff"
    :input-pattern "docs/.*\\.org$"
    :input-exclude "index.org$"
    :template "docs.html"
@@ -104,8 +105,9 @@
     (should (equal (gethash :template route) "docs.html"))
     (should (equal (gethash :url route) "docs/{{ slug }}.html"))
     (should (equal (gethash :input-exclude route) "index.org$"))
+    (should (equal (gethash :theme route) "stuff"))
     (should (equal (gethash :template-dirs route)
-                   (cons "/tmp/site/templates" (blorg--template-base)))))
+                   (cons "/tmp/site/templates" (blorg--template-base "stuff")))))
 
   ;; reset the global to its initial state
   (clrhash blorg--sites))
