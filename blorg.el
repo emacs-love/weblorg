@@ -251,13 +251,94 @@ Parameters in ~OPTIONS~:
     (puthash :input-pattern (blorg--get opt :input-pattern "org$") route)
     (puthash :input-exclude (blorg--get opt :input-exclude "^$") route)
     (puthash :input-filter (blorg--get opt :input-filter) route)
-    (puthash :input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-none) route)
+    (puthash :input-parser (blorg--get opt :input-parser #'blorg--parse-org-file) route)
+    (puthash :input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-each) route)
     (puthash :output (blorg--get opt :output url) route)
+    (puthash :export (blorg--get opt :export #'blorg-export-template) route)
     (puthash :template (blorg--get opt :template nil) route)
     (puthash :template-vars (blorg--get opt :template-vars nil) route)
     (puthash :template-dirs template-dirs route)
     (puthash :theme theme route)
     (puthash :template-env (templatel-env-new :importfn (blorg--route-importfn route)) route)
+    (puthash name route (gethash :routes site))))
+
+(defun blorg-copy-static (&rest options)
+  "Utility and Route for static assets of a blorg site.
+
+Use this route if you want either of these two things:
+
+ 1. You want to use a built-in theme and need to copy its assets
+    to the output directory of your site;
+
+ 2. You are want to copy assets of your local theme to the output
+    directory of your site;
+
+Examples:
+
+ 1. Add static route to the default site.  That will allow
+    `url_for' to find the route ~\"static\"~.
+
+    #+BEGIN_SRC emacs-lisp
+    (blorg-copy-static
+     :output \"output/static/{{ basename }}\"
+     :url \"/static/{{ basename }}\")
+    #+END_SRC
+
+ 2. This example uses a custom site parameter.  The site
+    parameter points to a CDN as its Base URL.
+
+    #+BEGIN_SRC emacs-lisp
+    (blorg-copy-static
+     :output \"output/public/{{ filename }}\"
+     :url \"/public/{{ filename }}\"
+     :site (blorg-site
+            :name \"cdn\"
+            :base-url \"https://cdn.example.com\"
+            :theme \"autodoc\"))
+    (blorg-export)
+    #+END_SRC
+
+Parameters in ~OPTIONS~:
+
+ * `:output': String with a template for generating the output
+   file name.  The variables available are the variables of each
+   item of a collection returned by `:input-aggregate'.
+
+ * `:url': Similarly to the `:output' parameter, it takes a
+   template string as input and returns the URL of an entry of a
+   given entry in this route.
+
+ * `:site': Instance of a blorg site created by the function
+   [[anchor:symbol-blorg-site][blorg-site]].  If not provided, it
+   will use a default value.  The most valuable information a
+   site carries is its base URL, and that's why it's relevant for
+   routes.  That way one can have multiple sites in one single
+   program.
+
+ * `:name': name of the route.  This defaults to ~\"static\"~.
+   Notice that if you are using this function to copy assets from
+   a built-in theme, the template of such a theme will reference
+   the route ~\"static\"~ when including assets.  Which means
+   that you need at least one ~\"static\"~ route in your site."
+  (let* ((opt (seq-partition options 2))
+         (route (make-hash-table))
+         (name (blorg--get opt :name "static"))
+         (url (blorg--get opt :url "/static/{{ file }}"))
+         (base-dir (blorg--get opt :base-dir default-directory))
+         (site (or (blorg--get opt :site)
+                   (blorg-site :base-url blorg--default-url))))
+    (puthash :name name route)
+    (puthash :site site route)
+    (puthash :url url route)
+    (puthash :base-dir base-dir route)
+    (puthash :theme-dir "static/" route)
+    (puthash :input-pattern (blorg--get opt :input-pattern "/static/") route)
+    (puthash :input-exclude (blorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
+    (puthash :input-filter (blorg--get opt :input-filter) route)
+    (puthash :input-parser #'identity route)
+    (puthash :input-aggregate #'identity route)
+    (puthash :output (blorg--get opt :output "output/static/{{ file }}") route)
+    (puthash :export (blorg--get opt :export #'blorg-export-assets) route)
     (puthash name route (gethash :routes site))))
 
 (defun blorg-export ()
@@ -266,13 +347,59 @@ Parameters in ~OPTIONS~:
       ;; Iterate over each site available in our global registry
       (maphash (lambda(_ site)
                  ;; Iterate over each route of a given site
-                 (maphash (lambda(_ route) (blorg--export-site-route site route))
+                 (maphash (lambda(_ route) (funcall (gethash :export route) route))
                           (gethash :routes site)))
                blorg--sites)
     (templatel-error
      (message "Syntax Error: %s" (cdr exc)))
     (file-missing
      (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
+
+(defun blorg-export-template (route)
+  "Export a single ROUTE of a site with files to be templatized."
+  ;; Add the route's main template to the environment
+  (funcall (blorg--route-importfn route)
+           (gethash :template-env route)
+           (gethash :template route))
+  ;; Install link handlers
+  (let ((site (gethash :site route)))
+    (org-link-set-parameters
+     "url_for"
+     :export (lambda(path desc _backend)
+               (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
+    (templatel-env-add-filter
+     (gethash :template-env route)
+     "url_for"
+     (lambda(route-name &optional vars)
+       (blorg--url-for-v route-name vars site))))
+  ;; Collect -> Aggregate -> Template -> Write
+  (let ((input-source (gethash :input-source route)))
+    (blorg--export-template
+     route
+     (if (null input-source)
+         (blorg--route-collect-and-aggregate route)
+       input-source))))
+
+(defun blorg-export-assets (route)
+  "Export static assets ROUTE."
+  (dolist (source-file (blorg--route-collect-and-aggregate route))
+    (let* (;; base name of the source file path
+           (file (file-name-nondirectory source-file))
+           ;; rendered destination
+           (rendered-output
+            (templatel-render-string
+             (gethash :output route)
+             `(("file" . ,file))))
+           ;; Render the full path
+           (dest-file
+            (expand-file-name rendered-output (gethash :base-dir route))))
+      (blorg--log-info  "copying: %s -> %s" source-file dest-file)
+      (mkdir (file-name-directory dest-file) t)
+      (condition-case exc
+          (copy-file source-file dest-file t)
+        (error
+         (if (not (string= (caddr exc) "Success"))
+             (message "error: %s: %s" (car (cddr exc)) (cadr (cddr exc)))))))))
 
 
 
@@ -289,12 +416,23 @@ draft or not."
 
 ;; ---- Aggregation functions ----
 
-
-(defun blorg-input-aggregate-none (posts)
+(defun blorg-input-aggregate-each (posts)
   "Aggregate each post within POSTS as a single collection.
 
-This is the default aggregation function used by `blorg-gen' and
-generate one collection per input file."
+This is the default aggregation function used by `blorg-route'
+and generate one collection per input file.
+
+It returns a list in the following format:
+
+#+BEGIN_SRC emacs-lisp
+'((\"post\" . ((\"title\" . \"My post\")
+               (\"slug\" . \"my-post\"))
+               ...)
+  (\"post\" . ((\"title\" . \"Another Post\")
+               (\"slug\" . \"another-post\")
+               ...))
+  ...)
+#+END_SRC"
   (mapcar (lambda(p) `(("post" . ,p))) posts))
 
 (defun blorg-input-aggregate-all (posts)
@@ -500,16 +638,24 @@ are mainly two good places for calling this function:
 (defun blorg--route-collect-and-aggregate (route)
   "Fing input files apply templates for a ROUTE."
   (let* ((input-filter (gethash :input-filter route))
+         (theme-dir (gethash :theme-dir route))
          ;; Find all files that match input pattern and don't match
          ;; exclude pattern
          (input-files
-          (blorg--find-source-files
-           (gethash :base-dir route)
-           (gethash :input-pattern route)
-           (gethash :input-exclude route)))
+          (append
+           ;; Routes can request scanner to visit
+           (unless (null theme-dir)
+             (blorg--find-source-files
+              (blorg--theme-dir (gethash :theme (gethash :site route)) theme-dir)
+              (gethash :input-pattern route)
+              (gethash :input-exclude route)))
+           (blorg--find-source-files
+            (gethash :base-dir route)
+            (gethash :input-pattern route)
+            (gethash :input-exclude route))))
          ;; Parse Org-mode files
          (parsed-files
-          (mapcar #'blorg--parse-org-file input-files))
+          (mapcar (gethash :input-parser route) input-files))
          ;; Apply filters that depend on data read from parser
          (filtered-files
           (if (null input-filter) parsed-files
@@ -520,7 +666,7 @@ are mainly two good places for calling this function:
           (funcall (gethash :input-aggregate route) filtered-files)))
     aggregated-data))
 
-(defun blorg--route-export (route collections)
+(defun blorg--export-template (route collections)
   "Walk through COLLECTIONS & render a template for each item on it.
 
 The settings for generating the template, like output file name,
@@ -545,28 +691,8 @@ can be found in the ROUTE."
       (write-region rendered nil rendered-output))))
 
 (defun blorg--export-site-route (site route)
-  "Export a single ROUTE of a SITE."
-  ;; Add the route's main template to the environment
-  (funcall (blorg--route-importfn route)
-           (gethash :template-env route)
-           (gethash :template route))
-  ;; Install link handlers
-  (org-link-set-parameters
-   "url_for"
-   :export (lambda(path desc _backend)
-             (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
-  (templatel-env-add-filter
-   (gethash :template-env route)
-   "url_for"
-   (lambda(route-name &optional vars)
-     (blorg--url-for-v route-name vars site)))
-  ;; Collect -> Aggregate -> Template -> Write
-  (let ((input-source (gethash :input-source route)))
-    (blorg--route-export
-     route
-     (if (null input-source)
-         (blorg--route-collect-and-aggregate route)
-       input-source))))
+  "SITE ROUTE."
+  (funcall (gethash :export route) site route))
 
 (defun blorg--parse-org-file (input-path)
   "Parse an Org-Mode file located at INPUT-PATH."

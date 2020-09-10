@@ -50,5 +50,9 @@
  :output "output/index.html"
  :url "/")
 
+(blorg-copy-static
+ :output "output/static/{{ file }}"
+ :url "/static/{{ file }}")
+
 (blorg-export)
 ;;; publish.el ends here
