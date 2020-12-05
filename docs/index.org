@@ -1,0 +1,14 @@
+#+OPTIONS: toc:nil num:nil
+* Blorg - The unicorn diary
+A pure elisp static site generator
+Transform your org files into static websites and blogs.
+
+** Pure Emacs Lisp
+No python, ruby, go or other language
+
+** Static
+org, templatel, HTML & CSS.
+Everyting inside your emacs!
+
+** Blog ready
+Permalink, categories, pages, posts and custom layouts.
