@@ -26,6 +26,9 @@
 ;; Defaults to localhost:8000
 (setq blorg-default-url "http://localhost:8080")
 
+;; Set site wide configuration
+(blorg-site :theme "site")
+
 ;; Generate index
 (blorg-route
  :name "index"
