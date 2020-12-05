@@ -96,7 +96,7 @@
   `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version))))
   "Collection of variables that always get added to templates.")
 
-(defconst blorg--default-url "http://localhost:8000"
+(defvar blorg-default-url "http://localhost:8000"
   "Default URL for a blorg.")
 
 (defconst blorg--sites (make-hash-table :test 'equal)
@@ -117,7 +117,7 @@ OPTIONS can contain the following parameters:
    tries to register two sites with the same ~:base-url~, an
    error will be raised."
   (let* ((opt (seq-partition options 2))
-         (base-url (blorg--get opt :base-url nil))
+         (base-url (blorg--get opt :base-url blorg-default-url))
          (theme (blorg--get opt :theme "default"))
          (site (blorg--site-get base-url)))
     (if (null site)
@@ -233,7 +233,7 @@ Parameters in ~OPTIONS~:
          ;; Not using the `default' parameter in `blorg--get' because
          ;; it doesn't give the short circiut given by `or'.
          (site (or (blorg--get opt :site)
-                   (blorg-site :base-url blorg--default-url)))
+                   (blorg-site :base-url blorg-default-url)))
          ;; Prefix path for most file operations within a route
          (base-dir (blorg--get opt :base-dir default-directory))
          ;; The default theme of the site is the defacto "default"
@@ -326,7 +326,7 @@ Parameters in ~OPTIONS~:
          (url (blorg--get opt :url "/static/{{ file }}"))
          (base-dir (blorg--get opt :base-dir default-directory))
          (site (or (blorg--get opt :site)
-                   (blorg-site :base-url blorg--default-url))))
+                   (blorg-site :base-url blorg-default-url))))
     (puthash :name name route)
     (puthash :site site route)
     (puthash :url url route)
@@ -513,7 +513,7 @@ within each tag found there."
 
 (defun blorg--site-get (&optional base-url)
   "Retrieve a site with key BASE-URL from `blorg--sites'."
-  (gethash (or base-url blorg--default-url) blorg--sites))
+  (gethash (or base-url blorg-default-url) blorg--sites))
 
 (defun blorg--site-route (site route-name)
   "Retrieve ROUTE-NAME from SITE."
@@ -569,7 +569,7 @@ consumption from templatel."
 
 (defun blorg--url-for (link &optional site)
   "Find route within SITE and interpolate variables found in LINK."
-  (let* ((site (or site (blorg-site :base-url blorg--default-url)))
+  (let* ((site (or site (blorg-site :base-url blorg-default-url)))
          (parsed (blorg--url-parse link)))
     (blorg--url-for-v (car parsed) (cdr parsed) site)))
 
