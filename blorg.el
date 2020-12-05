@@ -562,10 +562,15 @@ consumption from templatel."
 
 (defun blorg--url-for-v (route-name vars site)
   "Find ROUTE-NAME within SITE and interpolate route url with VARS."
-  (concat (gethash :base-url site)
-          (templatel-render-string
-           (gethash :url (blorg--site-route site route-name))
-           vars)))
+  (let ((route (blorg--site-route site route-name)))
+    (if (not (null route))
+        (concat (gethash :base-url site)
+                (templatel-render-string
+                 (gethash :url route)
+                 vars))
+      (progn
+        (warn "url_for: Can't find route %s" route-name)
+        ""))))
 
 (defun blorg--url-for (link &optional site)
   "Find route within SITE and interpolate variables found in LINK."
