@@ -60,21 +60,27 @@
    #+begin_src sh
    $ tree your-new-blog
    your-new-blog
-   ├─ src/
-   │  ├─ publish.el
-   │  └─ posts/
-   │     └─ welcome.org # (and other .org files)
-   └─ public/
-       ├─ css/
-       ├─ img/
-       └─ js/
+   ├─ publish.el
+   ├─ index.org
+   ├─ posts/
+   │   ├─ fun-with-org-mode.org
+   │   ├─ what-if-emacs-was-your-operating-system.org
+   │   └─ write-yourself-a-nice-blorg.org
+   └─ templates/
+       ├─ custom-template.html
+       └─ yet-another-template.html
    #+end_src
 
-   The script ~./publish.el~ would have the call to ~blog-gen~ to
-   export the HTML to the configured output directory.  There is a
-   good example of a ~publish.el~ file that won't mess with your
-   default Emacs configuration. In fact, it tries to stay away from it
-   and run without any assumptions about the setup.
+   Then use the ~publish.el~ script to declare routes and export the
+   content.  The ~blorg~ ships with a theme but one can also write
+   their own.
+
+   The ~templates~ directory is not required.  It's only needed if the
+   templates available in the theme you chose aren't enough.  The
+   ~blorg~ uses [[https://clarete.li/templatel/][templatel]] as its templating language.  It's very
+   similar to [[https://jinja.palletsprojects.com/en/2.11.x/][Jinja]], the well known language created by the Python
+   community, so there's a chance you're already be familiar with it
+   :D
 
 ** HTML Generation
 
