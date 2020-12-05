@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    {% block head %}
+      <meta charset="utf-8">
+      <title>'templatel - {% block title %}Home{% endblock %}</title>
+      <meta name="description" content="{% block description %}{% endblock %}">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="pub/style.css">
+    {% endblock %}
+  </head>
+  <body>
+    <div class="document">
+      {# Top navigation bar #}
+      {% block nav %}
+        <div class="nav">
+          <h1>
+            <a href="{{ url_for("index") }}">'templatel</a>
+            {% block title %}{% endblock %}
+          </h1>
+        </div>
+      {% endblock %}
+
+      {# Probably where most of the action will happen #}
+      {% block page %}{% endblock %}
+
+      {# Links, copyright notice, etc #}
+      {% block footer %}
+        <div class="footer">
+          <ul>
+            <li><a href="{{ url_for("index") }}">Home</a></li>
+            <li><a href="{{ url_for("api") }}">API Docs</a></li>
+            <li><a href="https://github.com/clarete/templatel" target="_blank">Github</a></li>
+          </ul>
+          <div class="ack">
+            Made with &#x2665; and
+            <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
+              <img src="pub/emacs-bw.svg" width="16" height="16" />
+            </a>
+            by
+            <a href="https://clarete.li" target="_blank">
+              @clarete
+            </a>
+          </div>
+        </div>
+      {% endblock %}
+    </div>
+  </body>
+</html>

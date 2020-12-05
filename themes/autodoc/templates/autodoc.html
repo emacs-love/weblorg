@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}API Reference{% endblock %}
+
+{% block page %}
+  <div class="api">
+    <div class="api-menu">
+      {% for section in sections %}
+        <h3>
+          <a href="#section-{{ section.slug }}">{{ section.name }}</a>
+        </h3>
+        <ul>
+          {% for symbol in section.symbols %}
+            <li><a href="#symbol-{{ symbol.name }}">{{ symbol.name }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    </div>
+
+    <div class="page">
+      {% for section in sections %}
+        <article id="section-{{ section.slug }}" class="section">
+          <h1>{{ section.name }}</h1>
+
+          <div class="symbols">
+            {% for symbol in section.symbols %}
+              <div class="symbol" id="symbol-{{ symbol.name }}">
+                {% if symbol.type == "function" %}
+                  <h2>({{ symbol.name }} {{ symbol.args }})</h2>
+                {% else %}
+                  <h2>{{ symbol.name }}</h2>
+                {% endif %}
+
+                {% if symbol.docs %}
+                  <div class="docstring">
+                    {{ symbol.docs }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

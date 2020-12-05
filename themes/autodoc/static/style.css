@@ -1,0 +1,203 @@
+:root {
+    /* Fonts */
+    --ft-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+    --ft-logofm: Times New Roman, Liberation Serif;
+    --ft-size-0: 2.6rem;
+    --ft-size-1: 1rem;
+    --ft-size-2: .5rem;
+    --ft-size-3: .1rem;
+
+    /* Dimmensions */
+    --dm-page-width: 850px;
+
+    /* Layout Variables */
+    --cl-background: #ffffff;
+    --cl-foreground: #000000;
+
+    /* https://colorhunt.co/palette/180289 */
+    --cl-blue0: #142850;
+    --cl-blue1: #27496d;
+    --cl-blue2: #00909e;
+    --cl-blue3: #4f566b;
+
+    --cl-gray0: #666666;
+    --cl-gray1: #dae1e7;
+    --cl-gray2: #f8f8f2;
+    --cl-gray3: #94979a11;
+    --cl-gray4: #94979B39;
+
+    /* -- Page colors -- */
+    --cl-bg-dark:         var(--cl-blue0);
+    --cl-bg-light:        var(--cl-gray2);
+    --cl-fg-dark:         var(--cl-blue1);
+    --cl-fg-light:        var(--cl-gray2);
+    --cl-link-nav:        var(--cl-blue2);
+    --cl-link-menu:       var(--cl-gray0);
+    --cl-link-menu-hover: var(--cl-blue2);
+    --cl-link-page:       var(--cl-blue2);
+    --cl-h1:              var(--cl-blue1);
+    --cl-h2:              var(--cl-blue3);
+    --cl-banner-bg:       var(--cl-blue1);
+    --cl-banner-fg:       var(--cl-gray2);
+    --cl-border-src:      var(--cl-gray3);
+    --cl-border-nav:      var(--cl-gray4);
+    --cl-preformatted:    var(--cl-gray1);
+    --cl-footer-bg:       var(--cl-gray1);
+
+    /* -- Code Block Colors -- */
+
+    /* --- Monokai Theme */
+    --cl-code-monokai-background:   #272822;
+    --cl-code-monokai-foreground:   #F8F8F2;
+    --cl-code-monokai-comment:      #75715E;
+    --cl-code-monokai-red:          #F92672;
+    --cl-code-monokai-orange:       #FD971F;
+    --cl-code-monokai-light-orange: #E69F66;
+    --cl-code-monokai-yellow:       #E6DB74;
+    --cl-code-monokai-green:        #A6E22E;
+    --cl-code-monokai-blue:         #66D9EF;
+    --cl-code-monokai-purple:       #AE81FF;
+
+    /* --- Parasol Theme */
+    --cl-code-parasol-background:   #F8F8F2;
+    --cl-code-parasol-foreground:   #004260;
+    --cl-code-parasol-builtin:      #80A5E9;
+    --cl-code-parasol-doc:          #BFBFBF;
+    --cl-code-parasol-functions:    #7540CA;
+    --cl-code-parasol-keyword:      #F73D8A;
+    --cl-code-parasol-string:       #00B664;
+    --cl-code-parasol-type:         #F73D8A;
+    --cl-code-parasol-variables:    #008ED4;
+
+    /* --- Theme Variables */
+    --cl-code-background:           var(--cl-code-parasol-background);
+    --cl-code-foreground:           var(--cl-code-parasol-foreground);
+    --cl-code-builtin:              var(--cl-code-parasol-builtin);
+    --cl-code-doc:                  var(--cl-code-parasol-doc);
+    --cl-code-function-name:        var(--cl-code-parasol-functions);
+    --cl-code-keyword:              var(--cl-code-parasol-keyword);
+    --cl-code-string:               var(--cl-code-parasol-string);
+    --cl-code-type:                 var(--cl-code-parasol-type);
+    --cl-code-variable-name:        var(--cl-code-parasol-variables);
+}
+
+/* Main HTML tags */
+body                  {
+    /* Reset */
+    margin: 0;
+    padding: 0;
+
+    /* Colors */
+    background: var(--cl-background);
+    color: var(--cl-foreground);
+
+    /* Font */
+    font-family: var(--ft-family);
+}
+
+/* -- Inline Code -- */
+code                  { background: var(--cl-preformatted); }
+
+/* -- Code Blocks -- */
+.org-builtin          { color: var(--cl-code-builtin); }
+.org-doc              { color: var(--cl-code-doc); }
+.org-function-name    { color: var(--cl-code-function-name); }
+.org-keyword          { color: var(--cl-code-keyword); }
+.org-string           { color: var(--cl-code-string); }
+.org-type             { color: var(--cl-code-type); }
+.org-variable-name    { color: var(--cl-code-variable-name); }
+.org-src-container    { color: var(--cl-code-foreground);
+                        background: var(--cl-code-background);
+                        border: 1px solid var(--cl-border-src);
+                        padding: 0px 15px;
+                        max-width: 100%;
+                        overflow-y: scroll;
+                        border-radius: 5px; }
+
+/* Navigation */
+.nav                  { background: var(--cl-banner-bg); color: var(--cl-fg-light); padding: 5px 20px; }
+.nav h1               { text-transform: lowercase; font-size: 1.5rem; font-weight: 500; }
+.nav a                { text-decoration: none; color: var(--cl-link-nav); font-style: italic; font-family: var(--ft-logofm); }
+.nav a:hover          { color: var(--cl-blue2); text-shadow: var(--cl-gray2) 0.01px 0 0.2px; }
+
+/* Footer */
+.footer               { background-color: var(--cl-footer-bg); padding: 100px; }
+.footer ul            { max-width: var(--dm-page-width); margin: 0 auto; list-style: none; padding: 0; display: flex; }
+.footer li            { margin-right: 20px; }
+.footer li:last-child { margin-right: 0; }
+.footer img           { vertical-align: middle; padding-bottom: 3px; transition: 0.5s; width: 16px; height: 16px; }
+.footer img:hover     { transition: 0.5s; width: 19px; height: 19px; }
+.footer a             { color: var(--cl-link-page); text-decoration: none; }
+.footer a:hover       { text-decoration: underline; }
+.footer .ack          { max-width: var(--dm-page-width); margin: 0 auto; padding-top: 50px; }
+.footer a.M-x         { width: 20px; display: inline-block; text-align: center; }
+.footer a:hover.M-x   { text-decoration: none; }
+
+/* General settings for the content area */
+.page                 { line-height: 1.6; flex-grow: 1; margin-bottom: 100px; }
+.page article         { max-width: var(--dm-page-width); margin: 0 auto; }
+.page h1              { color: var(--cl-h1); font-weight: 50; }
+.page h2              { color: var(--cl-h2); font-weight: 500; }
+.page p               { margin-bottom: 1.5rem; }
+.page a               { color: var(--cl-link-page); text-decoration: none; }
+.page a:hover         { text-decoration: underline; }
+.page h1              { font-size: 28pt; }
+.page h2              { font-size: 14pt; }
+
+/* Index page */
+.index .banner        { background: var(--cl-banner-bg); color: var(--cl-banner-fg); text-align: center; }
+.index .banner h1     { font-size: 80px; font-style: italic; font-family: var(--ft-logofm); margin: 0; padding: 50px 0 20px 0; }
+.index .banner .sub   { font-size: 30px; font-weight: 100; margin: 0; padding: 0 0 50px 0; color: #aaa; }
+.index .menu          { background: var(--cl-bg-light); border-bottom: 1px solid var(--cl-border-nav); }
+.index .menu ul       { max-width: var(--dm-page-width); margin: 0 auto; padding: 0; list-style: none; display: flex; }
+.index .menu li       { margin-right: 20px; }
+.index .menu a        { text-decoration: none; padding: 20px 0; display: block; color: var(--cl-link-nav); }
+.index .menu a:hover  { text-decoration: underline; }
+
+/* HTML generated off of Org-Mode files */
+.outline-2 h2         { margin: 40px 0; color: var(--cl-h1); font-size: var(--ft-size-0); font-weight: 50;  }
+.outline-text-2,
+.outline-text-3       { margin-left: 50px; }
+
+/* API reference page */
+.api                  { display: flex !important; }
+.api > div            { padding: 20px; }
+
+/* -- Left menu with index of all sections & symbols  */
+.api-menu             { background: var(--cl-bg-light); border-right: 1px solid var(--cl-border-nav); }
+.api-menu a           { text-decoration: none; color: var(--cl-link-menu); }
+.api-menu a:hover     { color: var(--cl-link-menu-hover); }
+.api-menu ul          { list-style: square; }
+.api-menu ul li       { margin-bottom: 8px; }
+
+/* -- Right side of the API page with the actual content */
+.page .section        { border-bottom: solid 1px var(--cl-border-nav); }
+.page .docstring      { padding-left: 50px; }
+.page .symbol         { margin-bottom: 50px; }
+
+/* Mobile settings */
+
+@media only screen 
+  and (min-device-width: 375px)
+  and (max-device-width: 812px) {
+    /* General */
+    .document         { width: 100%; }
+    .footer           { padding: 100px 20px; text-align: center; }
+    .footer ul        { justify-content: center; }
+
+    /* Index */
+    .index .menu      { padding: 0 20px; }
+    .index .banner    { padding: 0 20px; }
+    .index .page      { width: calc(100%-40px); padding: 0 20px; }
+
+    /* API */
+    .api              { width: 100%; }
+    .api-menu         { display: none; }
+    .api .page        { width: calc(100% - 60px); }
+    .page .section    { margin-bottom: 50px; }
+    .page .docstring  { padding-left: 0; }
+
+    /* Org-Mode */
+    .outline-text-2,
+    .outline-text-3   { margin-left: 0; }
+}

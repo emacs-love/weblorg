@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block page %}
+  <div class="index">
+    <div class="banner">
+      <h1>'templatel</h1>
+      <div class="sub">
+        A modern templating language for Emacs-Lisp
+      </div>
+    </div>
+
+    <div class="menu">
+      <ul>
+        <li><a href="api.html">API Docs</a></li>
+        <li>
+          <a href="https://github.com/clarete/templatel" target="_blank">
+            Github
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="page">
+      <article>
+        {{ post.html }}
+      </article>
+    </div>
+  </div>
+{% endblock %}
