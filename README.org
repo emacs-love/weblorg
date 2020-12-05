@@ -86,7 +86,7 @@
 
    We're using the powerful ~ox~ and ~ox-html~ native capabilities of
    ~org-mode~.  The ~org-html-template~ function is overwritten with
-   an advice and a [[github.com/clarete/templatel][template system]] is used instead of simply
+   an advice and a [[https://clarete.li/templatel][template system]] is used instead of simply
    concatenating a preamble and a post amble strings.  There isn't
    currently a good way of configuring how that HTML is
    generated. Ideas are welcome.
