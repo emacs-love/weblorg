@@ -1,7 +1,9 @@
 #+OPTIONS: toc:nil num:nil
-* Blorg - The unicorn diary
-A pure elisp static site generator
-Transform your org files into static websites and blogs.
+
+* Highlights
+  :PROPERTIES:
+  :HTML_CONTAINER_CLASS: columns no-heading
+  :END:
 
 ** Pure Emacs Lisp
 No python, ruby, go or other language

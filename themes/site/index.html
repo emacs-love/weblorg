@@ -6,23 +6,22 @@
 -->
 <html>
   <head>
-    <title>Stellar by HTML5 UP</title>
+    <title>Blorg - The unicorn dairy</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <link rel="stylesheet" href="assets/css/main.css" />
-    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <link rel="stylesheet" href="{{ url_for("static", file="css/main.css") }}" />
   </head>
   <body class="is-preload">
-
     <!-- Wrapper -->
     <div id="wrapper">
 
       <!-- Header -->
       <header id="header" class="alt">
-        <span class="logo"><img src="images/logo.svg" alt="" /></span>
-        <h1>Stellar</h1>
-        <p>Just another free, fully responsive site template<br />
-          built by <a href="https://twitter.com/ajlkn">@ajlkn</a> for <a href="https://html5up.net">HTML5 UP</a>.</p>
+        <span class="logo"><img src="{{ url_for("static", file="images/logo.svg") }}" alt="Blorg purple unicord logo" /></span>
+        <h1>Blorg - The unicorn dairy</h1>
+        <p>Pure elisp static site generator<br />
+          Magicly transform your org files into static websites and blogs.
+        </p>
       </header>
 
       <!-- Nav -->
@@ -42,17 +41,8 @@
         <section id="intro" class="main">
           <div class="spotlight">
             <div class="content">
-              <header class="major">
-                <h2>Ipsum sed adipiscing</h2>
-              </header>
-              <p>Sed lorem ipsum dolor sit amet nullam consequat feugiat consequat magna
-                adipiscing magna etiam amet veroeros. Lorem ipsum dolor tempus sit cursus.
-                Tempus nisl et nullam lorem ipsum dolor sit amet aliquam.</p>
-              <ul class="actions">
-                <li><a href="generic.html" class="button">Learn More</a></li>
-              </ul>
+              {% block main %}{% endblock %}
             </div>
-            <span class="image"><img src="images/pic01.jpg" alt="" /></span>
           </div>
         </section>
 
