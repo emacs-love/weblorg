@@ -3,7 +3,7 @@
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
 ;; URL: https://clarete.li/blorg
 ;; Version: 0.1.0
-;; Package-Requires: ((templatel "0.1.0") (emacs "26.1"))
+;; Package-Requires: ((templatel "0.1.3") (emacs "26.1"))
 ;;
 ;; Copyright (C) 2020  Lincoln Clarete
 ;;
