@@ -382,9 +382,15 @@ Parameters in ~OPTIONS~:
 
 (defun blorg-export-assets (route)
   "Export static assets ROUTE."
-  (dolist (source-file (blorg--route-collect-and-aggregate route))
-    (let* (;; base name of the source file path
-           (file (file-name-nondirectory source-file))
+  (dolist (source-file
+           (blorg--find-source-files
+            (blorg--theme-dir-from-route route)
+            (gethash :input-pattern route)
+            (gethash :input-exclude route)))
+    (let* (;; path to the theme directory the route refers to
+           (base-path (blorg--theme-dir-from-route route))
+           ;; file path without the base path above
+           (file (replace-regexp-in-string (regexp-quote base-path) "" source-file t t))
            ;; rendered destination
            (rendered-output
             (templatel-render-string
@@ -590,6 +596,12 @@ the absolute path for THEME."
         theme (expand-file-name
                "themes" blorg-module-dir))))
 
+(defun blorg--theme-dir-from-route (route)
+  "Get the path of directory `:theme-dir' of a ROUTE."
+  (blorg--theme-dir
+   (gethash :theme (gethash :site route))
+   (gethash :theme-dir route)))
+
 (defun blorg--template-find (directories name)
   "Find template NAME within DIRECTORIES.
 
@@ -648,10 +660,10 @@ are mainly two good places for calling this function:
          ;; exclude pattern
          (input-files
           (append
-           ;; Routes can request scanner to visit
+           ;; Routes can request scanner to visit the theme directory
            (unless (null theme-dir)
              (blorg--find-source-files
-              (blorg--theme-dir (gethash :theme (gethash :site route)) theme-dir)
+              (blorg--theme-dir-from-route route)
               (gethash :input-pattern route)
               (gethash :input-exclude route)))
            (blorg--find-source-files
@@ -749,15 +761,15 @@ be added ad an entry to the returned assoc."
   (let (output-files)
     (dolist (file (directory-files-and-attributes directory t))
       (cond
-       ((and (string-match pattern (car file))
-             (not (string-match exclude (car file))))
-        (setq output-files (cons (car file) output-files)))
-       ((eq t (car (cdr file)))
+       ((eq t (file-attribute-type (cdr file)))
         (if (not (equal "." (substring (car file) -1)))
             (setq output-files
                   (append
                    (blorg--find-source-files (car file) pattern exclude)
-                   output-files))))))
+                   output-files))))
+       ((and (string-match pattern (car file))
+             (not (string-match exclude (car file))))
+        (setq output-files (cons (car file) output-files)))))
     output-files))
 
 (defun blorg--slugify (s)
