@@ -25,7 +25,7 @@
 
 ;; Defaults to localhost:8000
 (if (string= (getenv "ENV") "prod")
-    (setq blorg-default-url "https://clarete.li/blorg"))
+    (setq blorg-default-url "https://emacs.love/blorg"))
 
 ;; Set site wide configuration
 (blorg-site :theme "site")
