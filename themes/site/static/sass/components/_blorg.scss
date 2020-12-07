@@ -75,13 +75,13 @@ pre {
     padding: 4em 2em;
 
     .api-menu {
-        width: 40%;
+        width: 35%;
     }
     .page {
         width: 100%;
         .section {
             padding-right: 20px;
-            pre {
+            code, pre {
                 font-size: 0.7em;
             }
         }
