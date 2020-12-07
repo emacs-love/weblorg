@@ -2561,6 +2561,23 @@ pre {
   margin: 0;
 }
 
+.api {
+  display: flex;
+  padding: 4em 2em;
+}
+.api .api-menu {
+  width: 40%;
+}
+.api .page {
+  width: 100%;
+}
+.api .page .section {
+  padding-right: 20px;
+}
+.api .page .section pre {
+  font-size: 0.7em;
+}
+
 /* Header */
 #header {
   padding: 5em 5em 1em 5em;

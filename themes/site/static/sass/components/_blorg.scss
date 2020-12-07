@@ -69,3 +69,21 @@ $cl-border-src:                $cl-code-parasol-doc;
 pre {
     margin: 0;
 }
+
+.api {
+    display: flex;
+    padding: 4em 2em;
+
+    .api-menu {
+        width: 40%;
+    }
+    .page {
+        width: 100%;
+        .section {
+            padding-right: 20px;
+            pre {
+                font-size: 0.7em;
+            }
+        }
+    }
+}
