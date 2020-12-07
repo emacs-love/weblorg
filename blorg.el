@@ -683,6 +683,10 @@ are mainly two good places for calling this function:
           (funcall (gethash :input-aggregate route) filtered-files)))
     aggregated-data))
 
+(defun blorg--vars-from-route (route)
+  "Pick some data from ROUTE to forward rendering templates."
+  `(("route" . (("name" . ,(gethash :name route))))))
+
 (defun blorg--export-template (route collections)
   "Walk through COLLECTIONS & render a template for each item on it.
 
@@ -694,7 +698,10 @@ can be found in the ROUTE."
             (templatel-env-render
              (gethash :template-env route)
              (gethash :template route)
-             (append (gethash :template-vars route) blorg-meta data)))
+             (append (gethash :template-vars route)
+                     blorg-meta
+                     data
+                     (blorg--vars-from-route route))))
            ;; Render the relative output path
            (rendered-output
             (templatel-render-string
