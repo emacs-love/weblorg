@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<!--
+     Stellar by HTML5 UP
+     html5up.net | @ajlkn
+     Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Blorg - The unicorn dairy</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://clarete.li/blorg/static/css/main.css" />
+    <meta name="description" content="Org-mode blog static generator">
+    <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+  </head>
+  <body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+      <!-- Header -->
+      <header id="header" class="alt">
+        <span class="logo"><img src="https://clarete.li/blorg/static/images/logo.svg" alt="Blorg purple unicord logo" /></span>
+        <h1>Blorg - The unicorn dairy</h1>
+        <p>
+          Magicly transform your org files into static websites and blogs.
+        </p>
+      </header>
+
+      <!-- Nav -->
+      <nav id="nav">
+        <ul>
+          <li><a href="/"  class="active" >Home</a>
+          <li><a href="/api.html" >API Docs</a>
+        </ul>
+      </nav>
+
+      <div id="main">
+        
+<section id="intro" class="main">
+  <div class="spotlight">
+    <div class="content">
+      <p>
+The blorg an Emacs-Lisp API rather than a command line tool. The use of the API becomes the description of a pipeline that takes lists of Org-Mode files as input, templatize them and generate HTML files as an output.
+</p>
+
+<div id="outline-container-orgdcf999f" class="outline-2 features no-heading">
+<h2 id="orgdcf999f">Highlights</h2>
+<div class="outline-text-2" id="text-orgdcf999f">
+</div>
+
+<div id="outline-container-org22147b5" class="outline-3 feature">
+<h3 id="org22147b5">Pure Emacs Lisp</h3>
+<div class="outline-text-3" id="text-org22147b5">
+<p>
+No python, ruby, go or other language
+</p>
+</div>
+</div>
+
+<div id="outline-container-org44f3507" class="outline-3 feature">
+<h3 id="org44f3507">Static</h3>
+<div class="outline-text-3" id="text-org44f3507">
+<p>
+org, templatel, HTML &amp; CSS.
+Everyting inside your emacs!
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfd73008" class="outline-3 feature">
+<h3 id="orgfd73008">Powered by Templatel</h3>
+<div class="outline-text-3" id="text-orgfd73008">
+<p>
+<a href="//clarete.li/templatel/">templatel</a> is the modern templating language that was missing for Emacs-Lisp. It provides variable substitution and control flow through a clean and powerful language inspired by Python's Jinja.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6edbcdb" class="outline-3 feature">
+<h3 id="org6edbcdb">Blog ready</h3>
+<div class="outline-text-3" id="text-org6edbcdb">
+<p>
+Permalink, categories, pages, posts and custom layouts.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga83c08a" class="outline-2">
+<h2 id="orga83c08a">Getting started</h2>
+<div class="outline-text-2" id="text-orga83c08a">
+<p>
+This is the minimal structure for a blog powered by Blorg!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">blog/
+&#9500;&#9472;&#9472; pages
+&#9474;&#160;&#160; &#9492;&#9472;&#9472; about.org
+&#9500;&#9472;&#9472; posts
+&#9474;&#160;&#160; &#9492;&#9472;&#9472; my-first-post.org
+&#9492;&#9472;&#9472; publish.el
+</pre>
+</div>
+
+<p>
+On publish.el is the Blorg configuration file, you can configure routes, theme and other things. This is the minimal setup for a blog.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(use-package blorg)
+(use-package templatel)
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Org-Mode depends on `</span><span class="org-comment"><span class="org-constant">htmlize</span></span><span class="org-comment">' in order to produce HTML off Org-Mode</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">blocks with syntax highlighting.</span>
+(use-package htmlize)
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Tells `</span><span class="org-comment"><span class="org-constant">htmlize</span></span><span class="org-comment">' library to output HTML with css classes instead of</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">directly formatting the output.</span>
+(setq org-html-htmlize-output-type 'css)
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Generate blog posts</span>
+(blorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"posts"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
+ <span class="org-builtin">:template</span> <span class="org-string">"post.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/posts/{{ slug }}.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/posts/{{ slug }}.html"</span>)
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Generate pages</span>
+(blorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"pages"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"pages/.*\\.org$"</span>
+ <span class="org-builtin">:template</span> <span class="org-string">"page.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/{{ slug }}/index.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/{{ slug }}"</span>)
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Generate posts summary</span>
+(blorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
+ <span class="org-builtin">:input-aggregate</span> #'blorg-input-aggregate-all
+ <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
+
+(blorg-copy-static
+ <span class="org-builtin">:output</span> <span class="org-string">"output/static/{{ file }}"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/static/{{ file }}"</span>)
+
+(blorg-export)
+</pre>
+</div>
+
+<p>
+To generate your blog touched by unicorn just run
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">emacs --script publish.el 2&gt;&amp;1
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0023507" class="outline-2">
+<h2 id="org0023507">Theming</h2>
+<div class="outline-text-2" id="text-org0023507">
+<p>
+Blorg came with a default theme for you can focus on content, but if you want to create modify existing template just create a folder <b>templates</b> on the same level of <code>publish.el</code>
+</p>
+</div>
+</div>
+
+    </div>
+  </div>
+</section>
+
+      </div>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <p class="copyright">&copy; Made with love <3 by Blorg. Design by: <a href="https://html5up.net">HTML5 UP</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+/* --- Monokai Theme */
+$cl-code-monokai-background:   #272822;
+$cl-code-monokai-foreground:   #F8F8F2;
+$cl-code-monokai-comment:      #75715E;
+$cl-code-monokai-red:          #F92672;
+$cl-code-monokai-orange:       #FD971F;
+$cl-code-monokai-light-orange: #E69F66;
+$cl-code-monokai-yellow:       #E6DB74;
+$cl-code-monokai-green:        #A6E22E;
+$cl-code-monokai-blue:         #66D9EF;
+$cl-code-monokai-purple:       #AE81FF;
+
+/* --- Parasol Theme */
+$cl-code-parasol-background:   #F8F8F2;
+$cl-code-parasol-foreground:   #004260;
+$cl-code-parasol-builtin:      #80A5E9;
+$cl-code-parasol-doc:          #BFBFBF;
+$cl-code-parasol-functions:    #7540CA;
+$cl-code-parasol-keyword:      #F73D8A;
+$cl-code-parasol-string:       #00B664;
+$cl-code-parasol-type:         #F73D8A;
+$cl-code-parasol-variables:    #008ED4;
+
+/* --- Theme Variables */
+$cl-code-background:           $cl-code-parasol-background;
+$cl-code-foreground:           $cl-code-parasol-foreground;
+$cl-code-builtin:              $cl-code-parasol-builtin;
+$cl-code-comment:              $cl-code-parasol-doc;
+$cl-code-function-name:        $cl-code-parasol-functions;
+$cl-code-keyword:              $cl-code-parasol-keyword;
+$cl-code-string:               $cl-code-parasol-string;
+$cl-code-type:                 $cl-code-parasol-type;
+$cl-code-variable-name:        $cl-code-parasol-variables;
+$cl-code-doc:                  $cl-code-parasol-doc;
+$cl-border-src:                $cl-code-parasol-doc;
+
+/* -- Code Blocks -- */
+.org-builtin          { color: $cl-code-builtin; }
+.org-doc              { color: $cl-code-doc; }
+.org-function-name    { color: $cl-code-function-name; }
+.org-keyword          { color: $cl-code-keyword; }
+.org-string           { color: $cl-code-string; }
+.org-type             { color: $cl-code-type; }
+.org-variable-name    { color: $cl-code-variable-name; }
+.org-comment, .org-comment-delimiter { color: $cl-code-comment; }
+.org-src-container    { color: $cl-code-foreground;
+                        background: $cl-code-background;
+                        border: 1px solid $cl-border-src;
+                        padding: 15px;
+                        max-width: 100%;
+                        border-radius: 5px;
+                        margin-bottom: 20px;
+                      }
+
+
+.no-heading {
+    h2 {
+        display: none;
+    }
+}
+
+.feature {
+    width: calc(50% - 2em);
+    margin-left: 2em;
+    margin-top: 3em;
+    padding: 0;
+}
+
+pre {
+    margin: 0;
+}
+
+.api {
+    display: flex;
+    padding: 4em 2em;
+
+    .api-menu {
+        width: 35%;
+    }
+    .page {
+        width: 100%;
+        .section {
+            padding-right: 20px;
+            code, pre {
+                font-size: 0.7em;
+            }
+        }
+    }
+}

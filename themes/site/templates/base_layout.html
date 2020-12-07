@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<!--
+     Stellar by HTML5 UP
+     html5up.net | @ajlkn
+     Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Blorg - The unicorn dairy</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="{{ url_for("static", file="css/main.css") }}" />
+    <meta name="description" content="Org-mode blog static generator">
+    <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+  </head>
+  <body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+      <!-- Header -->
+      <header id="header" class="alt">
+        <span class="logo"><img src="{{ url_for("static", file="images/logo.svg") }}" alt="Blorg purple unicord logo" /></span>
+        <h1>Blorg - The unicorn dairy</h1>
+        <p>
+          Magicly transform your org files into static websites and blogs.
+        </p>
+      </header>
+
+      <!-- Nav -->
+      <nav id="nav">
+        <ul>
+          <li><a href="/" {% if route.name == "index" %} class="active" {% endif %}>Home</a>
+          <li><a href="/api.html" {% if route.name == "api" %}class="active" {% endif %}>API Docs</a>
+        </ul>
+      </nav>
+
+      <div id="main">
+        {% block main %}{% endblock %}
+      </div>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <p class="copyright">&copy; Made with love <3 by Blorg. Design by: <a href="https://html5up.net">HTML5 UP</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
