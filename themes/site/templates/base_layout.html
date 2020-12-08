@@ -29,8 +29,8 @@
       <!-- Nav -->
       <nav id="nav">
         <ul>
-          <li><a href="/" {% if route.name == "index" %} class="active" {% endif %}>Home</a>
-          <li><a href="/api.html" {% if route.name == "api" %}class="active" {% endif %}>API Docs</a>
+          <li><a href="/" {% if route.name == "index" %} class="active" {% endif %}>Home</a></li>
+          <li><a href="{{ url_for("api") }}" {% if route.name == "api" %}class="active" {% endif %}>API Docs</a></li>
         </ul>
       </nav>
 
