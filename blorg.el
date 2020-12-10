@@ -725,7 +725,13 @@ can be found in the ROUTE."
                        (insert-file-contents input-path)
                        (buffer-string)))
          (keywords (blorg--parse-org input-data))
-         (slug (blorg--get-cdr keywords "title" input-path)))
+         (slug
+          ;; First look for `slug` FILETAG, if it's not available, try
+          ;; to use the `title` FILETAG. If both fail, use the file
+          ;; name.
+          (blorg--get-cdr
+           keywords "slug"
+           (blorg--get-cdr keywords "title" input-path))))
     (blorg--prepend keywords (cons "file" input-path))
     (blorg--prepend keywords (cons "slug" (blorg--slugify slug)))
     keywords))
