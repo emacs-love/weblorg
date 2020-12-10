@@ -386,7 +386,8 @@ Parameters in ~OPTIONS~:
            (blorg--find-source-files
             (blorg--theme-dir-from-route route)
             (gethash :input-pattern route)
-            (gethash :input-exclude route)))
+            (gethash :input-exclude route)
+            t))
     (let* (;; path to the theme directory the route refers to
            (base-path (blorg--theme-dir-from-route route))
            ;; file path without the base path above
@@ -763,16 +764,19 @@ be added ad an entry to the returned assoc."
     (blorg--prepend keywords (cons "html" html))
     keywords))
 
-(defun blorg--find-source-files (directory pattern exclude)
-  "Find files matching PATTERN but not EXCLUDE within DIRECTORY."
+(defun blorg--find-source-files (directory pattern exclude &optional recursive)
+  "Find files matching PATTERN but not EXCLUDE within DIRECTORY.
+
+If the flag RECURSIVE is true, the search will continue within
+sub directories."
   (let (output-files)
     (dolist (file (directory-files-and-attributes directory t))
       (cond
        ((eq t (file-attribute-type (cdr file)))
-        (if (not (equal "." (substring (car file) -1)))
+        (if (and recursive (not (equal "." (substring (car file) -1))))
             (setq output-files
                   (append
-                   (blorg--find-source-files (car file) pattern exclude)
+                   (blorg--find-source-files (car file) pattern exclude recursive)
                    output-files))))
        ((and (string-match pattern (car file))
              (not (string-match exclude (car file))))
