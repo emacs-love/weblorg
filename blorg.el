@@ -84,6 +84,7 @@
 (require 'org)
 (require 'ox-html)
 (require 'seq)
+(require 'em-glob)
 (require 'templatel)
 
 (defvar blorg-module-dir (file-name-directory load-file-name)
@@ -248,7 +249,7 @@ Parameters in ~OPTIONS~:
     (puthash :url url route)
     (puthash :base-dir base-dir route)
     (puthash :input-source (blorg--get opt :input-source) route)
-    (puthash :input-pattern (blorg--get opt :input-pattern "org$") route)
+    (puthash :input-pattern (blorg--get opt :input-pattern "*.org") route)
     (puthash :input-exclude (blorg--get opt :input-exclude "^$") route)
     (puthash :input-filter (blorg--get opt :input-filter) route)
     (puthash :input-parser (blorg--get opt :input-parser #'blorg--parse-org-file) route)
@@ -332,7 +333,7 @@ Parameters in ~OPTIONS~:
     (puthash :url url route)
     (puthash :base-dir base-dir route)
     (puthash :theme-dir "static/" route)
-    (puthash :input-pattern (blorg--get opt :input-pattern "/static/") route)
+    (puthash :input-pattern (blorg--get opt :input-pattern "**/*") route)
     (puthash :input-exclude (blorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
     (puthash :input-filter (blorg--get opt :input-filter) route)
     (puthash :input-parser #'identity route)
@@ -386,8 +387,7 @@ Parameters in ~OPTIONS~:
            (blorg--find-source-files
             (blorg--theme-dir-from-route route)
             (gethash :input-pattern route)
-            (gethash :input-exclude route)
-            t))
+            (gethash :input-exclude route)))
     (let* (;; path to the theme directory the route refers to
            (base-path (blorg--theme-dir-from-route route))
            ;; file path without the base path above
@@ -654,7 +654,7 @@ are mainly two good places for calling this function:
 ;; Exporting pipeline
 
 (defun blorg--route-collect-and-aggregate (route)
-  "Fing input files apply templates for a ROUTE."
+  "Find input files apply templates for a ROUTE."
   (let* ((input-filter (gethash :input-filter route))
          (theme-dir (gethash :theme-dir route))
          ;; Find all files that match input pattern and don't match
@@ -764,24 +764,19 @@ be added ad an entry to the returned assoc."
     (blorg--prepend keywords (cons "html" html))
     keywords))
 
-(defun blorg--find-source-files (directory pattern exclude &optional recursive)
-  "Find files matching PATTERN but not EXCLUDE within DIRECTORY.
+(defun blorg--find-source-files (base-dir input-pattern input-exclude)
+  "Find source files with parameters extracted from a route.
 
-If the flag RECURSIVE is true, the search will continue within
-sub directories."
-  (let (output-files)
-    (dolist (file (directory-files-and-attributes directory t))
-      (cond
-       ((eq t (file-attribute-type (cdr file)))
-        (if (and recursive (not (equal "." (substring (car file) -1))))
-            (setq output-files
-                  (append
-                   (blorg--find-source-files (car file) pattern exclude recursive)
-                   output-files))))
-       ((and (string-match pattern (car file))
-             (not (string-match exclude (car file))))
-        (setq output-files (cons (car file) output-files)))))
-    output-files))
+The BASE-DIR is a path where the search will start.  The
+INPUT-PATTERN is a glob expression, compatible with eshell's
+`eshell-extended-glob'.  After a list of file names is found, it
+is then filtered with INPUT-EXCLUDE, which is a regular
+expression (not a glob)."
+  (seq-filter
+   (lambda (f)
+     (not (string-match input-exclude f)))
+   (eshell-extended-glob
+    (concat (file-name-as-directory base-dir) input-pattern))))
 
 (defun blorg--slugify (s)
   "Make slug of S."

@@ -30,7 +30,7 @@
   (blorg-route
    :base-dir (expand-file-name "t/fixtures/test1/" default-directory)
    :name "route"
-   :input-pattern ".*\\.org$"
+   :input-pattern "src/*.org"
    :input-exclude "index.org$"
    :template "post.html"
    :url "/{{ slug }}.html")
@@ -41,7 +41,7 @@
          (posts (mapcar #'cdar collection)))
     (should (equal (length collection) 2))
     (should (equal (mapcar (lambda(p) (blorg--get-cdr p "slug")) posts)
-                   (list "a-simple-post" "a-draft-post"))))
+                   (list "a-draft-post" "a-simple-post"))))
 
   ;; reset the global to its initial state
   (clrhash blorg--sites))
@@ -51,7 +51,7 @@
   ;; site parameter
   (blorg-route
    :name "docs"
-   :input-pattern ".*\\.org$"
+   :input-pattern "*.org"
    :input-exclude "index.org$"
    :template "post.html"
    :url "/documentation/{{ slug }}-{{ stuff }}.html"
