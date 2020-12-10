@@ -37,7 +37,7 @@
 ;; 1. Use-case: transform a list of Org-Mode files in HTML:
 ;;
 ;;    (blorg-route
-;;     :input-pattern ".*\\.org"
+;;     :input-pattern "*.org"
 ;;     :template "post.html"
 ;;     :url "/{{ slug }}.html")
 ;;    (blorg-export)
@@ -48,13 +48,13 @@
 ;;
 ;;       (blorg-route
 ;;        :name "docs"
-;;        :input-pattern ".*\\.org$"
+;;        :input-pattern "*.org"
 ;;        :input-exclude "index.org$"
 ;;        :template "post.html"
 ;;        :url "/{{ slug }}.html")
 ;;       (blorg-route
 ;;        :name "index"
-;;        :input-pattern "index.org$"
+;;        :input-pattern "index.org"
 ;;        :template "index.html"
 ;;        :url "/index.html")
 ;;       (blorg-export)
@@ -151,7 +151,7 @@ Examples:
     #+BEGIN_SRC emacs-lisp
     (blorg-route
      :name \"index\"
-     :input-pattern \"posts/.*\\.org$\"
+     :input-pattern \"posts/*org\"
      :input-aggregate #'blorg-input-aggregate-all
      :template \"blog.html\"
      :output \"output/index.html\"
@@ -166,7 +166,7 @@ Examples:
     #+BEGIN_SRC emacs-lisp
     (blorg-route
      :name \"pages\"
-     :input-pattern \"pages/.*\\.org$\"
+     :input-pattern \"pages/*.org\"
      :template \"page.html\"
      :output \"output/{{ slug }}/index.html\"
      :url \"/{{ slug }}\")
@@ -174,8 +174,8 @@ Examples:
 
 Parameters in ~OPTIONS~:
 
- * `:input-pattern': Regular expression for selecting files
-    within path `:base-dir'.  It defaults to \"org$\";
+ * `:input-pattern': glob expression for selecting files within
+    path `:base-dir'.  It defaults to \"*.org\";
 
  * `:input-exclude': Regular expression for excluding files from
     the input list.  Defaults to \"^$\";

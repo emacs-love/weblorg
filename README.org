@@ -18,13 +18,13 @@
    #+begin_src emacs-lisp
    (blorg-route
     :name "posts"
-    :input-pattern "posts/.*\\.org$"
+    :input-pattern "posts/*.org"
     :template "post.html"
     :output "{{ slug }}.html"
     :url "/{{ slug }}.html")
    (blorg-route
-    :name "posts"
-    :input-pattern "posts/.*\\.org$"
+    :name "blog"
+    :input-pattern "posts/*.org"
     :input-aggregate #'blorg-input-aggregate-all
     :template "blog.html"
     :output "index.html"
