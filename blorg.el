@@ -230,7 +230,7 @@ Parameters in ~OPTIONS~:
          ;; all parameters the entry point takes
          (name (blorg--get opt :name))
          ;; It's also the default for :output
-         (url (blorg--get opt :url "/{{ slug }}.html"))
+         (url (blorg--get opt :url))
          ;; Not using the `default' parameter in `blorg--get' because
          ;; it doesn't give the short circiut given by `or'.
          (site (or (blorg--get opt :site)
