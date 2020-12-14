@@ -372,7 +372,12 @@ Parameters in ~OPTIONS~:
      (gethash :template-env route)
      "url_for"
      (lambda(route-name &optional vars)
-       (blorg--url-for-v route-name vars site))))
+       (blorg--url-for-v route-name vars site)))
+    (templatel-env-add-filter
+     (gethash :template-env route)
+     "strftime"
+     (lambda(time format)
+       (format-time-string format time))))
   ;; Collect -> Aggregate -> Template -> Write
   (let ((input-source (gethash :input-source route)))
     (blorg--export-template
@@ -755,9 +760,7 @@ be added ad an entry to the returned assoc."
      (lambda(keyword _c _i)
        (blorg--prepend
         keywords
-        (cons
-         (downcase (org-element-property :key keyword))
-         (org-element-property :value keyword)))))
+        (blorg--parse-org-keyword keyword))))
     ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
       (insert input-data)
@@ -769,6 +772,20 @@ be added ad an entry to the returned assoc."
     ;; as well
     (blorg--prepend keywords (cons "html" html))
     keywords))
+
+(defun blorg--parse-org-keyword (keyword)
+  "Parse a single Org-Mode document KEYWORD.
+
+If it's a date field, it will return a timestamp tuple instead of
+the value string.  The user will have to use the `strftime`
+template filter to display a nicely formatted string."
+  (let ((key (downcase (org-element-property :key keyword)))
+        (value (org-element-property :value keyword)))
+    (cons
+     key
+     (if (string= key "date")
+         (encode-time (org-parse-time-string value))
+       value))))
 
 (defun blorg--find-source-files (base-dir input-pattern input-exclude)
   "Find source files with parameters extracted from a route.
