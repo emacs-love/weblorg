@@ -667,7 +667,7 @@ are mainly two good places for calling this function:
          (input-files
           (append
            ;; Routes can request scanner to visit the theme directory
-           (unless (null theme-dir)
+           (when theme-dir
              (blorg--find-source-files
               (blorg--theme-dir-from-route route)
               (gethash :input-pattern route)
@@ -751,12 +751,12 @@ be added ad an entry to the returned assoc."
     ;; Replace the HTML generation code to prevent ox-html from adding
     ;; headers and stuff around the HTML generated for the `body` tag.
     (advice-add
-     'org-html-template :override
+     #'org-html-template :override
      (lambda(contents _i) (setq html contents)))
     ;; Watch collection of keywords, which are file-level properties,
     ;; like #+TITLE, #+FILETAGS, etc.
     (advice-add
-     'org-html-keyword :before
+     #'org-html-keyword :before
      (lambda(keyword _c _i)
        (blorg--prepend
         keywords
@@ -822,7 +822,7 @@ expression (not a glob)."
   (message
    "%s INFO %s"
    (format-time-string "%Y-%m-%d %H:%M:%S")
-   (apply 'format (cons msg vars))))
+   (apply #'format (cons msg vars))))
 
 (org-link-set-parameters
  "anchor"
