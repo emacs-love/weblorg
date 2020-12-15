@@ -784,7 +784,9 @@ template filter to display a nicely formatted string."
     (cons
      key
      (if (string= key "date")
-         (encode-time (org-parse-time-string value))
+         ;; use the deprecated signature of `encode-time' to keep
+         ;; compatibility to Emacs 26x.
+         (apply #'encode-time (org-parse-time-string value))
        value))))
 
 (defun blorg--find-source-files (base-dir input-pattern input-exclude)
