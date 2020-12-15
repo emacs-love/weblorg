@@ -39,9 +39,19 @@
   (let* ((route (blorg--site-route (blorg--site-get) "route"))
          (collection (blorg--route-collect-and-aggregate route))
          (posts (mapcar #'cdar collection)))
+    ;; we've got two posts there so far
     (should (equal (length collection) 2))
+
+    ;; notice the list of files will be sorted
     (should (equal (mapcar (lambda(p) (blorg--get-cdr p "slug")) posts)
-                   (list "a-draft-post" "a-simple-post"))))
+                   (list "a-draft-post" "a-simple-post")))
+    ;; also compare dates read and parsed from org files
+    (should (equal (mapcar (lambda(p)
+                             (format-time-string
+                              "%Y-%m-%d"
+                              (blorg--get-cdr p "date")))
+                           posts)
+                   (list "2020-09-10" "2020-09-05"))))
 
   ;; reset the global to its initial state
   (clrhash blorg--sites))
