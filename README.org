@@ -7,61 +7,15 @@
   lists of Org-Mode files as input, templatize them and generate HTML
   files as an output.
 
-** Usage
+** Quick Example
 
-   You need to define an input pattern to filter out which Org-Mode
-   files are part of your input, choose a template, then specify an
-   output and ~blorg-gen~ will make the HTML content and the metadata
-   of the Org-Mode file available to the template and finally generate
-   an HTML file and save it in a file:
-
-   #+begin_src emacs-lisp
-   (blorg-route
-    :name "posts"
-    :input-pattern "posts/*.org"
-    :template "post.html"
-    :output "{{ slug }}.html"
-    :url "/{{ slug }}.html")
-   (blorg-route
-    :name "blog"
-    :input-pattern "posts/*.org"
-    :input-aggregate #'blorg-input-aggregate-all
-    :template "blog.html"
-    :output "index.html"
-    :url "/")
-   (blorg-export)
-   #+end_src
-
-   The most important parameters that must be passed to ~blorg-route~
-   are:
-
-   1. ~input-pattern~: That's a regular expression that will be used
-      to match which files are included in the input list.
-   2. ~template~: Which HTML file will be picked as the template.
-   3. ~output~: Little template expression that allows customizing the
-      output file name. It takes a template expression and has all the
-      ~post~ variables available.  If your input expression matches
-      more than one file, this option allows you to name the diffent
-      output files based on data from the input file.  Also, if sub
-      directories that appear in the output path don't exist in the
-      file system, they will be created automatically.
-   4. ~url~: Similar to the ~output~ variable, but is used to render
-      the URL of a link to a given document under a route.
-
-   One common thing between the three variables above is that they're
-   all relative to the ~:base-dir~.  Which also happens to be a
-   parameter to ~blorg-route~ and defaults to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Names.html#index-default-directory_002c-of-a-buffer-1187][~default-directory~]].
-
-** Proposed file structure
-
-   If you're looking into creating a new blog or porting an existing
-   body of Org-Mode posts you can have a structure similar to this:
+   Either if you're creating a new blog or porting an existing body of
+   Org-Mode posts you can use a structure similar to this:
 
    #+begin_src sh
    $ tree your-new-blog
    your-new-blog
    ├─ publish.el
-   ├─ index.org
    ├─ posts/
    │   ├─ fun-with-org-mode.org
    │   ├─ what-if-emacs-was-your-operating-system.org
@@ -71,16 +25,72 @@
        └─ yet-another-template.html
    #+end_src
 
-   Then use the ~publish.el~ script to declare routes and export the
-   content.  The ~blorg~ ships with a theme but one can also write
-   their own.
+   * The ~posts~ directory is where your blog posts go.
 
-   The ~templates~ directory is not required.  It's only needed if the
-   templates available in the theme you chose aren't enough.  The
-   ~blorg~ uses [[https://clarete.li/templatel/][templatel]] as its templating language.  It's very
-   similar to [[https://jinja.palletsprojects.com/en/2.11.x/][Jinja]], the well known language created by the Python
-   community, so there's a chance you're already be familiar with it
-   :D
+   * The ~templates~ directory is where custom templates go.  The
+     blorg ships with some themes so if don't need anything special,
+     chances are you won't need this directory.  Tutorial on how to
+     create custom themes will come, but for now you can take a peak at the
+     source code of the [[https://github.com/emacs-love/blorg/tree/main/themes][existing themes]].
+
+   * The ~publish.el~ script is where routes are declared and the
+     export is invoked.  Let's say we want to generate one HTML file
+     for each blog post and we also want to generate an index listing
+     all the posts.
+
+     #+begin_src emacs-lisp
+     (blorg-route
+      :name "posts"
+      :input-pattern "posts/*.org"
+      :template "post.html"
+      :output "{{ slug }}.html"
+      :url "/{{ slug }}.html")
+
+     (blorg-route
+      :name "blog"
+      :input-pattern "posts/*.org"
+      :input-aggregate #'blorg-input-aggregate-all-desc
+      :template "blog.html"
+      :output "index.html"
+      :url "/")
+
+   (blorg-export)
+   #+end_src
+
+   The most important parameters that must be passed to ~blorg-route~
+   are:
+
+   1. ~name~: this is used everywhere that requires identifying a
+      route. e.g.: creating links ~url_for("posts", slug=post.slug)~.
+
+   2. ~input-pattern~: That's a glob expression that will be used to
+      match which files belong to that route.  It uses the same glob
+      that ~eshell~ understands.  If an expression doesn't match any
+      files, an error will be presented identifying the route by its
+      name and showing the glob expression.
+
+   3. ~template~: Which HTML file will be picked as the template.
+
+   4. ~output~: It takes a template expression that allows customizing
+      the output file name. All the ~post~ variables are available.
+      If your input expression matches more than one file, this option
+      allows you to name the diffent output files based on data from
+      the input file. Notice how a route that generates a single file
+      doesn't need anything but the file itself (index.html) but a
+      route that generates multiple files will need something more
+      sophisticated, like ~{{ slug }}.html~.
+
+      Also, if sub directories that appear in the output path don't
+      exist in the file system, they will be created automatically.
+      Which allows you to do something like ~{{ slug }}/index.html~
+      and allow URLs without extensions.
+
+   5. ~url~: Similar to the ~output~ variable, but is used to render
+      the URL of a link to a given document under a route.
+
+   One common thing between the three variables above is that they're
+   all relative to the ~:base-dir~.  Which also happens to be a
+   parameter to ~blorg-route~ and defaults to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Names.html#index-default-directory_002c-of-a-buffer-1187][~default-directory~]].
 
 ** HTML Generation
 
