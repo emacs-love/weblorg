@@ -2,15 +2,14 @@
 
   Generate Static HTML websites from Org-Mode files.
 
-  The blorg an Emacs-Lisp API rather than a command line tool.  The
-  use of the API becomes the description of a pipeline that takes
-  lists of Org-Mode files as input, templatize them and generate HTML
-  files as an output.
+  The blorg is designed as an Emacs-Lisp API rather than a command line tool.  The
+  use of the API becomes the description of a pipeline that finds collections of
+  Org-Mode files as input, templatize them and generate HTML files as an output.
 
-** Quick Example
+** Quick Start
 
    Either if you're creating a new blog or porting an existing body of
-   Org-Mode posts you can use a structure similar to this:
+   Org-Mode posts, you can use a structure similar to this:
 
    #+begin_src sh
    $ tree your-new-blog
@@ -29,7 +28,7 @@
 
    * The ~templates~ directory is where custom templates go.  The
      blorg ships with some themes so if don't need anything special,
-     chances are you won't need this directory.  Tutorial on how to
+     chances are you won't need this directory.  Tutorials on how to
      create custom themes will come, but for now you can take a peak at the
      source code of the [[https://github.com/emacs-love/blorg/tree/main/themes][existing themes]].
 
@@ -39,22 +38,22 @@
      all the posts.
 
      #+begin_src emacs-lisp
-     (blorg-route
-      :name "posts"
-      :input-pattern "posts/*.org"
-      :template "post.html"
-      :output "{{ slug }}.html"
-      :url "/{{ slug }}.html")
+(blorg-route
+ :name "posts"
+ :input-pattern "posts/*.org"
+ :template "post.html"
+ :output "{{ slug }}.html"
+ :url "/{{ slug }}.html")
 
-     (blorg-route
-      :name "blog"
-      :input-pattern "posts/*.org"
-      :input-aggregate #'blorg-input-aggregate-all-desc
-      :template "blog.html"
-      :output "index.html"
-      :url "/")
+(blorg-route
+ :name "blog"
+ :input-pattern "posts/*.org"
+ :input-aggregate #'blorg-input-aggregate-all-desc
+ :template "blog.html"
+ :output "index.html"
+ :url "/")
 
-   (blorg-export)
+(blorg-export)
    #+end_src
 
    The most important parameters that must be passed to ~blorg-route~
