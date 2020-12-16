@@ -87,6 +87,9 @@
 (require 'em-glob)
 (require 'templatel)
 
+(define-error 'blorg-error-config "Configuration Error" 'blorg-error-user)
+
+
 (defvar blorg-module-dir (file-name-directory load-file-name)
   "Directory that points to the directory of blorgs source code.")
 
@@ -249,7 +252,7 @@ Parameters in ~OPTIONS~:
     (puthash :url url route)
     (puthash :base-dir base-dir route)
     (puthash :input-source (blorg--get opt :input-source) route)
-    (puthash :input-pattern (blorg--get opt :input-pattern "*.org") route)
+    (puthash :input-pattern (blorg--get opt :input-pattern) route)
     (puthash :input-exclude (blorg--get opt :input-exclude "^$") route)
     (puthash :input-filter (blorg--get opt :input-filter) route)
     (puthash :input-parser (blorg--get opt :input-parser #'blorg--parse-org-file) route)
@@ -352,16 +355,14 @@ Parameters in ~OPTIONS~:
                           (gethash :routes site)))
                blorg--sites)
     (templatel-error
-     (message "Syntax Error: %s" (cdr exc)))
+     (error "Template Error: %s" (cdr exc)))
+    (blorg-error-config
+     (error "Configuration error: %s" (cdr exc)))
     (file-missing
-     (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
+     (error "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
 
 (defun blorg-export-template (route)
   "Export a single ROUTE of a site with files to be templatized."
-  ;; Add the route's main template to the environment
-  (funcall (blorg--route-importfn route)
-           (gethash :template-env route)
-           (gethash :template route))
   ;; Install link handlers
   (let ((site (gethash :site route)))
     (org-link-set-parameters
@@ -390,6 +391,7 @@ Parameters in ~OPTIONS~:
   "Export static assets ROUTE."
   (dolist (source-file
            (blorg--find-source-files
+            (gethash :name route)
             (blorg--theme-dir-from-route route)
             (gethash :input-pattern route)
             (gethash :input-exclude route)))
@@ -683,10 +685,12 @@ are mainly two good places for calling this function:
            ;; Routes can request scanner to visit the theme directory
            (when theme-dir
              (blorg--find-source-files
+              (gethash :name route)
               (blorg--theme-dir-from-route route)
               (gethash :input-pattern route)
               (gethash :input-exclude route)))
            (blorg--find-source-files
+            (gethash :name route)
             (gethash :base-dir route)
             (gethash :input-pattern route)
             (gethash :input-exclude route))))
@@ -712,27 +716,41 @@ are mainly two good places for calling this function:
 
 The settings for generating the template, like output file name,
 can be found in the ROUTE."
-  (dolist (data collections)
-    (let* (;; Render the template
-           (rendered
-            (templatel-env-render
-             (gethash :template-env route)
-             (gethash :template route)
-             (append (gethash :template-vars route)
-                     blorg-meta
-                     data
-                     (blorg--vars-from-route route))))
-           ;; Render the relative output path
-           (rendered-output
-            (templatel-render-string
-             (gethash :output route)
-             (cdar data)))
-           ;; Render the full path
-           (final-output
-            (expand-file-name rendered-output (gethash :base-dir route))))
-      (blorg--log-info "writing: %s" final-output)
-      (mkdir (file-name-directory final-output) t)
-      (write-region rendered nil rendered-output))))
+  ;; Don't bother doing anything else if there are no input files
+  (when collections
+    ;; Add the route's main template to the environment
+    (let ((template (gethash :template route)))
+      (if template
+          (funcall (blorg--route-importfn route)
+               (gethash :template-env route)
+               template)
+        (signal
+         'blorg-error-config
+         (format
+          "route `%s` needs a template to render matched files"
+          (gethash :name route)))))
+
+    (dolist (data collections)
+      (let* (;; Render the template
+             (rendered
+              (templatel-env-render
+               (gethash :template-env route)
+               (gethash :template route)
+               (append (gethash :template-vars route)
+                       blorg-meta
+                       data
+                       (blorg--vars-from-route route))))
+             ;; Render the relative output path
+             (rendered-output
+              (templatel-render-string
+               (gethash :output route)
+               (cdar data)))
+             ;; Render the full path
+             (final-output
+              (expand-file-name rendered-output (gethash :base-dir route))))
+        (blorg--log-info "writing: %s" final-output)
+        (mkdir (file-name-directory final-output) t)
+        (write-region rendered nil rendered-output)))))
 
 (defun blorg--export-site-route (site route)
   "SITE ROUTE."
@@ -803,19 +821,26 @@ template filter to display a nicely formatted string."
          (apply #'encode-time (org-parse-time-string value))
        value))))
 
-(defun blorg--find-source-files (base-dir input-pattern input-exclude)
-  "Find source files with parameters extracted from a route.
+(defun blorg--find-source-files (route-name base-dir input-pattern input-exclude)
+  "Find source files with parameters extracted from a route ROUTE-NAME.
 
 The BASE-DIR is a path where the search will start.  The
 INPUT-PATTERN is a glob expression, compatible with eshell's
 `eshell-extended-glob'.  After a list of file names is found, it
 is then filtered with INPUT-EXCLUDE, which is a regular
 expression (not a glob)."
-  (seq-filter
-   (lambda (f)
-     (not (string-match input-exclude f)))
-   (eshell-extended-glob
-    (concat (file-name-as-directory base-dir) input-pattern))))
+  (when input-pattern
+    (seq-filter
+     (lambda (f)
+       (not (string-match input-exclude f)))
+     (let* ((glob (concat (file-name-as-directory base-dir) input-pattern))
+            (result (eshell-extended-glob glob)))
+       (if (and (stringp result)
+                (string= result glob))
+           (signal
+            'blorg-error-config
+            (format "no matches for input-pattern `%s` in route `%s`" input-pattern route-name))
+         result)))))
 
 (defun blorg--slugify (s)
   "Make slug of S."
