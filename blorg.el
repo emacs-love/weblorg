@@ -447,6 +447,20 @@ It returns a list in the following format:
 #+END_SRC"
   (mapcar (lambda(p) `(("post" . ,p))) posts))
 
+(defun blorg-input-aggregate-all-desc (posts)
+  "Aggregate all POSTS within a single collection in decreasing order.
+
+This aggregation function generate a single collection for all
+the input files.  It is useful for index pages, RSS pages, etc.
+
+Notice the results are sorted on a descending order comparing the
+value of the date file tag.  Posts without a date will be shown
+last."
+  `((("posts" . ,(sort posts (lambda(a b)
+                               (not (time-less-p
+                                     (blorg--get a "date" 0)
+                                     (blorg--get b "date" 0)))))))))
+
 (defun blorg-input-aggregate-all (posts)
   "Aggregate all POSTS within a single collection.
 
