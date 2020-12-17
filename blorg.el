@@ -363,22 +363,7 @@ Parameters in ~OPTIONS~:
 
 (defun blorg-export-template (route)
   "Export a single ROUTE of a site with files to be templatized."
-  ;; Install link handlers
-  (let ((site (gethash :site route)))
-    (org-link-set-parameters
-     "url_for"
-     :export (lambda(path desc _backend)
-               (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
-    (templatel-env-add-filter
-     (gethash :template-env route)
-     "url_for"
-     (lambda(route-name &optional vars)
-       (blorg--url-for-v route-name vars site)))
-    (templatel-env-add-filter
-     (gethash :template-env route)
-     "strftime"
-     (lambda(time format)
-       (format-time-string format time))))
+  (blorg--route-install-template-filters route)
   ;; Collect -> Aggregate -> Template -> Write
   (let ((input-source (gethash :input-source route)))
     (blorg--export-template
@@ -651,6 +636,29 @@ default templates."
        ;; we found it
        ((null (file-attribute-type attrs))
         path)))))
+
+(defun blorg--route-install-template-filters (route)
+  "Install template filters in the template enviroment of a ROUTE.
+
+This function also installs an Org-Mode link handler `url_for`
+that is accessible with the same syntax as the template filter."
+  (let ((site (gethash :site route)))
+    ;; Install link handlers
+    (org-link-set-parameters
+     "url_for"
+     :export (lambda(path desc _backend)
+               (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
+    (templatel-env-add-filter
+     (gethash :template-env route)
+     "url_for"
+     (lambda(route-name &optional vars)
+       (blorg--url-for-v route-name vars site)))
+    ;; time formatting
+    (templatel-env-add-filter
+     (gethash :template-env route)
+     "strftime"
+     (lambda(time format)
+       (format-time-string format time)))))
 
 (defun blorg--route-importfn (route)
   "Build the import function for ROUTE.
