@@ -645,6 +645,10 @@ that is accessible with the same syntax as the template filter."
   (let ((site (gethash :site route)))
     ;; Install link handlers
     (org-link-set-parameters
+     "anchor"
+     :export (lambda(path desc _backend)
+               (format "<a href=\"#%s\">%s</a>" path desc)))
+    (org-link-set-parameters
      "url_for"
      :export (lambda(path desc _backend)
                (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
@@ -870,11 +874,6 @@ expression (not a glob)."
    "%s INFO %s"
    (format-time-string "%Y-%m-%d %H:%M:%S")
    (apply #'format (cons msg vars))))
-
-(org-link-set-parameters
- "anchor"
- :export (lambda(path desc _backend)
-           (format "<a href=\"#%s\">%s</a>" path desc)))
 
 (provide 'blorg)
 ;;; blorg.el ends here
