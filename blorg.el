@@ -642,7 +642,8 @@ default templates."
 
 This function also installs an Org-Mode link handler `url_for`
 that is accessible with the same syntax as the template filter."
-  (let ((site (gethash :site route)))
+  (let ((site (gethash :site route))
+        (env (gethash :template-env route)))
     ;; Install link handlers
     (org-link-set-parameters
      "anchor"
@@ -653,16 +654,18 @@ that is accessible with the same syntax as the template filter."
      :export (lambda(path desc _backend)
                (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
     (templatel-env-add-filter
-     (gethash :template-env route)
-     "url_for"
+     env "url_for"
      (lambda(route-name &optional vars)
        (blorg--url-for-v route-name vars site)))
+    ;; Usage: {{ len(listp) }} or {{ listp | len }}
+    (templatel-env-add-filter env "len" #'length)
+    ;; Usage {{ maybe_nil | default("Stuff") }} to show "Stuff" in
+    ;; case `maybe_nil` actually contains `nil'
+    (templatel-env-add-filter
+     env "default" (lambda(value default) (or value default)))
     ;; time formatting
     (templatel-env-add-filter
-     (gethash :template-env route)
-     "strftime"
-     (lambda(time format)
-       (format-time-string format time)))))
+     env "strftime" (lambda(time format) (format-time-string format time)))))
 
 (defun blorg--route-importfn (route)
   "Build the import function for ROUTE.
