@@ -258,7 +258,7 @@ Parameters in ~OPTIONS~:
     (puthash :input-parser (blorg--get opt :input-parser #'blorg--parse-org-file) route)
     (puthash :input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-each) route)
     (puthash :output (blorg--get opt :output url) route)
-    (puthash :export (blorg--get opt :export #'blorg-export-template) route)
+    (puthash :export (blorg--get opt :export #'blorg-export-templates) route)
     (puthash :template (blorg--get opt :template nil) route)
     (puthash :template-vars (blorg--get opt :template-vars nil) route)
     (puthash :template-dirs template-dirs route)
@@ -361,12 +361,12 @@ Parameters in ~OPTIONS~:
     (file-missing
      (error "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
 
-(defun blorg-export-template (route)
+(defun blorg-export-templates (route)
   "Export a single ROUTE of a site with files to be templatized."
   (blorg--route-install-template-filters route)
   ;; Collect -> Aggregate -> Template -> Write
   (let ((input-source (gethash :input-source route)))
-    (blorg--export-template
+    (blorg--export-templates
      route
      (if (null input-source)
          (blorg--route-collect-and-aggregate route)
@@ -723,7 +723,7 @@ are mainly two good places for calling this function:
   "Pick some data from ROUTE to forward rendering templates."
   `(("route" . (("name" . ,(gethash :name route))))))
 
-(defun blorg--export-template (route collections)
+(defun blorg--export-templates (route collections)
   "Walk through COLLECTIONS & render a template for each item on it.
 
 The settings for generating the template, like output file name,
