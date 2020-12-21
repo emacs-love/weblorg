@@ -24,10 +24,10 @@
 
 (require 'ert)
 (require 'cl-lib)
-(require 'blorg)
+(require 'weblorg)
 
-(ert-deftest blorg--collect-n-aggr ()
-  (blorg-route
+(ert-deftest weblorg--collect-n-aggr ()
+  (weblorg-route
    :base-dir (expand-file-name "t/fixtures/test1/" default-directory)
    :name "route"
    :input-pattern "src/*.org"
@@ -36,52 +36,52 @@
    :url "/{{ slug }}.html")
 
   ;; When the collection and aggregation happen
-  (let* ((route (blorg--site-route (blorg--site-get) "route"))
-         (collection (blorg--route-collect-and-aggregate route))
+  (let* ((route (weblorg--site-route (weblorg--site-get) "route"))
+         (collection (weblorg--route-collect-and-aggregate route))
          (posts (mapcar #'cdar collection)))
     ;; we've got two posts there so far
     (should (equal (length collection) 2))
 
     ;; notice the list of files will be sorted
-    (should (equal (mapcar (lambda(p) (blorg--get-cdr p "slug")) posts)
+    (should (equal (mapcar (lambda(p) (weblorg--get-cdr p "slug")) posts)
                    (list "a-draft-post" "a-simple-post")))
     ;; also compare dates read and parsed from org files
     (should (equal (mapcar (lambda(p)
                              (format-time-string
                               "%Y-%m-%d"
-                              (blorg--get-cdr p "date")))
+                              (weblorg--get-cdr p "date")))
                            posts)
                    (list "2020-09-10" "2020-09-05"))))
 
   ;; reset the global to its initial state
-  (clrhash blorg--sites))
+  (clrhash weblorg--sites))
 
-(ert-deftest blorg--resolve-link ()
+(ert-deftest weblorg--resolve-link ()
   ;; An implicit site gets created by this route that doesn't have a
   ;; site parameter
-  (blorg-route
+  (weblorg-route
    :name "docs"
    :input-pattern "*.org"
    :input-exclude "index.org$"
    :template "post.html"
    :url "/documentation/{{ slug }}-{{ stuff }}.html"
-   :site (blorg-site :base-url "https://example.com"))
+   :site (weblorg-site :base-url "https://example.com"))
 
   ;; When an URL for a given route is requested, then it should use
   ;; the `url' field of the route to interpolate the variables
   (should
-   (equal (blorg--url-for "docs,slug=overview,stuff=10" (blorg-site :base-url "https://example.com"))
+   (equal (weblorg--url-for "docs,slug=overview,stuff=10" (weblorg-site :base-url "https://example.com"))
           "https://example.com/documentation/overview-10.html"))
 
   ;; reset the global to its initial state
-  (clrhash blorg--sites))
+  (clrhash weblorg--sites))
 
 ;; Make sure we can register routes in a site and then retrieve them
 ;; later.
-(ert-deftest blorg--site-route--add-and-retrieve ()
+(ert-deftest weblorg--site-route--add-and-retrieve ()
   ;; An implicit site gets created by this route that doesn't have a
   ;; site parameter
-  (blorg-route
+  (weblorg-route
    :name "docs"
    :input-pattern ".*\\.org$"
    :input-exclude "index.org$"
@@ -90,8 +90,8 @@
 
   ;; The site instance is being explicitly added to another site, so
   ;; this new route should not impact the previously defined one
-  (blorg-route
-   :site (blorg-site :base-url "https://example.com")
+  (weblorg-route
+   :site (weblorg-site :base-url "https://example.com")
    :name "docs"
    :base-dir "/tmp/site"
    :theme "stuff"
@@ -100,16 +100,16 @@
    :template "docs.html"
    :url "docs/{{ slug }}.html")
 
-  (let* ((site (blorg--site-get))
-         (route (blorg--site-route site "docs")))
+  (let* ((site (weblorg--site-get))
+         (route (weblorg--site-route site "docs")))
     (should (equal (gethash :name route) "docs"))
     (should (equal (gethash :input-pattern route) ".*\\.org$"))
     (should (equal (gethash :template route) "post.html"))
     (should (equal (gethash :url route) "/{{ slug }}.html"))
     (should (equal (gethash :input-exclude route) "index.org$")))
 
-  (let* ((site (blorg--site-get "https://example.com"))
-         (route (blorg--site-route site "docs")))
+  (let* ((site (weblorg--site-get "https://example.com"))
+         (route (weblorg--site-route site "docs")))
     (should (equal (gethash :name route) "docs"))
     (should (equal (gethash :input-pattern route) "docs/.*\\.org$"))
     (should (equal (gethash :template route) "docs.html"))
@@ -117,24 +117,24 @@
     (should (equal (gethash :input-exclude route) "index.org$"))
     (should (equal (gethash :theme route) "stuff"))
     (should (equal (gethash :template-dirs route)
-                   (list "/tmp/site/templates" (blorg--theme-dir "stuff" "templates")))))
+                   (list "/tmp/site/templates" (weblorg--theme-dir "stuff" "templates")))))
 
   ;; reset the global to its initial state
-  (clrhash blorg--sites))
+  (clrhash weblorg--sites))
 
 ;; Make sure that registering a new site works and that data
 ;; associated with it can be retrieved
-(ert-deftest blorg--site-get--success ()
-  (blorg-site :base-url "http://localhost:9000" :theme "stuff")
-  (let ((the-same-blorg (blorg--site-get "http://localhost:9000")))
-    (should (equal (gethash :base-url the-same-blorg) "http://localhost:9000"))
-    (should (equal (gethash :theme the-same-blorg) "stuff")))
+(ert-deftest weblorg--site-get--success ()
+  (weblorg-site :base-url "http://localhost:9000" :theme "stuff")
+  (let ((the-same-weblorg (weblorg--site-get "http://localhost:9000")))
+    (should (equal (gethash :base-url the-same-weblorg) "http://localhost:9000"))
+    (should (equal (gethash :theme the-same-weblorg) "stuff")))
   ;; reset the global to its initial state
-  (clrhash blorg--sites))
+  (clrhash weblorg--sites))
 
 ;; Make sure this lil helper works
-(ert-deftest blorg--get--with-and-without-default ()
-  (should (equal (blorg--get '((:base-dir "expected")) :base-dir "wrong") "expected"))
-  (should (equal (blorg--get '() :base-dir "expected") "expected")))
+(ert-deftest weblorg--get--with-and-without-default ()
+  (should (equal (weblorg--get '((:base-dir "expected")) :base-dir "wrong") "expected"))
+  (should (equal (weblorg--get '() :base-dir "expected") "expected")))
 
-;;; blorg-tests.el ends here
+;;; weblorg-tests.el ends here

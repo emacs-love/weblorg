@@ -1,7 +1,7 @@
-;;; blorg.el --- Static Site Generator for org-mode; -*- lexical-binding: t -*-
+;;; weblorg.el --- Static Site Generator for org-mode; -*- lexical-binding: t -*-
 ;;
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
-;; URL: https://clarete.li/blorg
+;; URL: https://emacs.love/weblorg
 ;; Version: 0.1.0
 ;; Package-Requires: ((templatel "0.1.3") (emacs "26.1"))
 ;;
@@ -36,28 +36,28 @@
 ;;
 ;; 1. Use-case: transform a list of Org-Mode files in HTML:
 ;;
-;;    (blorg-route
+;;    (weblorg-route
 ;;     :input-pattern "*.org"
 ;;     :template "post.html"
 ;;     :url "/{{ slug }}.html")
-;;    (blorg-export)
+;;    (weblorg-export)
 ;;
 ;; 2. Use-case: Link documents from different routes
 ;;
 ;;    a. publish.el looks like this:
 ;;
-;;       (blorg-route
+;;       (weblorg-route
 ;;        :name "docs"
 ;;        :input-pattern "*.org"
 ;;        :input-exclude "index.org$"
 ;;        :template "post.html"
 ;;        :url "/{{ slug }}.html")
-;;       (blorg-route
+;;       (weblorg-route
 ;;        :name "index"
 ;;        :input-pattern "index.org"
 ;;        :template "index.html"
 ;;        :url "/index.html")
-;;       (blorg-export)
+;;       (weblorg-export)
 ;;
 ;;    b. a-post.org looks something like this:
 ;;
@@ -74,10 +74,10 @@
 ;;       <hr>
 ;;       <a href="{{ url_for("index") }}">Home</a>
 ;;
-;;    Behind the scenes, there's a global variable `blorg--sites' that
-;;    contains a hash-table with all the blorg-sites, indexed by the
-;;    `:base-url' parameter.  A default blorg site instance is created
-;;    if `blorg-route' doesn't receive an explicit `:site' parameter.
+;;    Behind the scenes, there's a global variable `weblorg--sites' that
+;;    contains a hash-table with all the weblorg-sites, indexed by the
+;;    `:base-url' parameter.  A default weblorg site instance is created
+;;    if `weblorg-route' doesn't receive an explicit `:site' parameter.
 ;;
 ;;; Code:
 
@@ -87,45 +87,45 @@
 (require 'em-glob)
 (require 'templatel)
 
-(define-error 'blorg-error-config "Configuration Error" 'blorg-error-user)
+(define-error 'weblorg-error-config "Configuration Error" 'weblorg-error-user)
 
 
-(defvar blorg-module-dir (file-name-directory load-file-name)
-  "Directory that points to the directory of blorgs source code.")
+(defvar weblorg-module-dir (file-name-directory load-file-name)
+  "Directory that points to the directory of weblorgs source code.")
 
-(defvar blorg-version "0.1.0"
-  "The blorg's library version.")
+(defvar weblorg-version "0.1.0"
+  "The weblorg's library version.")
 
-(defvar blorg-meta
-  `(("meta" ("generator" . ,(format "blorg %s (https://github.com/clarete/blorg)" blorg-version))))
+(defvar weblorg-meta
+  `(("meta" ("generator" . ,(format "weblorg %s (https://github.com/clarete/weblorg)" weblorg-version))))
   "Collection of variables that always get added to templates.")
 
-(defvar blorg-default-url "http://localhost:8000"
-  "Default URL for a blorg.")
+(defvar weblorg-default-url "http://localhost:8000"
+  "Default URL for a weblorg.")
 
-(defconst blorg--sites (make-hash-table :test 'equal)
+(defconst weblorg--sites (make-hash-table :test 'equal)
   "Hashtable with site metadata indexed by their URL.")
 
-(defmacro blorg--prepend (seq item)
+(defmacro weblorg--prepend (seq item)
   "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
 
-(defun blorg-site (&rest options)
-  "Create a new blorg site.
+(defun weblorg-site (&rest options)
+  "Create a new weblorg site.
 
 OPTIONS can contain the following parameters:
 
  * ~:base-url~: Website's base URL.  Can be protocol followed by
    domain and optionally by path.  Notice that each site is
-   registered within a global hash table `blorg--sites'.  If one
+   registered within a global hash table `weblorg--sites'.  If one
    tries to register two sites with the same ~:base-url~, an
    error will be raised."
   (let* ((opt (seq-partition options 2))
-         (base-url (blorg--get opt :base-url blorg-default-url))
-         (theme (blorg--get opt :theme "default"))
-         (site (blorg--site-get base-url)))
+         (base-url (weblorg--get opt :base-url weblorg-default-url))
+         (theme (weblorg--get opt :theme "default"))
+         (site (weblorg--site-get base-url)))
     (if (null site)
-        ;; Shape of the blorg object is the following:
+        ;; Shape of the weblorg object is the following:
         ;;
         ;; 0. Hashtable where the routes are saved.  The key comes
         ;;    from the :name of the route, and the value is all the
@@ -134,11 +134,11 @@ OPTIONS can contain the following parameters:
           (puthash :base-url base-url new-site)
           (puthash :theme theme new-site)
           (puthash :routes (make-hash-table :test 'equal) new-site)
-          (puthash base-url new-site blorg--sites))
+          (puthash base-url new-site weblorg--sites))
       ;; Already exists
       site)))
 
-(defun blorg-route (&rest options)
+(defun weblorg-route (&rest options)
   "Add a new route defined with parameters within OPTIONS.
 
 A route is an abstraction to manage how Org-Mode files are found
@@ -152,10 +152,10 @@ Examples:
     used to build summary pages
 
     #+BEGIN_SRC emacs-lisp
-    (blorg-route
+    (weblorg-route
      :name \"index\"
      :input-pattern \"posts/*org\"
-     :input-aggregate #'blorg-input-aggregate-all
+     :input-aggregate #'weblorg-input-aggregate-all
      :template \"blog.html\"
      :output \"output/index.html\"
      :url \"/\")
@@ -167,7 +167,7 @@ Examples:
     directories in the path that don't exist
 
     #+BEGIN_SRC emacs-lisp
-    (blorg-route
+    (weblorg-route
      :name \"pages\"
      :input-pattern \"pages/*.org\"
      :template \"page.html\"
@@ -214,7 +214,7 @@ Parameters in ~OPTIONS~:
    the template, not its path (neither relative or absolute).
    The value provided here will be searched within 1. the
    directory *template* within `:base-dir' 2. the directory
-   *templates* within blorg's source code.
+   *templates* within weblorg's source code.
 
  * `:template-vars': Association list of extra variables to be
    passed down to the template.
@@ -222,8 +222,8 @@ Parameters in ~OPTIONS~:
  * `:base-dir': Base path for `:input-pattern' and `:output'; If
     not provided, will default to the `:base-dir' of the website;
 
- * `:site': Instance of a blorg site created by the function
-   [[anchor:symbol-blorg-site][blorg-site]].  If not provided, it
+ * `:site': Instance of a weblorg site created by the function
+   [[anchor:symbol-weblorg-site][weblorg-site]].  If not provided, it
    will use a default value.  The most valuable information a
    site carries is its base URL, and that's why it's relevant for
    routes.  That way one can have multiple sites in one single
@@ -231,43 +231,43 @@ Parameters in ~OPTIONS~:
   (let* ((opt (seq-partition options 2))
          (route (make-hash-table))
          ;; all parameters the entry point takes
-         (name (blorg--get opt :name))
+         (name (weblorg--get opt :name))
          ;; It's also the default for :output
-         (url (blorg--get opt :url))
-         ;; Not using the `default' parameter in `blorg--get' because
+         (url (weblorg--get opt :url))
+         ;; Not using the `default' parameter in `weblorg--get' because
          ;; it doesn't give the short circiut given by `or'.
-         (site (or (blorg--get opt :site)
-                   (blorg-site :base-url blorg-default-url)))
+         (site (or (weblorg--get opt :site)
+                   (weblorg-site :base-url weblorg-default-url)))
          ;; Prefix path for most file operations within a route
-         (base-dir (blorg--get opt :base-dir default-directory))
+         (base-dir (weblorg--get opt :base-dir default-directory))
          ;; The default theme of the site is the defacto "default"
-         (theme (blorg--get opt :theme (gethash :theme site)))
+         (theme (weblorg--get opt :theme (gethash :theme site)))
          ;; Notice the templates directory close to `base-dir` has
          ;; higher precedence over the templates directory within
-         ;; blorg's source code.
+         ;; weblorg's source code.
          (template-dirs (list (expand-file-name "templates" base-dir)
-                              (blorg--theme-dir theme "templates"))))
+                              (weblorg--theme-dir theme "templates"))))
     (puthash :name name route)
     (puthash :site site route)
     (puthash :url url route)
     (puthash :base-dir base-dir route)
-    (puthash :input-source (blorg--get opt :input-source) route)
-    (puthash :input-pattern (blorg--get opt :input-pattern) route)
-    (puthash :input-exclude (blorg--get opt :input-exclude "^$") route)
-    (puthash :input-filter (blorg--get opt :input-filter) route)
-    (puthash :input-parser (blorg--get opt :input-parser #'blorg--parse-org-file) route)
-    (puthash :input-aggregate (blorg--get opt :input-aggregate #'blorg-input-aggregate-each) route)
-    (puthash :output (blorg--get opt :output url) route)
-    (puthash :export (blorg--get opt :export #'blorg-export-templates) route)
-    (puthash :template (blorg--get opt :template nil) route)
-    (puthash :template-vars (blorg--get opt :template-vars nil) route)
+    (puthash :input-source (weblorg--get opt :input-source) route)
+    (puthash :input-pattern (weblorg--get opt :input-pattern) route)
+    (puthash :input-exclude (weblorg--get opt :input-exclude "^$") route)
+    (puthash :input-filter (weblorg--get opt :input-filter) route)
+    (puthash :input-parser (weblorg--get opt :input-parser #'weblorg--parse-org-file) route)
+    (puthash :input-aggregate (weblorg--get opt :input-aggregate #'weblorg-input-aggregate-each) route)
+    (puthash :output (weblorg--get opt :output url) route)
+    (puthash :export (weblorg--get opt :export #'weblorg-export-templates) route)
+    (puthash :template (weblorg--get opt :template nil) route)
+    (puthash :template-vars (weblorg--get opt :template-vars nil) route)
     (puthash :template-dirs template-dirs route)
     (puthash :theme theme route)
-    (puthash :template-env (templatel-env-new :importfn (blorg--route-importfn route)) route)
+    (puthash :template-env (templatel-env-new :importfn (weblorg--route-importfn route)) route)
     (puthash name route (gethash :routes site))))
 
-(defun blorg-copy-static (&rest options)
-  "Utility and Route for static assets of a blorg site.
+(defun weblorg-copy-static (&rest options)
+  "Utility and Route for static assets of a weblorg site.
 
 Use this route if you want either of these two things:
 
@@ -283,7 +283,7 @@ Examples:
     `url_for' to find the route ~\"static\"~.
 
     #+BEGIN_SRC emacs-lisp
-    (blorg-copy-static
+    (weblorg-copy-static
      :output \"output/static/{{ basename }}\"
      :url \"/static/{{ basename }}\")
     #+END_SRC
@@ -292,14 +292,14 @@ Examples:
     parameter points to a CDN as its Base URL.
 
     #+BEGIN_SRC emacs-lisp
-    (blorg-copy-static
+    (weblorg-copy-static
      :output \"output/public/{{ filename }}\"
      :url \"/public/{{ filename }}\"
-     :site (blorg-site
+     :site (weblorg-site
             :name \"cdn\"
             :base-url \"https://cdn.example.com\"
             :theme \"autodoc\"))
-    (blorg-export)
+    (weblorg-export)
     #+END_SRC
 
 Parameters in ~OPTIONS~:
@@ -312,8 +312,8 @@ Parameters in ~OPTIONS~:
    template string as input and returns the URL of an entry of a
    given entry in this route.
 
- * `:site': Instance of a blorg site created by the function
-   [[anchor:symbol-blorg-site][blorg-site]].  If not provided, it
+ * `:site': Instance of a weblorg site created by the function
+   [[anchor:symbol-weblorg-site][weblorg-site]].  If not provided, it
    will use a default value.  The most valuable information a
    site carries is its base URL, and that's why it's relevant for
    routes.  That way one can have multiple sites in one single
@@ -326,26 +326,26 @@ Parameters in ~OPTIONS~:
    that you need at least one ~\"static\"~ route in your site."
   (let* ((opt (seq-partition options 2))
          (route (make-hash-table))
-         (name (blorg--get opt :name "static"))
-         (url (blorg--get opt :url "/static/{{ file }}"))
-         (base-dir (blorg--get opt :base-dir default-directory))
-         (site (or (blorg--get opt :site)
-                   (blorg-site :base-url blorg-default-url))))
+         (name (weblorg--get opt :name "static"))
+         (url (weblorg--get opt :url "/static/{{ file }}"))
+         (base-dir (weblorg--get opt :base-dir default-directory))
+         (site (or (weblorg--get opt :site)
+                   (weblorg-site :base-url weblorg-default-url))))
     (puthash :name name route)
     (puthash :site site route)
     (puthash :url url route)
     (puthash :base-dir base-dir route)
     (puthash :theme-dir "static/" route)
-    (puthash :input-pattern (blorg--get opt :input-pattern "**/*") route)
-    (puthash :input-exclude (blorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
-    (puthash :input-filter (blorg--get opt :input-filter) route)
+    (puthash :input-pattern (weblorg--get opt :input-pattern "**/*") route)
+    (puthash :input-exclude (weblorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
+    (puthash :input-filter (weblorg--get opt :input-filter) route)
     (puthash :input-parser #'identity route)
     (puthash :input-aggregate #'identity route)
-    (puthash :output (blorg--get opt :output "output/static/{{ file }}") route)
-    (puthash :export (blorg--get opt :export #'blorg-export-assets) route)
+    (puthash :output (weblorg--get opt :output "output/static/{{ file }}") route)
+    (puthash :export (weblorg--get opt :export #'weblorg-export-assets) route)
     (puthash name route (gethash :routes site))))
 
-(defun blorg-export ()
+(defun weblorg-export ()
   "Export all sites."
   (condition-case exc
       ;; Iterate over each site available in our global registry
@@ -353,35 +353,35 @@ Parameters in ~OPTIONS~:
                  ;; Iterate over each route of a given site
                  (maphash (lambda(_ route) (funcall (gethash :export route) route))
                           (gethash :routes site)))
-               blorg--sites)
+               weblorg--sites)
     (templatel-error
      (error "Template Error: %s" (cdr exc)))
-    (blorg-error-config
+    (weblorg-error-config
      (error "Configuration error: %s" (cdr exc)))
     (file-missing
      (error "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
 
-(defun blorg-export-templates (route)
+(defun weblorg-export-templates (route)
   "Export a single ROUTE of a site with files to be templatized."
-  (blorg--route-install-template-filters route)
+  (weblorg--route-install-template-filters route)
   ;; Collect -> Aggregate -> Template -> Write
   (let ((input-source (gethash :input-source route)))
-    (blorg--export-templates
+    (weblorg--export-templates
      route
      (if (null input-source)
-         (blorg--route-collect-and-aggregate route)
+         (weblorg--route-collect-and-aggregate route)
        input-source))))
 
-(defun blorg-export-assets (route)
+(defun weblorg-export-assets (route)
   "Export static assets ROUTE."
   (dolist (source-file
-           (blorg--find-source-files
+           (weblorg--find-source-files
             (gethash :name route)
-            (blorg--theme-dir-from-route route)
+            (weblorg--theme-dir-from-route route)
             (gethash :input-pattern route)
             (gethash :input-exclude route)))
     (let* (;; path to the theme directory the route refers to
-           (base-path (blorg--theme-dir-from-route route))
+           (base-path (weblorg--theme-dir-from-route route))
            ;; file path without the base path above
            (file (replace-regexp-in-string (regexp-quote base-path) "" source-file t t))
            ;; rendered destination
@@ -392,7 +392,7 @@ Parameters in ~OPTIONS~:
            ;; Render the full path
            (dest-file
             (expand-file-name rendered-output (gethash :base-dir route))))
-      (blorg--log-info  "copying: %s -> %s" source-file dest-file)
+      (weblorg--log-info  "copying: %s -> %s" source-file dest-file)
       (mkdir (file-name-directory dest-file) t)
       (condition-case exc
           (copy-file source-file dest-file t)
@@ -404,7 +404,7 @@ Parameters in ~OPTIONS~:
 
 ;; ---- Input Filter functions ----
 
-(defun blorg-input-filter-drafts (post)
+(defun weblorg-input-filter-drafts (post)
   "Exclude POST from input list if it is a draft.
 
 We use the DRAFT file property to define if an Org-Mode file is a
@@ -415,10 +415,10 @@ draft or not."
 
 ;; ---- Aggregation functions ----
 
-(defun blorg-input-aggregate-each (posts)
+(defun weblorg-input-aggregate-each (posts)
   "Aggregate each post within POSTS as a single collection.
 
-This is the default aggregation function used by `blorg-route'
+This is the default aggregation function used by `weblorg-route'
 and generate one collection per input file.
 
 It returns a list in the following format:
@@ -434,13 +434,13 @@ It returns a list in the following format:
 #+END_SRC"
   (mapcar (lambda(p) `(("post" . ,p))) posts))
 
-(defun blorg--compare-posts-desc (a b)
+(defun weblorg--compare-posts-desc (a b)
   "Compare post A and B by their date attribute."
   (not (time-less-p
-        (blorg--get a "date" 0)
-        (blorg--get b "date" 0))))
+        (weblorg--get a "date" 0)
+        (weblorg--get b "date" 0))))
 
-(defun blorg-input-aggregate-all (posts &optional sorting-fn)
+(defun weblorg-input-aggregate-all (posts &optional sorting-fn)
   "Aggregate all POSTS within a single collection.
 
 This aggregation function generate a single collection for all
@@ -450,7 +450,7 @@ If SORTING-FN is nil, posts are kept in the order they're found,
 otherwise SORTING-FN is applied to the posts."
   `((("posts" . ,(if sorting-fn (sort posts sorting-fn) posts)))))
 
-(defun blorg-input-aggregate-all-desc (posts)
+(defun weblorg-input-aggregate-all-desc (posts)
   "Aggregate all POSTS within a single collection in decreasing order.
 
 This aggregation function generate a single collection for all
@@ -459,9 +459,9 @@ the input files.  It is useful for index pages, RSS pages, etc.
 Notice the results are sorted on a descending order comparing the
 value of the date file tag.  Posts without a date will be shown
 last."
-  (blorg-input-aggregate-all posts #'blorg--compare-posts-desc))
+  (weblorg-input-aggregate-all posts #'weblorg--compare-posts-desc))
 
-(defun blorg-input-aggregate-by-category (posts &optional sorting-fn)
+(defun weblorg-input-aggregate-by-category (posts &optional sorting-fn)
   "Aggregate POSTS by category.
 
 This function reads the FILETAGS file property and put the file
@@ -485,7 +485,7 @@ the posts."
     ;; Make a list of list off the hash we just built
     (maphash
      (lambda(k v)
-       (blorg--prepend
+       (weblorg--prepend
         output
         `(("category" . (("name" . ,k)
                          ("posts" . ,(if sorting-fn (sort v sorting-fn) v)))))))
@@ -496,7 +496,7 @@ the posts."
                        (funcall sorting-fn (cadr (caddar a)) (cadr (caddar b)))))
       output)))
 
-(defun blorg-input-aggregate-by-category-desc (posts)
+(defun weblorg-input-aggregate-by-category-desc (posts)
   "Aggregate POSTS by category.
 
 This function reads the FILETAGS file property and put the file
@@ -505,13 +505,13 @@ within each tag found there.
 Notice the results are sorted on a descending order comparing the
 value of the date file tag.  Posts without a date will be shown
 last."
-  (blorg-input-aggregate-by-category posts #'blorg--compare-posts-desc))
+  (weblorg-input-aggregate-by-category posts #'weblorg--compare-posts-desc))
 
 
 
 ;; ---- Input Source: autodoc ----
 
-(defun blorg-input-source-autodoc (pattern)
+(defun weblorg-input-source-autodoc (pattern)
   "Pull metadata from Emacs-Lisp symbols that match PATTERN."
   `((("symbols" . ,(mapcar
                     (lambda(sym)
@@ -520,28 +520,28 @@ last."
                        (cond ((functionp sym)
                               `(("type" . "function")
                                 ("name" . ,sym)
-                                ("docs" . ,(blorg--input-source-autodoc-documentation sym))
+                                ("docs" . ,(weblorg--input-source-autodoc-documentation sym))
                                 ("args" . ,(help-function-arglist sym t))))
                              (t
                               `(("type" . "variable")
                                 ("name" . ,sym))))))
                     (apropos-internal pattern))))))
 
-(defun blorg-input-source-autodoc-sections (sections)
-  "Run `blorg-input-source-autodoc' for various SECTIONS."
+(defun weblorg-input-source-autodoc-sections (sections)
+  "Run `weblorg-input-source-autodoc' for various SECTIONS."
   `((("sections" . ,(mapcar
                      (lambda(section)
                        (cons "section"
                              `(("name" . ,(car section))
-                               ("slug" . ,(blorg--slugify (car section)))
-                               ,@(car (blorg-input-source-autodoc (cdr section))))))
+                               ("slug" . ,(weblorg--slugify (car section)))
+                               ,@(car (weblorg-input-source-autodoc (cdr section))))))
                      sections)))))
 
-(defun blorg--input-source-autodoc-documentation (sym)
+(defun weblorg--input-source-autodoc-documentation (sym)
   "Generate HTML documentation of the docstring of a symbol SYM."
   (let* ((doc (documentation sym))
          (doc (replace-regexp-in-string "\n\n(fn[^)]*)$" "" doc)))
-    (cdr (assoc "html" (blorg--parse-org doc)))))
+    (cdr (assoc "html" (weblorg--parse-org doc)))))
 
 
 
@@ -549,21 +549,21 @@ last."
 
 ;; Site object
 
-(defun blorg--site-get (&optional base-url)
-  "Retrieve a site with key BASE-URL from `blorg--sites'."
-  (gethash (or base-url blorg-default-url) blorg--sites))
+(defun weblorg--site-get (&optional base-url)
+  "Retrieve a site with key BASE-URL from `weblorg--sites'."
+  (gethash (or base-url weblorg-default-url) weblorg--sites))
 
-(defun blorg--site-route (site route-name)
+(defun weblorg--site-route (site route-name)
   "Retrieve ROUTE-NAME from SITE."
   (gethash route-name (gethash :routes site)))
 
-(defun blorg--site-route-add (site route-name route-params)
+(defun weblorg--site-route-add (site route-name route-params)
   "Add ROUTE-PARAMS under ROUTE-NAME to SITE."
   (puthash route-name route-params (gethash :routes site)))
 
 ;; Crossreference
 
-(defun blorg--url-parse (link)
+(defun weblorg--url-parse (link)
   "Parse LINK components.
 
 The LINK string has the following syntax:
@@ -598,9 +598,9 @@ consumption from templatel."
                    (cdar (templatel--parser-namedparams scanner)))))))
     (cons route vars)))
 
-(defun blorg--url-for-v (route-name vars site)
+(defun weblorg--url-for-v (route-name vars site)
   "Find ROUTE-NAME within SITE and interpolate route url with VARS."
-  (let ((route (blorg--site-route site route-name)))
+  (let ((route (weblorg--site-route site route-name)))
     (if (not (null route))
         (concat (gethash :base-url site)
                 (templatel-render-string
@@ -610,31 +610,31 @@ consumption from templatel."
         (warn "url_for: Can't find route %s" route-name)
         ""))))
 
-(defun blorg--url-for (link &optional site)
+(defun weblorg--url-for (link &optional site)
   "Find route within SITE and interpolate variables found in LINK."
-  (let* ((site (or site (blorg-site :base-url blorg-default-url)))
-         (parsed (blorg--url-parse link)))
-    (blorg--url-for-v (car parsed) (cdr parsed) site)))
+  (let* ((site (or site (weblorg-site :base-url weblorg-default-url)))
+         (parsed (weblorg--url-parse link)))
+    (weblorg--url-for-v (car parsed) (cdr parsed) site)))
 
 ;; Template Resolution
 
-(defun blorg--theme-dir (theme dir)
+(defun weblorg--theme-dir (theme dir)
   "Path for DIR within a THEME.
 
-The blorg ships with a gallery of themes.  This function returns
+The weblorg ships with a gallery of themes.  This function returns
 the absolute path for THEME."
   (expand-file-name
    dir (expand-file-name
         theme (expand-file-name
-               "themes" blorg-module-dir))))
+               "themes" weblorg-module-dir))))
 
-(defun blorg--theme-dir-from-route (route)
+(defun weblorg--theme-dir-from-route (route)
   "Get the path of directory `:theme-dir' of a ROUTE."
-  (blorg--theme-dir
+  (weblorg--theme-dir
    (gethash :theme (gethash :site route))
    (gethash :theme-dir route)))
 
-(defun blorg--template-find (directories name)
+(defun weblorg--template-find (directories name)
   "Find template NAME within DIRECTORIES.
 
 This function implements a search for templates within the
@@ -655,14 +655,14 @@ default templates."
            (attrs (file-attributes path)))
       (cond
        ;; doesn't exist; try next dir
-       ((null attrs) (blorg--template-find (cdr directories) name))
+       ((null attrs) (weblorg--template-find (cdr directories) name))
        ;; is a directory
        ((not (null (file-attribute-type attrs))) nil)
        ;; we found it
        ((null (file-attribute-type attrs))
         path)))))
 
-(defun blorg--route-install-template-filters (route)
+(defun weblorg--route-install-template-filters (route)
   "Install template filters in the template enviroment of a ROUTE.
 
 This function also installs an Org-Mode link handler `url_for`
@@ -677,11 +677,11 @@ that is accessible with the same syntax as the template filter."
     (org-link-set-parameters
      "url_for"
      :export (lambda(path desc _backend)
-               (format "<a href=\"%s\">%s</a>" (blorg--url-for path site) desc)))
+               (format "<a href=\"%s\">%s</a>" (weblorg--url-for path site) desc)))
     (templatel-env-add-filter
      env "url_for"
      (lambda(route-name &optional vars)
-       (blorg--url-for-v route-name vars site)))
+       (weblorg--url-for-v route-name vars site)))
     ;; Usage: {{ len(listp) }} or {{ listp | len }}
     (templatel-env-add-filter env "len" #'length)
     ;; Usage {{ maybe_nil | default("Stuff") }} to show "Stuff" in
@@ -694,7 +694,7 @@ that is accessible with the same syntax as the template filter."
      env "strftime" (lambda(time format)
                       (when time (format-time-string format time))))))
 
-(defun blorg--route-importfn (route)
+(defun weblorg--route-importfn (route)
   "Build the import function for ROUTE.
 
 The extension system provided by templatel takes a function which
@@ -712,11 +712,11 @@ are mainly two good places for calling this function:
     (templatel-env-add-template
      en name
      (templatel-new-from-file
-      (blorg--template-find (gethash :template-dirs route) name)))))
+      (weblorg--template-find (gethash :template-dirs route) name)))))
 
 ;; Exporting pipeline
 
-(defun blorg--route-collect-and-aggregate (route)
+(defun weblorg--route-collect-and-aggregate (route)
   "Find input files apply templates for a ROUTE."
   (let* ((input-filter (gethash :input-filter route))
          (theme-dir (gethash :theme-dir route))
@@ -726,12 +726,12 @@ are mainly two good places for calling this function:
           (append
            ;; Routes can request scanner to visit the theme directory
            (when theme-dir
-             (blorg--find-source-files
+             (weblorg--find-source-files
               (gethash :name route)
-              (blorg--theme-dir-from-route route)
+              (weblorg--theme-dir-from-route route)
               (gethash :input-pattern route)
               (gethash :input-exclude route)))
-           (blorg--find-source-files
+           (weblorg--find-source-files
             (gethash :name route)
             (gethash :base-dir route)
             (gethash :input-pattern route)
@@ -749,11 +749,11 @@ are mainly two good places for calling this function:
           (funcall (gethash :input-aggregate route) filtered-files)))
     aggregated-data))
 
-(defun blorg--vars-from-route (route)
+(defun weblorg--vars-from-route (route)
   "Pick some data from ROUTE to forward rendering templates."
   `(("route" . (("name" . ,(gethash :name route))))))
 
-(defun blorg--export-templates (route collections)
+(defun weblorg--export-templates (route collections)
   "Walk through COLLECTIONS & render a template for each item on it.
 
 The settings for generating the template, like output file name,
@@ -763,11 +763,11 @@ can be found in the ROUTE."
     ;; Add the route's main template to the environment
     (let ((template (gethash :template route)))
       (if template
-          (funcall (blorg--route-importfn route)
+          (funcall (weblorg--route-importfn route)
                (gethash :template-env route)
                template)
         (signal
-         'blorg-error-config
+         'weblorg-error-config
          (format
           "route `%s` needs a template to render matched files"
           (gethash :name route)))))
@@ -779,9 +779,9 @@ can be found in the ROUTE."
                (gethash :template-env route)
                (gethash :template route)
                (append (gethash :template-vars route)
-                       blorg-meta
+                       weblorg-meta
                        data
-                       (blorg--vars-from-route route))))
+                       (weblorg--vars-from-route route))))
              ;; Render the relative output path
              (rendered-output
               (templatel-render-string
@@ -790,32 +790,32 @@ can be found in the ROUTE."
              ;; Render the full path
              (final-output
               (expand-file-name rendered-output (gethash :base-dir route))))
-        (blorg--log-info "writing: %s" final-output)
+        (weblorg--log-info "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
         (write-region rendered nil rendered-output)))))
 
-(defun blorg--export-site-route (site route)
+(defun weblorg--export-site-route (site route)
   "SITE ROUTE."
   (funcall (gethash :export route) site route))
 
-(defun blorg--parse-org-file (input-path)
+(defun weblorg--parse-org-file (input-path)
   "Parse an Org-Mode file located at INPUT-PATH."
   (let* ((input-data (with-temp-buffer
                        (insert-file-contents input-path)
                        (buffer-string)))
-         (keywords (blorg--parse-org input-data))
+         (keywords (weblorg--parse-org input-data))
          (slug
           ;; First look for `slug` FILETAG, if it's not available, try
           ;; to use the `title` FILETAG. If both fail, use the file
           ;; name.
-          (blorg--get-cdr
+          (weblorg--get-cdr
            keywords "slug"
-           (blorg--get-cdr keywords "title" input-path))))
-    (blorg--prepend keywords (cons "file" input-path))
-    (blorg--prepend keywords (cons "slug" (blorg--slugify slug)))
+           (weblorg--get-cdr keywords "title" input-path))))
+    (weblorg--prepend keywords (cons "file" input-path))
+    (weblorg--prepend keywords (cons "slug" (weblorg--slugify slug)))
     keywords))
 
-(defun blorg--parse-org (input-data)
+(defun weblorg--parse-org (input-data)
   "Parse INPUT-DATA as an Org-Mode file & generate its HTML.
 
 An assoc will be returned with all the file properties collected
@@ -832,9 +832,9 @@ be added ad an entry to the returned assoc."
     (advice-add
      #'org-html-keyword :before
      (lambda(keyword _c _i)
-       (blorg--prepend
+       (weblorg--prepend
         keywords
-        (blorg--parse-org-keyword keyword))))
+        (weblorg--parse-org-keyword keyword))))
     ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
       (insert input-data)
@@ -844,10 +844,10 @@ be added ad an entry to the returned assoc."
     (ad-unadvise 'org-html-keyword)
     ;; Add the generated HTML as a property to the collected keywords
     ;; as well
-    (blorg--prepend keywords (cons "html" html))
+    (weblorg--prepend keywords (cons "html" html))
     keywords))
 
-(defun blorg--parse-org-keyword (keyword)
+(defun weblorg--parse-org-keyword (keyword)
   "Parse a single Org-Mode document KEYWORD.
 
 If it's a date field, it will return a timestamp tuple instead of
@@ -863,7 +863,7 @@ template filter to display a nicely formatted string."
          (apply #'encode-time (org-parse-time-string value))
        value))))
 
-(defun blorg--find-source-files (route-name base-dir input-pattern input-exclude)
+(defun weblorg--find-source-files (route-name base-dir input-pattern input-exclude)
   "Find source files with parameters extracted from a route ROUTE-NAME.
 
 The BASE-DIR is a path where the search will start.  The
@@ -880,30 +880,30 @@ expression (not a glob)."
        (if (and (stringp result)
                 (string= result glob))
            (signal
-            'blorg-error-config
+            'weblorg-error-config
             (format "no matches for input-pattern `%s` in route `%s`" input-pattern route-name))
          result)))))
 
-(defun blorg--slugify (s)
+(defun weblorg--slugify (s)
   "Make slug of S."
   (downcase
    (replace-regexp-in-string
     "\s" "-" (file-name-sans-extension (file-name-nondirectory s)))))
 
-(defun blorg--get (seq item &optional default)
+(defun weblorg--get (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."
   (or (cadr (assoc item seq)) default))
 
-(defun blorg--get-cdr (seq item &optional default)
+(defun weblorg--get-cdr (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."
   (or (cdr (assoc item seq)) default))
 
-(defun blorg--log-info (msg &rest vars)
+(defun weblorg--log-info (msg &rest vars)
   "Report MSG (formatted with VARS) to log level info."
   (message
    "%s INFO %s"
    (format-time-string "%Y-%m-%d %H:%M:%S")
    (apply #'format (cons msg vars))))
 
-(provide 'blorg)
-;;; blorg.el ends here
+(provide 'weblorg)
+;;; weblorg.el ends here

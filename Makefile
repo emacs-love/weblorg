@@ -1,11 +1,11 @@
 .POSIX:
 EMACS ?= cask exec emacs
 
-SRC = blorg.el
-TESTSRC = t/blorg-tests.el
+SRC = weblorg.el
+TESTSRC = t/weblorg-tests.el
 
-OBJ = blorg.elc
-TESTOBJ = t/blorg-tests.elc
+OBJ = weblorg.elc
+TESTOBJ = t/weblorg-tests.elc
 ALLOBJS = $(OBJ) $(TESTOBJ)
 
 # NOTE: This is meant to accelerate local development.  Although
