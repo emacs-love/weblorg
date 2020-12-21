@@ -1,11 +1,11 @@
-;;; publish.el --- Generate Blorg page
+;;; publish.el --- Generate Weblorg page
 ;;; Commentary:
 ;;
-;; Generate static website for blorg
+;; Generate static website for weblorg
 ;;
 ;;; Code:
 ;;
-;; Guarantee the freshest version of the blorg
+;; Guarantee the freshest version of the weblorg
 (add-to-list 'load-path "../")
 
 ;; Setup package management
@@ -21,26 +21,26 @@
 (use-package htmlize)
 (setq org-html-htmlize-output-type 'css)
 
-(require 'blorg)
+(require 'weblorg)
 
 ;; Defaults to localhost:8000
 (if (string= (getenv "ENV") "prod")
-    (setq blorg-default-url "https://emacs.love/blorg"))
+    (setq weblorg-default-url "https://emacs.love/weblorg"))
 
 ;; Set site wide configuration
-(blorg-site :theme "site")
+(weblorg-site :theme "site")
 
 ;; Generate index
-(blorg-route
+(weblorg-route
  :name "index"
  :input-pattern "./index.org"
  :template "index.html"
  :output "./index.html"
  :url "/")
 
-(blorg-route
+(weblorg-route
  :name "api"
- :input-source (blorg-input-source-autodoc-sections
+ :input-source (weblorg-input-source-autodoc-sections
                 `(("Render template strings" . "^templatel-render")
                   ("Template environments" . "^templatel-env")
                   ("Filters" . "^templatel-filter")
@@ -52,9 +52,9 @@
  :url "/api.html")
 
 
-(blorg-copy-static
+(weblorg-copy-static
  :output "static/{{ file }}"
  :url "/static/{{ file }}")
 
-(blorg-export)
+(weblorg-export)
 ;;; publish.el ends here
