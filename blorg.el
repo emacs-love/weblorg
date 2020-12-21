@@ -687,10 +687,12 @@ that is accessible with the same syntax as the template filter."
     ;; Usage {{ maybe_nil | default("Stuff") }} to show "Stuff" in
     ;; case `maybe_nil` actually contains `nil'
     (templatel-env-add-filter
-     env "default" (lambda(value default) (or value default)))
+     env "default" (lambda(value default)
+                     (if (null value) default value)))
     ;; time formatting
     (templatel-env-add-filter
-     env "strftime" (lambda(time format) (format-time-string format time)))))
+     env "strftime" (lambda(time format)
+                      (when time (format-time-string format time))))))
 
 (defun blorg--route-importfn (route)
   "Build the import function for ROUTE.
