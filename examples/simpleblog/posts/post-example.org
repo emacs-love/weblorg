@@ -1,4 +1,4 @@
-#+TITLE: Welcome to blorg
+#+TITLE: Welcome to weblorg
 #+DATE: <2020-08-19 qua>
 #+AUTHOR: Guilherme Guerra
 #+OPTIONS: toc:nil num:nil

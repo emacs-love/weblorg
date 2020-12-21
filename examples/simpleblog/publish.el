@@ -7,7 +7,7 @@
 ;;
 ;;; Code:
 
-;; Guarantee the freshest version of the blorg
+;; Guarantee the freshest version of the weblorg
 (add-to-list 'load-path "../../")
 
 ;; Setup package management
@@ -23,10 +23,10 @@
 (use-package htmlize)
 (setq org-html-htmlize-output-type 'css)
 
-(require 'blorg)
+(require 'weblorg)
 
 ;; Generate blog posts
-(blorg-route
+(weblorg-route
  :name "posts"
  :input-pattern "posts/.*\\.org$"
  :template "post.html"
@@ -34,7 +34,7 @@
  :url "/posts/{{ slug }}.html")
 
 ;; Generate pages
-(blorg-route
+(weblorg-route
  :name "pages"
  :input-pattern "pages/.*\\.org$"
  :template "page.html"
@@ -42,17 +42,17 @@
  :url "/{{ slug }}")
 
 ;; Generate posts summary
-(blorg-route
+(weblorg-route
  :name "index"
  :input-pattern "posts/.*\\.org$"
- :input-aggregate #'blorg-input-aggregate-all
+ :input-aggregate #'weblorg-input-aggregate-all
  :template "blog.html"
  :output "output/index.html"
  :url "/")
 
-(blorg-copy-static
+(weblorg-copy-static
  :output "output/static/{{ file }}"
  :url "/static/{{ file }}")
 
-(blorg-export)
+(weblorg-export)
 ;;; publish.el ends here
