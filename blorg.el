@@ -461,11 +461,15 @@ value of the date file tag.  Posts without a date will be shown
 last."
   (blorg-input-aggregate-all posts #'blorg--compare-posts-desc))
 
-(defun blorg-input-aggregate-by-category (posts)
+(defun blorg-input-aggregate-by-category (posts &optional sorting-fn)
   "Aggregate POSTS by category.
 
 This function reads the FILETAGS file property and put the file
-within each tag found there."
+within each tag found there.
+
+If SORTING-FN is nil, posts within each category are kept in the
+order they're found, otherwise SORTING-FN is applied function to
+the posts."
   (let (output
         (ht (make-hash-table :test 'equal)))
     (dolist (post posts)
@@ -484,9 +488,24 @@ within each tag found there."
        (blorg--prepend
         output
         `(("category" . (("name" . ,k)
-                         ("posts" . ,v))))))
+                         ("posts" . ,(if sorting-fn (sort v sorting-fn) v)))))))
      ht)
-    output))
+    ;; Sort categories by their first post
+    (if sorting-fn
+        (sort output (lambda (a b)
+                       (funcall sorting-fn (cadr (caddar a)) (cadr (caddar b)))))
+      output)))
+
+(defun blorg-input-aggregate-by-category-desc (posts)
+  "Aggregate POSTS by category.
+
+This function reads the FILETAGS file property and put the file
+within each tag found there.
+
+Notice the results are sorted on a descending order comparing the
+value of the date file tag.  Posts without a date will be shown
+last."
+  (blorg-input-aggregate-by-category posts #'blorg--compare-posts-desc))
 
 
 
