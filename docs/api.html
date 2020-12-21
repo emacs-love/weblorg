@@ -40,52 +40,34 @@
     <div class="api-menu">
       
         <dl>
-          <dt><a href="#section-render-template-strings">Render template strings</a></dt>
+          <dt><a href="#section-routing">Routing</a></dt>
           
-            <dd><a href="#symbol-templatel-render-file">templatel-render-file</a></dd>
+            <dd><a href="#symbol-weblorg-copy-static">weblorg-copy-static</a></dd>
           
-            <dd><a href="#symbol-templatel-render-string">templatel-render-string</a></dd>
+            <dd><a href="#symbol-weblorg-route">weblorg-route</a></dd>
           
         </dl>
       
         <dl>
-          <dt><a href="#section-template-environments">Template environments</a></dt>
+          <dt><a href="#section-exporting">Exporting</a></dt>
           
-            <dd><a href="#symbol-templatel-env-add-filter">templatel-env-add-filter</a></dd>
+            <dd><a href="#symbol-weblorg-export">weblorg-export</a></dd>
           
-            <dd><a href="#symbol-templatel-env-add-template">templatel-env-add-template</a></dd>
+        </dl>
+      
+        <dl>
+          <dt><a href="#section-data-sources">Data Sources</a></dt>
           
-            <dd><a href="#symbol-templatel-env-new">templatel-env-new</a></dd>
+            <dd><a href="#symbol-weblorg-input-source-autodoc">weblorg-input-source-autodoc</a></dd>
           
-            <dd><a href="#symbol-templatel-env-remove-filter">templatel-env-remove-filter</a></dd>
-          
-            <dd><a href="#symbol-templatel-env-render">templatel-env-render</a></dd>
+            <dd><a href="#symbol-weblorg-input-source-autodoc-sections">weblorg-input-source-autodoc-sections</a></dd>
           
         </dl>
       
         <dl>
           <dt><a href="#section-filters">Filters</a></dt>
           
-            <dd><a href="#symbol-templatel-filters-int">templatel-filters-int</a></dd>
-          
-            <dd><a href="#symbol-templatel-filters-lower">templatel-filters-lower</a></dd>
-          
-            <dd><a href="#symbol-templatel-filters-plus1">templatel-filters-plus1</a></dd>
-          
-            <dd><a href="#symbol-templatel-filters-sum">templatel-filters-sum</a></dd>
-          
-            <dd><a href="#symbol-templatel-filters-upper">templatel-filters-upper</a></dd>
-          
-        </dl>
-      
-        <dl>
-          <dt><a href="#section-exceptions">Exceptions</a></dt>
-          
-            <dd><a href="#symbol-templatel-backtracking">templatel-backtracking</a></dd>
-          
-            <dd><a href="#symbol-templatel-runtime-error">templatel-runtime-error</a></dd>
-          
-            <dd><a href="#symbol-templatel-syntax-error">templatel-syntax-error</a></dd>
+            <dd><a href="#symbol-weblorg-input-filter-drafts">weblorg-input-filter-drafts</a></dd>
           
         </dl>
       
@@ -93,59 +75,214 @@
 
     <div class="page">
       
-        <article id="section-render-template-strings" class="section">
-          <h1>Render template strings</h1>
+        <article id="section-routing" class="section">
+          <h1>Routing</h1>
 
           <div class="symbols">
             
-              <div class="symbol" id="symbol-templatel-render-file">
+              <div class="symbol" id="symbol-weblorg-copy-static">
                 
-                  <h2>(templatel-render-file (path variables))</h2>
+                  <h2>(weblorg-copy-static (&rest options))</h2>
                 
 
                 
                   <div class="docstring">
                     <p>
-Render template file at PATH with VARIABLES.
+Utility and Route for static assets of a weblorg site.
 </p>
 
 <p>
-Just like with
-<a href="#symbol-templatel-render-string">templatel-render-string</a>,
-templates rendered with this function also can’t use <code>{% extends
-%}</code> statements.  Please refer to the section
-<a href="#section-template-environments">Template Environments</a>
-to learn how to use the API that enables template inheritance.</p>
+Use this route if you want either of these two things:
+</p>
+
+<ol class="org-ol">
+<li>You want to use a built-in theme and need to copy its assets
+to the output directory of your site;</li>
+
+<li>You are want to copy assets of your local theme to the output
+directory of your site;</li>
+</ol>
+
+<p>
+Examples:
+</p>
+
+<ol class="org-ol">
+<li><p>
+Add static route to the default site.  That will allow
+‘url<sub>for</sub>’ to find the route <code>"static"</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(weblorg-copy-static
+ <span class="org-builtin">:output</span> <span class="org-string">"output/static/{{ basename }}"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/static/{{ basename }}"</span>)
+</pre>
+</div></li>
+
+<li><p>
+This example uses a custom site parameter.  The site
+parameter points to a CDN as its Base URL.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(weblorg-copy-static
+ <span class="org-builtin">:output</span> <span class="org-string">"output/public/{{ filename }}"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/public/{{ filename }}"</span>
+ <span class="org-builtin">:site</span> (weblorg-site
+        <span class="org-builtin">:name</span> <span class="org-string">"cdn"</span>
+        <span class="org-builtin">:base-url</span> <span class="org-string">"https://cdn.example.com"</span>
+        <span class="org-builtin">:theme</span> <span class="org-string">"autodoc"</span>))
+(weblorg-export)
+</pre>
+</div></li>
+</ol>
+
+<p>
+Parameters in <code>OPTIONS</code>:
+</p>
+
+<ul class="org-ul">
+<li>‘:output’: String with a template for generating the output
+file name.  The variables available are the variables of each
+item of a collection returned by ‘:input-aggregate’.</li>
+
+<li>‘:url’: Similarly to the ‘:output’ parameter, it takes a
+template string as input and returns the URL of an entry of a
+given entry in this route.</li>
+
+<li>‘:site’: Instance of a weblorg site created by the function
+<a href="#symbol-weblorg-site">weblorg-site</a>.  If not provided, it
+will use a default value.  The most valuable information a
+site carries is its base URL, and that’s why it’s relevant for
+routes.  That way one can have multiple sites in one single
+program.</li>
+
+<li>‘:name’: name of the route.  This defaults to <code>"static"</code>.
+Notice that if you are using this function to copy assets from
+a built-in theme, the template of such a theme will reference
+the route <code>"static"</code> when including assets.  Which means
+that you need at least one <code>"static"</code> route in your site.</li>
+</ul>
 
                   </div>
                 
               </div>
             
-              <div class="symbol" id="symbol-templatel-render-string">
+              <div class="symbol" id="symbol-weblorg-route">
                 
-                  <h2>(templatel-render-string (template variables))</h2>
+                  <h2>(weblorg-route (&rest options))</h2>
                 
 
                 
                   <div class="docstring">
                     <p>
-Render TEMPLATE string with VARIABLES.
+Add a new route defined with parameters within OPTIONS.
 </p>
 
 <p>
-This is the simplest way to use <b>templatel</b>, since it only takes
-a function call.  However, notice that it won’t allow you to
-extend other templates because no <code>:importfn</code> can be passed to
-the implicit envoronment created within this function.  Please
-refer to the next section
-<a href="#section-template-environments">Template Environments</a>
-to learn how to use the API that enables template inheritance.
+A route is an abstraction to manage how Org-Mode files are found
+and how they are transformed in HTML.
+</p>
+
+<p>
+Examples:
+</p>
+
+<ol class="org-ol">
+<li><p>
+Route that finds all the Org-Mode files within the <code>posts</code>
+directory, aggregate them all in one single collection made
+available to the also template called <code>posts</code> so it can be
+used to build summary pages
 </p>
 
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(templatel-render-string <span class="org-string">"Hello, {{ name }}!"</span> <span class="org-warning">&#8217;</span>((<span class="org-string">"name"</span> . <span class="org-string">"GNU!"</span>)))
+<pre class="src src-emacs-lisp">(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/*org"</span>
+ <span class="org-builtin">:input-aggregate</span> #<span class="org-warning">&#8217;</span>weblorg-input-aggregate-all
+ <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
 </pre>
-</div>
+</div></li>
+
+<li><p>
+Route for rendering each Org-Mode file under the directory
+<code>pages</code> as a separate HTML using the template <code>page.html</code>.
+Notice the <code>:output</code> parameter will create all the
+directories in the path that don’t exist
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"pages"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"pages/*.org"</span>
+ <span class="org-builtin">:template</span> <span class="org-string">"page.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/{{ slug }}/index.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/{{ slug }}"</span>)
+</pre>
+</div></li>
+</ol>
+
+<p>
+Parameters in <code>OPTIONS</code>:
+</p>
+
+<ul class="org-ul">
+<li>‘:input-pattern’: glob expression for selecting files within
+path ‘:base-dir’.  It defaults to "*.org";</li>
+
+<li>‘:input-exclude’: Regular expression for excluding files from
+the input list.  Defaults to "^$";</li>
+
+<li>‘:input-filter’: Function for filtering out files after they
+were parsed.  This allows using data from within the Org-Mode
+file to decide if it should be included or not in the input
+list.</li>
+
+<li>‘:input-aggregate’: Function for grouping files into
+collections.  Templates are applied to collections, not to
+files from the input list.  The variables available for the
+template come from the return of this function.</li>
+
+<li>‘:input-source’: List of collections of data to be writtend
+directly to templates.  In other words, this parameter
+replaces the pipeline ‘pattern‘ &gt; ‘exclude‘ &gt; ‘filter‘ &gt;
+‘aggregate‘ and will feed data directly into the function that
+writes down templates.  This is useful for generating HTML
+files off template variables read from whatever source you
+want.</li>
+
+<li>‘:output’: String with a template for generating the output
+file name.  The variables available are the variables of each
+item of a collection returned by ‘:input-aggregate’.</li>
+
+<li>‘:url’: Similarly to the ‘:output’ parameter, it takes a
+template string as input and returns the URL of an entry of a
+given entry in this route.</li>
+
+<li>‘:template’: Name of the template that should be used to
+render a collection of files.  Notice that this is the name of
+the template, not its path (neither relative or absolute).
+The value provided here will be searched within 1. the
+directory <b>template</b> within ‘:base-dir’ 2. the directory
+<b>templates</b> within weblorg’s source code.</li>
+
+<li>‘:template-vars’: Association list of extra variables to be
+passed down to the template.</li>
+
+<li>‘:base-dir’: Base path for ‘:input-pattern’ and ‘:output’; If
+not provided, will default to the ‘:base-dir’ of the website;</li>
+
+<li>‘:site’: Instance of a weblorg site created by the function
+<a href="#symbol-weblorg-site">weblorg-site</a>.  If not provided, it
+will use a default value.  The most valuable information a
+site carries is its base URL, and that’s why it’s relevant for
+routes.  That way one can have multiple sites in one single
+program.</li>
+</ul>
 
                   </div>
                 
@@ -154,142 +291,56 @@ to learn how to use the API that enables template inheritance.
           </div>
         </article>
       
-        <article id="section-template-environments" class="section">
-          <h1>Template environments</h1>
+        <article id="section-exporting" class="section">
+          <h1>Exporting</h1>
 
           <div class="symbols">
             
-              <div class="symbol" id="symbol-templatel-env-add-filter">
+              <div class="symbol" id="symbol-weblorg-export">
                 
-                  <h2>(templatel-env-add-filter (env name filter))</h2>
+                  <h2>(weblorg-export nil)</h2>
                 
 
                 
                   <div class="docstring">
                     <p>
-Add FILTER to ENV under key NAME.
-</p>
-
-<p>
-This is how <i>templatel</i> supports user-defined filters.  Let’s say
-there’s a template environment that needs to provide a new filter
-called <b>addspam</b> that adds the word "spam" right after text.:
-</p>
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">let</span> ((env (templatel-env-new)))
-  (templatel-env-add-filter env <span class="org-string">"spam"</span> (<span class="org-keyword">lambda</span>(stuff) (format <span class="org-string">"%s spam"</span> stuff)))
-  (templatel-env-add-template env <span class="org-string">"page.html"</span> (templatel-new <span class="org-string">"{{ spam(\"hi\") }}"</span>))
-  (templatel-env-render env <span class="org-string">"page.html"</span> <span class="org-warning">&#8217;</span>()))
-</pre>
-</div>
-
-<p>
-The above code would render something like <code>hi spam</code>.
-</p>
-
-<p>
-Use
-<a href="#symbol-templatel-env-remove-filter">templatel-env-remove-filter</a>
-to remove filters added with this function.</p>
+Export all sites.</p>
 
                   </div>
                 
               </div>
             
-              <div class="symbol" id="symbol-templatel-env-add-template">
+          </div>
+        </article>
+      
+        <article id="section-data-sources" class="section">
+          <h1>Data Sources</h1>
+
+          <div class="symbols">
+            
+              <div class="symbol" id="symbol-weblorg-input-source-autodoc">
                 
-                  <h2>(templatel-env-add-template (env name template))</h2>
+                  <h2>(weblorg-input-source-autodoc (pattern))</h2>
                 
 
                 
                   <div class="docstring">
                     <p>
-Add TEMPLATE to ENV under key NAME.</p>
+Pull metadata from Emacs-Lisp symbols that match PATTERN.</p>
 
                   </div>
                 
               </div>
             
-              <div class="symbol" id="symbol-templatel-env-new">
+              <div class="symbol" id="symbol-weblorg-input-source-autodoc-sections">
                 
-                  <h2>(templatel-env-new (&rest options))</h2>
-                
-
-                
-                  <div class="docstring">
-                    <p>
-Create new template environment configured via OPTIONS.
-</p>
-
-<p>
-Both
-<a href="#symbol-templatel-render-string">templatel-render-string</a>
-and
-<a href="#symbol-templatel-render-string">templatel-render-file</a>
-provide a one-call interface to render a template from a string
-or from a file respectively.  Although convenient, neither or
-these two functions can be used to render templates that use <code>{%
-extends %}</code>.
-</p>
-
-<p>
-This decision was made to keep <i>templatel</i> extensible allowing
-users to define how new templates should be found.  It also keeps
-the library simpler as a good side-effect.
-</p>
-
-<p>
-To get template inheritance to work, a user defined import
-function must be attached to a template environment.  The user
-defined function is responsible for finding and adding templates
-to the environment.  The following snippet demonstrates how to
-create the simplest import function and provide it to an
-environment via <code>:importfn</code> parameter.
-</p>
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(templatel-env-new
- <span class="org-builtin">:importfn</span> (<span class="org-keyword">lambda</span>(environment name)
-             (templatel-env-add-template
-              environment name
-              (templatel-new-from-file
-               (expand-file-name name <span class="org-string">"/home/user/templates"</span>)))))
-</pre>
-</div>
-
-                  </div>
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-env-remove-filter">
-                
-                  <h2>(templatel-env-remove-filter (env name))</h2>
+                  <h2>(weblorg-input-source-autodoc-sections (sections))</h2>
                 
 
                 
                   <div class="docstring">
                     <p>
-Remove filter from ENV under key NAME.
-</p>
-
-<p>
-This function reverts the effect of a previous call to
-<a href="#symbol-templatel-env-add-filter">templatel-env-add-filter</a>.</p>
-
-                  </div>
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-env-render">
-                
-                  <h2>(templatel-env-render (env name vars))</h2>
-                
-
-                
-                  <div class="docstring">
-                    <p>
-Render template NAME within ENV with VARS as parameters.</p>
+Run ‘weblorg-input-source-autodoc’ for various SECTIONS.</p>
 
                   </div>
                 
@@ -303,105 +354,22 @@ Render template NAME within ENV with VARS as parameters.</p>
 
           <div class="symbols">
             
-              <div class="symbol" id="symbol-templatel-filters-int">
+              <div class="symbol" id="symbol-weblorg-input-filter-drafts">
                 
-                  <h2>(templatel-filters-int (s base))</h2>
-                
-
-                
-                  <div class="docstring">
-                    <p>
-Convert S into integer of base BASE.</p>
-
-                  </div>
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-filters-lower">
-                
-                  <h2>(templatel-filters-lower (s))</h2>
+                  <h2>(weblorg-input-filter-drafts (post))</h2>
                 
 
                 
                   <div class="docstring">
                     <p>
-Lower case all chars of S.</p>
+Exclude POST from input list if it is a draft.
+</p>
+
+<p>
+We use the DRAFT file property to define if an Org-Mode file is a
+draft or not.</p>
 
                   </div>
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-filters-plus1">
-                
-                  <h2>(templatel-filters-plus1 (s))</h2>
-                
-
-                
-                  <div class="docstring">
-                    <p>
-Add one to S.</p>
-
-                  </div>
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-filters-sum">
-                
-                  <h2>(templatel-filters-sum (s))</h2>
-                
-
-                
-                  <div class="docstring">
-                    <p>
-Sum all entries in S.</p>
-
-                  </div>
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-filters-upper">
-                
-                  <h2>(templatel-filters-upper (s))</h2>
-                
-
-                
-                  <div class="docstring">
-                    <p>
-Upper case all chars of S.</p>
-
-                  </div>
-                
-              </div>
-            
-          </div>
-        </article>
-      
-        <article id="section-exceptions" class="section">
-          <h1>Exceptions</h1>
-
-          <div class="symbols">
-            
-              <div class="symbol" id="symbol-templatel-backtracking">
-                
-                  <h2>templatel-backtracking</h2>
-                
-
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-runtime-error">
-                
-                  <h2>templatel-runtime-error</h2>
-                
-
-                
-              </div>
-            
-              <div class="symbol" id="symbol-templatel-syntax-error">
-                
-                  <h2>templatel-syntax-error</h2>
-                
-
                 
               </div>
             

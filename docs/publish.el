@@ -41,12 +41,10 @@
 (weblorg-route
  :name "api"
  :input-source (weblorg-input-source-autodoc-sections
-                `(("Render template strings" . "^templatel-render")
-                  ("Template environments" . "^templatel-env")
-                  ("Filters" . "^templatel-filter")
-                  ("Exceptions" . ,(concat "templatel-" (regexp-opt '("syntax-error"
-                                                                      "runtime-error"
-                                                                      "backtracking"))))))
+                `(("Routing" . "^weblorg-\\(?:route\\|copy-static\\)")
+                  ("Exporting" . "^weblorg-export$")
+                  ("Data Sources" . "^weblorg-input-source-")
+                  ("Filters" . "^weblorg-input-filter-")))
  :template "autodoc.html"
  :output "api.html"
  :url "/api.html")
