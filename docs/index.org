@@ -1,6 +1,6 @@
 #+OPTIONS: toc:nil num:nil
 
-The blorg an Emacs-Lisp API rather than a command line tool. The use of the API becomes the description of a pipeline that takes lists of Org-Mode files as input, templatize them and generate HTML files as an output.
+The weblorg an Emacs-Lisp API rather than a command line tool. The use of the API becomes the description of a pipeline that takes lists of Org-Mode files as input, templatize them and generate HTML files as an output.
 
 * Highlights
   :PROPERTIES:
@@ -34,7 +34,7 @@ Permalink, categories, pages, posts and custom layouts.
 
 * Getting started
 
-This is the minimal structure for a blog powered by Blorg!
+This is the minimal structure for a blog powered by Weblorg!
 
 #+begin_src shell
 blog/
@@ -45,10 +45,10 @@ blog/
 └── publish.el
 #+end_src
 
-On publish.el is the Blorg configuration file, you can configure routes, theme and other things. This is the minimal setup for a blog.
+On ~publish.el~ is the Weblorg configuration file, you can configure routes, theme and other things. This is the minimal setup for a blog.
 
 #+begin_src lisp
-(use-package blorg)
+(use-package weblorg)
 (use-package templatel)
 ;; Org-Mode depends on `htmlize' in order to produce HTML off Org-Mode
 ;; blocks with syntax highlighting.
@@ -59,7 +59,7 @@ On publish.el is the Blorg configuration file, you can configure routes, theme a
 (setq org-html-htmlize-output-type 'css)
 
 ;; Generate blog posts
-(blorg-route
+(weblorg-route
  :name "posts"
  :input-pattern "posts/.*\\.org$"
  :template "post.html"
@@ -67,7 +67,7 @@ On publish.el is the Blorg configuration file, you can configure routes, theme a
  :url "/posts/{{ slug }}.html")
 
 ;; Generate pages
-(blorg-route
+(weblorg-route
  :name "pages"
  :input-pattern "pages/.*\\.org$"
  :template "page.html"
@@ -75,19 +75,19 @@ On publish.el is the Blorg configuration file, you can configure routes, theme a
  :url "/{{ slug }}")
 
 ;; Generate posts summary
-(blorg-route
+(weblorg-route
  :name "index"
  :input-pattern "posts/.*\\.org$"
- :input-aggregate #'blorg-input-aggregate-all
+ :input-aggregate #'weblorg-input-aggregate-all
  :template "blog.html"
  :output "output/index.html"
  :url "/")
 
-(blorg-copy-static
+(weblorg-copy-static
  :output "output/static/{{ file }}"
  :url "/static/{{ file }}")
 
-(blorg-export)
+(weblorg-export)
 #+end_src
 
 To generate your blog touched by unicorn just run
@@ -97,4 +97,4 @@ emacs --script publish.el 2>&1
 #+end_src
 
 * Theming
-Blorg came with a default theme for you can focus on content, but if you want to create modify existing template just create a folder *templates* on the same level of ~publish.el~
+Weblorg came with a default theme for you can focus on content, but if you want to create modify existing template just create a folder *templates* on the same level of ~publish.el~
