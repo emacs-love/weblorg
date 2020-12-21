@@ -264,7 +264,9 @@ Parameters in ~OPTIONS~:
     (puthash :template-dirs template-dirs route)
     (puthash :theme theme route)
     (puthash :template-env (templatel-env-new :importfn (weblorg--route-importfn route)) route)
-    (puthash name route (gethash :routes site))))
+    (puthash name route (gethash :routes site))
+    (weblorg--route-install-template-filters route)
+    route))
 
 (defun weblorg-copy-static (&rest options)
   "Utility and Route for static assets of a weblorg site.
@@ -363,7 +365,6 @@ Parameters in ~OPTIONS~:
 
 (defun weblorg-export-templates (route)
   "Export a single ROUTE of a site with files to be templatized."
-  (weblorg--route-install-template-filters route)
   ;; Collect -> Aggregate -> Template -> Write
   (let ((input-source (gethash :input-source route)))
     (weblorg--export-templates
