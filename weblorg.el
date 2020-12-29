@@ -90,7 +90,7 @@
 (define-error 'weblorg-error-config "Configuration Error" 'weblorg-error-user)
 
 
-(defconst weblorg-module-dir (file-name-directory load-file-name)
+(defconst weblorg-module-dir (file-name-directory (or load-file-name buffer-file-name))
   "Directory that points to the directory of weblorg's source code.")
 
 (defvar weblorg-version "0.1.0"
