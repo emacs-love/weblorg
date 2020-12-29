@@ -602,7 +602,7 @@ consumption from templatel."
 (defun weblorg--url-for-v (route-name vars site)
   "Find ROUTE-NAME within SITE and interpolate route url with VARS."
   (let ((route (weblorg--site-route site route-name)))
-    (if (not (null route))
+    (if route
         (concat (gethash :base-url site)
                 (templatel-render-string
                  (gethash :url route)
@@ -658,7 +658,7 @@ default templates."
        ;; doesn't exist; try next dir
        ((null attrs) (weblorg--template-find (cdr directories) name))
        ;; is a directory
-       ((not (null (file-attribute-type attrs))) nil)
+       ((file-attribute-type attrs) nil)
        ;; we found it
        ((null (file-attribute-type attrs))
         path)))))
