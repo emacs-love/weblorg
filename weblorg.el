@@ -1,4 +1,4 @@
-;;; weblorg.el --- Static Site Generator for org-mode; -*- lexical-binding: t -*-
+;;; weblorg.el --- Static Site Generator for org-mode -*- lexical-binding: t -*-
 ;;
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
 ;; URL: https://emacs.love/weblorg
@@ -22,7 +22,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; Genenrate static websites off of Org Mode sources.
+;; Generate static websites off of Org Mode sources.
 ;;
 ;; The API is modeled as a simplified version of a generic HTTP
 ;; framework.  Simplified in the meaning that it doesn't give access
@@ -193,7 +193,7 @@ Parameters in ~OPTIONS~:
    files from the input list.  The variables available for the
    template come from the return of this function.
 
- * `:input-source': List of collections of data to be writtend
+ * `:input-source': List of collections of data to be written
    directly to templates.  In other words, this parameter
    replaces the pipeline `pattern` > `exclude` > `filter` >
    `aggregate` and will feed data directly into the function that
@@ -235,7 +235,7 @@ Parameters in ~OPTIONS~:
          ;; It's also the default for :output
          (url (weblorg--get opt :url))
          ;; Not using the `default' parameter in `weblorg--get' because
-         ;; it doesn't give the short circiut given by `or'.
+         ;; it doesn't give the short circuit given by `or'.
          (site (or (weblorg--get opt :site)
                    (weblorg-site :base-url weblorg-default-url)))
          ;; Prefix path for most file operations within a route
@@ -664,7 +664,7 @@ default templates."
         path)))))
 
 (defun weblorg--route-install-template-filters (route)
-  "Install template filters in the template enviroment of a ROUTE.
+  "Install template filters in the template environment of a ROUTE.
 
 This function also installs an Org-Mode link handler `url_for`
 that is accessible with the same syntax as the template filter."
