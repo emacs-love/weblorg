@@ -4,7 +4,7 @@
     {{ post.title }}
   </h1>
   <section>
-    {{ post.html }}
+    {{ post.html|safe }}
   </section>
 </article>
 {% endblock %}

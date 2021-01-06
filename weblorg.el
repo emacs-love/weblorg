@@ -70,7 +70,7 @@
 ;;    c. post.html could looks something like this
 ;;
 ;;       <h1>{{ post.title }}</h1>
-;;       {{ post.html }}
+;;       {{ post.html|safe }}
 ;;       <hr>
 ;;       <a href="{{ url_for("index") }}">Home</a>
 ;;
@@ -263,7 +263,9 @@ Parameters in ~OPTIONS~:
     (puthash :template-vars (weblorg--get opt :template-vars nil) route)
     (puthash :template-dirs template-dirs route)
     (puthash :theme theme route)
-    (puthash :template-env (templatel-env-new :importfn (weblorg--route-importfn route)) route)
+    (let ((env (templatel-env-new :importfn (weblorg--route-importfn route))))
+      (templatel-env-set-autoescape env t)
+      (puthash :template-env env route))
     (puthash name route (gethash :routes site))
     (weblorg--route-install-template-filters route)
     route))

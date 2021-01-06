@@ -33,7 +33,7 @@
 
                 {% if symbol.docs %}
                   <div class="docstring">
-                    {{ symbol.docs }}
+                    {{ symbol.docs|safe }}
                   </div>
                 {% endif %}
               </div>

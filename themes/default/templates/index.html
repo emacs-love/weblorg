@@ -7,7 +7,7 @@
     {{ post.date }}
   </section>
   <section>
-    {{ post.html }}
+    {{ post.html|safe }}
   </section>
 </article>
 {% endblock %}
