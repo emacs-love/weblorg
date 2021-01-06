@@ -3,10 +3,10 @@
   <head>
     {% block head %}
       <meta charset="utf-8">
-      <title>'templatel - {% block title %}Home{% endblock %}</title>
+      <title>{{ project_name }} - {% block title %}Home{% endblock %}</title>
       <meta name="description" content="{% block description %}{% endblock %}">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="static/style.css">
+      <link rel="stylesheet" href="{{ url_for("static", file="style.css") }}" type="text/css" />
     {% endblock %}
   </head>
   <body>
@@ -15,9 +15,19 @@
       {% block nav %}
         <div class="nav">
           <h1>
-            <a href="{{ url_for("index") }}">'templatel</a>
+            <a href="{{ url_for("index") }}">{{ project_name }}</a>
             {% block title %}{% endblock %}
           </h1>
+
+          <div class="menu">
+            <ul>
+              <li><a href="{{ url_for("index") }}">home</a></li>
+              <li><a href="{{ url_for("doc") }}">documentation</a></li>
+              <li><a href="{{ url_for("api") }}">api reference</a></li>
+              <li><a href="{{ project_github }}" target="_blank">github</a></li>
+            </ul>
+        </div>
+
         </div>
       {% endblock %}
 
@@ -28,14 +38,15 @@
       {% block footer %}
         <div class="footer">
           <ul>
-            <li><a href="{{ url_for("index") }}">Home</a></li>
-            <li><a href="{{ url_for("api") }}">API Docs</a></li>
-            <li><a href="https://github.com/clarete/templatel" target="_blank">Github</a></li>
+            <li><a href="{{ url_for("index") }}">home</a></li>
+            <li><a href="{{ url_for("doc") }}">documentation</a></li>
+            <li><a href="{{ url_for("api") }}">api reference</a></li>
+            <li><a href="{{ project_github }}" target="_blank">github</a></li>
           </ul>
           <div class="ack">
             Made with &#x2665; and
             <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
-              <img src="static/emacs-bw.svg" width="16" height="16" />
+              <img src="{{ url_for("static", file="emacs-bw.svg") }}" width="16" height="16" />
             </a>
             by
             <a href="https://clarete.li" target="_blank">

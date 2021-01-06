@@ -114,11 +114,19 @@ code                  { background: var(--cl-preformatted); }
                         overflow-y: scroll;
                         border-radius: 5px; }
 
+/* Menu */
+.menu ul       { max-width: var(--dm-page-width); margin: 0 auto; padding: 0; list-style: none; display: flex; }
+.menu li       { margin-right: 20px; }
+.menu a        { text-decoration: none; padding: 20px 0; display: block; color: var(--cl-link-nav); }
+.menu a:hover  { text-decoration: underline; }
+
 /* Navigation */
 .nav                  { background: var(--cl-banner-bg); color: var(--cl-fg-light); padding: 5px 20px; }
-.nav h1               { text-transform: lowercase; font-size: 1.5rem; font-weight: 500; }
-.nav a                { text-decoration: none; color: var(--cl-link-nav); font-style: italic; font-family: var(--ft-logofm); }
-.nav a:hover          { color: var(--cl-blue2); text-shadow: var(--cl-gray2) 0.01px 0 0.2px; }
+.nav h1               { text-transform: lowercase; font-size: 1.5rem; font-weight: 500; float: left; width: 22%; }
+.nav h1 a             { text-decoration: none; color: var(--cl-link-nav); font-family: var(--ft-logofm); }
+.nav h1 a:hover       { color: var(--cl-blue2); text-shadow: var(--cl-gray2) 0.01px 0 0.2px; }
+.nav .menu            { background: transparent; border-bottom: none; width: 77%; padding-top: 2px; }
+.nav .menu a          { color: #fff; }
 
 /* Footer */
 .footer               { background-color: var(--cl-footer-bg); padding: 100px; }
@@ -149,10 +157,6 @@ code                  { background: var(--cl-preformatted); }
 .index .banner h1     { font-size: 80px; font-style: italic; font-family: var(--ft-logofm); margin: 0; padding: 50px 0 20px 0; }
 .index .banner .sub   { font-size: 30px; font-weight: 100; margin: 0; padding: 0 0 50px 0; color: #aaa; }
 .index .menu          { background: var(--cl-bg-light); border-bottom: 1px solid var(--cl-border-nav); }
-.index .menu ul       { max-width: var(--dm-page-width); margin: 0 auto; padding: 0; list-style: none; display: flex; }
-.index .menu li       { margin-right: 20px; }
-.index .menu a        { text-decoration: none; padding: 20px 0; display: block; color: var(--cl-link-nav); }
-.index .menu a:hover  { text-decoration: underline; }
 
 /* HTML generated off of Org-Mode files */
 .outline-2 h2         { margin: 40px 0; color: var(--cl-h1); font-size: var(--ft-size-0); font-weight: 50;  }
@@ -164,7 +168,7 @@ code                  { background: var(--cl-preformatted); }
 .api > div            { padding: 20px; }
 
 /* -- Left menu with index of all sections & symbols  */
-.api-menu             { background: var(--cl-bg-light); border-right: 1px solid var(--cl-border-nav); }
+.api-menu             { background: var(--cl-bg-light); border-right: 1px solid var(--cl-border-nav); min-width: 200px; clear: both; }
 .api-menu a           { text-decoration: none; color: var(--cl-link-menu); }
 .api-menu a:hover     { color: var(--cl-link-menu-hover); }
 .api-menu ul          { list-style: square; }

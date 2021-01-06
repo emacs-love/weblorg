@@ -7,20 +7,17 @@
 {% block page %}
   <div class="index">
     <div class="banner">
-      <h1>'templatel</h1>
+      <h1>{{ project_name }}</h1>
       <div class="sub">
-        A modern templating language for Emacs-Lisp
+        {{ project_description }}
       </div>
     </div>
 
     <div class="menu">
       <ul>
-        <li><a href="api.html">API Docs</a></li>
-        <li>
-          <a href="https://github.com/clarete/templatel" target="_blank">
-            Github
-          </a>
-        </li>
+        <li><a href="{{ url_for("doc") }}">documentation</a></li>
+        <li><a href="{{ url_for("api") }}">api reference</a></li>
+        <li><a href="{{ project_github }}" target="_blank">github</a></li>
       </ul>
     </div>
 
