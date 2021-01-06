@@ -119,7 +119,10 @@ OPTIONS can contain the following parameters:
    domain and optionally by path.  Notice that each site is
    registered within a global hash table `weblorg--sites'.  If one
    tries to register two sites with the same ~:base-url~, an
-   error will be raised."
+   error will be raised.
+
+ * `:template-vars': Association list of extra variables to be
+   passed down to all templates."
   (let* ((opt (seq-partition options 2))
          (base-url (weblorg--get opt :base-url weblorg-default-url))
          (theme (weblorg--get opt :theme "default"))
@@ -133,6 +136,7 @@ OPTIONS can contain the following parameters:
         (let ((new-site (make-hash-table :size 3)))
           (puthash :base-url base-url new-site)
           (puthash :theme theme new-site)
+          (puthash :template-vars (weblorg--get opt :template-vars nil) new-site)
           (puthash :routes (make-hash-table :test 'equal) new-site)
           (puthash base-url new-site weblorg--sites))
       ;; Already exists
@@ -805,7 +809,8 @@ can be found in the ROUTE."
               (templatel-env-render
                (gethash :template-env route)
                (gethash :template route)
-               (append (gethash :template-vars route)
+               (append (gethash :template-vars (gethash :site route))
+                       (gethash :template-vars route)
                        weblorg-meta
                        data
                        (weblorg--vars-from-route route))))
