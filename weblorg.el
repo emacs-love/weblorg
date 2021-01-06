@@ -594,21 +594,45 @@ consumption from templatel."
                 scanner
                 (lambda()
                   (templatel--token-comma scanner)
-                  (mapcar
-                   (lambda(np)
-                     (cons (cdar np)
-                           (cdadar (cdadr np))))
-                   (cdar (templatel--parser-namedparams scanner)))))))
+                  (weblorg--url-for-parser-namedparams scanner)))))
     (cons route vars)))
+
+(defun weblorg--url-for-parser-namedparams (scanner)
+  "Read a list of named parameters off SCANNER."
+  (let ((first (weblorg--url-for-parser-namedparam scanner))
+        (rest (templatel--scanner-zero-or-more
+               scanner
+               (lambda()
+                 (templatel--token-comma scanner)
+                 (weblorg--url-for-parser-namedparam scanner)))))
+    (cons first rest)))
+
+(defun weblorg--url-for-parser-namedparam (scanner)
+  "Read one named parameter off SCANNER."
+  (let* ((id (cdr (templatel--parser-identifier scanner))))
+    (templatel--token-= scanner)
+    (cons
+     id
+     (templatel--parser-join-chars
+      (templatel--scanner-zero-or-more
+       scanner
+       (lambda()
+         (templatel--scanner-or
+          scanner
+          (list (lambda() (templatel--scanner-range scanner ?a ?z))
+                (lambda() (templatel--scanner-range scanner ?A ?Z))
+                (lambda() (templatel--scanner-range scanner ?0 ?9))
+                (lambda() (templatel--scanner-match scanner ?-))
+                (lambda() (templatel--scanner-match scanner ?_))))))))))
 
 (defun weblorg--url-for-v (route-name vars site)
   "Find ROUTE-NAME within SITE and interpolate route url with VARS."
-  (let ((route (weblorg--site-route site route-name)))
+  (let ((route (weblorg--site-route site route-name))
+        (anchor (weblorg--get-cdr vars "anchor")))
     (if route
         (concat (gethash :base-url site)
-                (templatel-render-string
-                 (gethash :url route)
-                 vars))
+                (templatel-render-string (gethash :url route) vars)
+                (if anchor (format "#%s" anchor) ""))
       (progn
         (warn "url_for: Can't find route %s" route-name)
         ""))))

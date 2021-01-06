@@ -73,6 +73,11 @@
    (equal (weblorg--url-for "docs,slug=overview,stuff=10" (weblorg-site :base-url "https://example.com"))
           "https://example.com/documentation/overview-10.html"))
 
+  ;; Add anchor in any link it asked for
+  (should
+   (equal (weblorg--url-for "docs,slug=overview,stuff=10,anchor=sub-item" (weblorg-site :base-url "https://example.com"))
+          "https://example.com/documentation/overview-10.html#sub-item"))
+
   ;; reset the global to its initial state
   (clrhash weblorg--sites))
 
