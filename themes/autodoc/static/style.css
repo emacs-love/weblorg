@@ -122,10 +122,10 @@ code                  { background: var(--cl-preformatted); }
 
 /* Navigation */
 .nav                  { background: var(--cl-banner-bg); color: var(--cl-fg-light); padding: 5px 20px; }
-.nav h1               { text-transform: lowercase; font-size: 1.5rem; font-weight: 500; float: left; width: 22%; }
+.nav h1               { text-transform: lowercase; font-size: 1.5rem; font-weight: 500; float: left; width: 30%; }
 .nav h1 a             { text-decoration: none; color: var(--cl-link-nav); font-family: var(--ft-logofm); }
 .nav h1 a:hover       { color: var(--cl-blue2); text-shadow: var(--cl-gray2) 0.01px 0 0.2px; }
-.nav .menu            { background: transparent; border-bottom: none; width: 77%; padding-top: 2px; }
+.nav .menu            { background: transparent; border-bottom: none; width: 75%; padding-top: 2px; }
 .nav .menu a          { color: #fff; }
 
 /* Footer */
@@ -179,6 +179,9 @@ code                  { background: var(--cl-preformatted); }
 .page .docstring      { padding-left: 50px; }
 .page .symbol         { margin-bottom: 50px; }
 
+/* doc */
+.doc > div { padding: 20px; }
+
 /* Mobile settings */
 
 @media only screen 
@@ -189,6 +192,16 @@ code                  { background: var(--cl-preformatted); }
     .footer           { padding: 100px 20px; text-align: center; }
     .footer ul        { justify-content: center; }
 
+    /* Nav */
+    .nav h1           { width: auto; float: none; }
+    .nav .menu        { width: 100%; margin: 0; }
+    .nav li:first-child { display: none; }
+
+    /* Page */
+    .page             { width: calc(100% - 60px); }
+    .page .section    { margin-bottom: 50px; }
+    .page .docstring  { padding-left: 0; }
+
     /* Index */
     .index .menu      { padding: 0 20px; }
     .index .banner    { padding: 0 20px; }
@@ -197,9 +210,6 @@ code                  { background: var(--cl-preformatted); }
     /* API */
     .api              { width: 100%; }
     .api-menu         { display: none; }
-    .api .page        { width: calc(100% - 60px); }
-    .page .section    { margin-bottom: 50px; }
-    .page .docstring  { padding-left: 0; }
 
     /* Org-Mode */
     .outline-text-2,
