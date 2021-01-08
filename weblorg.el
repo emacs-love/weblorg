@@ -795,8 +795,8 @@ can be found in the ROUTE."
     (let ((template (gethash :template route)))
       (if template
           (funcall (weblorg--route-importfn route)
-               (gethash :template-env route)
-               template)
+                   (gethash :template-env route)
+                   template)
         (signal
          'weblorg-error-config
          (format
