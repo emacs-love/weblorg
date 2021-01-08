@@ -30,6 +30,7 @@
   (weblorg-route
    :base-dir (expand-file-name "t/fixtures/test1/" default-directory)
    :name "route"
+   :input-filter nil
    :input-pattern "src/*.org"
    :input-exclude "index.org$"
    :template "post.html"
