@@ -138,6 +138,7 @@ OPTIONS can contain the following parameters:
           (puthash :theme theme new-site)
           (puthash :template-vars (weblorg--get opt :template-vars nil) new-site)
           (puthash :routes (make-hash-table :test 'equal) new-site)
+          (puthash :cache (make-hash-table :test 'equal) new-site)
           (puthash base-url new-site weblorg--sites))
       ;; Already exists
       site)))
@@ -376,7 +377,7 @@ Parameters in ~OPTIONS~:
     (weblorg--export-templates
      route
      (if (null input-source)
-         (weblorg--route-collect-and-aggregate route)
+         (weblorg--route-posts route)
        input-source))))
 
 (defun weblorg-export-assets (route)
@@ -746,6 +747,30 @@ are mainly two good places for calling this function:
       (weblorg--template-find (gethash :template-dirs route) name)))))
 
 ;; Exporting pipeline
+
+(defun weblorg--route-posts (route)
+  "Pull all posts found for a given ROUTE.
+
+This function will run the find, filter, aggregate pipeline and
+cache the results.  When it's called again with the same
+parameters it should use the cache and not really run the
+pipeline again."
+  (let* ((site (gethash :site route))
+         (cache-key
+          (format
+           "%s:%s:%s:%s:%s"
+           (gethash :input-pattern route)
+           (gethash :input-exclude route)
+           (gethash :input-filter route)
+           (gethash :input-aggregate route)
+           (gethash :input-source route)))
+         (cached-data
+          (gethash cache-key (gethash :cache site))))
+    (or cached-data
+        (puthash
+         cache-key
+         (weblorg--route-collect-and-aggregate route)
+         (gethash :cache site)))))
 
 (defun weblorg--route-collect-and-aggregate (route)
   "Find input files apply templates for a ROUTE."
