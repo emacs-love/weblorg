@@ -924,7 +924,10 @@ expression (not a glob)."
 
 (defun weblorg--get (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."
-  (or (cadr (assoc item seq)) default))
+  (let ((pair (assoc item seq)))
+    (if pair
+        (cadr pair)
+      default)))
 
 (defun weblorg--get-cdr (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."
