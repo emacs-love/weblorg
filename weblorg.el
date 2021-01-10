@@ -724,7 +724,15 @@ that is accessible with the same syntax as the template filter."
     ;; time formatting
     (templatel-env-add-filter
      env "strftime" (lambda(time format)
-                      (when time (format-time-string format time))))))
+                      (when time (format-time-string format time))))
+
+    (templatel-env-add-filter
+     env "weblorg_route_posts"
+     (lambda(route-name)
+       (mapcar #'car
+               (weblorg--route-posts
+                ;; find route named `route-name'
+                (weblorg--site-route (gethash :site route) route-name)))))))
 
 (defun weblorg--route-importfn (route)
   "Build the import function for ROUTE.
