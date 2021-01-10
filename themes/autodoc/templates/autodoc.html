@@ -1,10 +1,12 @@
+{# api.html --- Template for auto generated API doc; -*- Mode: Jinja2; -*- #}
+
 {% extends "layout.html" %}
 
 {% block title %}api reference{% endblock %}
 
 {% block page %}
-  <div class="api">
-    <div class="api-menu">
+  <div class="page api">
+    <div class="left-pane">
       {% for section in sections %}
         <h3>
           <a href="#section-{{ section.slug }}">{{ section.name }}</a>
@@ -17,7 +19,7 @@
       {% endfor %}
     </div>
 
-    <div class="page">
+    <div class="content">
       {% for section in sections %}
         <article id="section-{{ section.slug }}" class="section">
           <h1>{{ section.name }}</h1>

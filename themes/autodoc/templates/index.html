@@ -1,3 +1,5 @@
+{# index.html --- Template for the index page -*- Mode: Jinja2; -*- #}
+
 {% extends "layout.html" %}
 
 {% block title %}Home{% endblock %}
@@ -5,7 +7,7 @@
 {% block nav %}{% endblock %}
 
 {% block page %}
-  <div class="index">
+  <div class="page index">
     <div class="banner">
       <h1>{{ project_name }}</h1>
       <div class="sub">
@@ -21,7 +23,7 @@
       </ul>
     </div>
 
-    <div class="page">
+    <div class="content">
       <article>
         {{ post.html|safe }}
       </article>

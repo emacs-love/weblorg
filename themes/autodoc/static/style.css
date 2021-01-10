@@ -115,18 +115,20 @@ code                  { background: var(--cl-preformatted); }
                         border-radius: 5px; }
 
 /* Menu */
-.menu ul       { max-width: var(--dm-page-width); margin: 0 auto; padding: 0; list-style: none; display: flex; }
-.menu li       { margin-right: 20px; }
-.menu a        { text-decoration: none; padding: 20px 0; display: block; color: var(--cl-link-nav); }
-.menu a:hover  { text-decoration: underline; }
+.menu ul              { max-width: var(--dm-page-width); margin: 0 auto; padding: 0; list-style: none; display: flex; }
+.menu li              { margin-right: 20px; }
+.menu a               { text-decoration: none; padding: 20px 0; display: block; color: var(--cl-link-nav); }
+.menu a:hover         { text-decoration: underline; }
 
 /* Navigation */
-.nav                  { background: var(--cl-banner-bg); color: var(--cl-fg-light); padding: 5px 20px; }
-.nav h1               { text-transform: lowercase; font-size: 1.5rem; font-weight: 500; float: left; width: 30%; }
+.nav                  { display: flex; }
+.nav h1               { background: var(--cl-banner-bg); color: var(--cl-fg-light);
+                        text-transform: lowercase; font-size: 1.5rem; font-weight: 500;
+                        min-width: 200px; width: 20%; display: block; margin: 0px; padding: 20px; }
 .nav h1 a             { text-decoration: none; color: var(--cl-link-nav); font-family: var(--ft-logofm); }
 .nav h1 a:hover       { color: var(--cl-blue2); text-shadow: var(--cl-gray2) 0.01px 0 0.2px; }
-.nav .menu            { background: transparent; border-bottom: none; width: 75%; padding-top: 2px; }
-.nav .menu a          { color: #fff; }
+.nav .menu            { background: var(--cl-bg-dark); flex-grow: 1; font-size: 1.5rem; }
+.nav .menu a          { color: var(--cl-fg-light); }
 
 /* Footer */
 .footer               { background-color: var(--cl-footer-bg); padding: 100px; }
@@ -142,17 +144,22 @@ code                  { background: var(--cl-preformatted); }
 .footer a:hover.M-x   { text-decoration: none; }
 
 /* General settings for the content area */
-.page                 { line-height: 1.6; flex-grow: 1; margin-bottom: 100px; }
-.page article         { max-width: var(--dm-page-width); margin: 0 auto; }
-.page h1              { color: var(--cl-h1); font-weight: 50; }
-.page h2              { color: var(--cl-h2); font-weight: 500; }
-.page p               { margin-bottom: 1.5rem; }
-.page a               { color: var(--cl-link-page); text-decoration: none; }
-.page a:hover         { text-decoration: underline; }
-.page h1              { font-size: 28pt; }
-.page h2              { font-size: 14pt; }
+.page                 { display: flex; }
+.content              { line-height: 1.6; flex-grow: 1; margin-bottom: 100px; }
+.content article      { max-width: var(--dm-page-width); margin: 0 auto; }
+.content h1           { color: var(--cl-h1); font-weight: 50; }
+.content h2           { color: var(--cl-h2); font-weight: 500; }
+.content p            { margin-bottom: 1.5rem; }
+.content a            { color: var(--cl-link-page); text-decoration: none; }
+.content a:hover      { text-decoration: underline; }
+.content h1           { font-size: 28pt; }
+.content h2           { font-size: 14pt; }
+.content .section     { border-bottom: solid 1px var(--cl-border-nav); }
+.content .docstring   { padding-left: 50px; }
+.content .symbol      { margin-bottom: 50px; }
 
 /* Index page */
+.page.index           { display: block; }
 .index .banner        { background: var(--cl-banner-bg); color: var(--cl-banner-fg); text-align: center; }
 .index .banner h1     { font-size: 80px; font-style: italic; font-family: var(--ft-logofm); margin: 0; padding: 50px 0 20px 0; }
 .index .banner .sub   { font-size: 30px; font-weight: 100; margin: 0; padding: 0 0 50px 0; color: #aaa; }
@@ -163,24 +170,13 @@ code                  { background: var(--cl-preformatted); }
 .outline-text-2,
 .outline-text-3       { margin-left: 50px; }
 
-/* API reference page */
-.api                  { display: flex !important; }
-.api > div            { padding: 20px; }
-
 /* -- Left menu with index of all sections & symbols  */
-.api-menu             { background: var(--cl-bg-light); border-right: 1px solid var(--cl-border-nav); min-width: 200px; clear: both; }
-.api-menu a           { text-decoration: none; color: var(--cl-link-menu); }
-.api-menu a:hover     { color: var(--cl-link-menu-hover); }
-.api-menu ul          { list-style: square; }
-.api-menu ul li       { margin-bottom: 8px; }
-
-/* -- Right side of the API page with the actual content */
-.page .section        { border-bottom: solid 1px var(--cl-border-nav); }
-.page .docstring      { padding-left: 50px; }
-.page .symbol         { margin-bottom: 50px; }
-
-/* doc */
-.doc > div { padding: 20px; }
+.left-pane            { background: var(--cl-bg-light); border-right: 1px solid var(--cl-border-nav);
+                        min-width: 200px; width: 20%; padding: 20px; }
+.left-pane a          { text-decoration: none; color: var(--cl-link-menu); }
+.left-pane a:hover    { color: var(--cl-link-menu-hover); }
+.left-pane ul         { list-style: square; }
+.left-pane ul li      { margin-bottom: 8px; }
 
 /* Mobile settings */
 
@@ -193,23 +189,22 @@ code                  { background: var(--cl-preformatted); }
     .footer ul        { justify-content: center; }
 
     /* Nav */
+    .nav              { flex-direction: column; }
     .nav h1           { width: auto; float: none; }
-    .nav .menu        { width: 100%; margin: 0; }
+    .nav ul           { justify-content: center; }
     .nav li:first-child { display: none; }
 
     /* Page */
-    .page             { width: calc(100% - 60px); }
-    .page .section    { margin-bottom: 50px; }
-    .page .docstring  { padding-left: 0; }
+    .page               { flex-direction: column-reverse;}
+    .left-pane          { width: auto; padding: 20px; }
+    .content            { padding: 20px; margin-bottom: 0; }
+    .content .section   { margin-bottom: 50px; }
+    .content .docstring { padding-left: 0; }
 
     /* Index */
     .index .menu      { padding: 0 20px; }
     .index .banner    { padding: 0 20px; }
-    .index .page      { width: calc(100%-40px); padding: 0 20px; }
-
-    /* API */
-    .api              { width: 100%; }
-    .api-menu         { display: none; }
+    .index .content   { width: calc(100%-40px); padding: 0 20px; }
 
     /* Org-Mode */
     .outline-text-2,
