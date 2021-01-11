@@ -618,7 +618,7 @@ consumption from templatel."
     (templatel--token-= scanner)
     (cons
      id
-     (templatel--parser-join-chars
+     (templatel--join-chars
       (templatel--scanner-zero-or-more
        scanner
        (lambda()
