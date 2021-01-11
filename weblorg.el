@@ -732,7 +732,7 @@ that is accessible with the same syntax as the template filter."
        (mapcar #'car
                (weblorg--route-posts
                 ;; find route named `route-name'
-                (weblorg--site-route (gethash :site route) route-name)))))))
+                (weblorg--site-route site route-name)))))))
 
 (defun weblorg--route-importfn (route)
   "Build the import function for ROUTE.
