@@ -8,6 +8,12 @@
   <div class="page doc">
 
     <div class="left-pane">
+      <h3>
+        <a href="{{ url_for("doc") }}">
+          Getting Started
+        </a>
+      </h3>
+
       {% for subpost in weblorg_route_posts("docs") %}
         <h3>
           <a href="{{ url_for("docs", slug=subpost.slug) }}">

@@ -167,6 +167,7 @@ code                  { background: var(--cl-preformatted); }
 
 /* HTML generated off of Org-Mode files */
 .outline-2 h2         { margin: 40px 0; color: var(--cl-h1); font-size: var(--ft-size-0); font-weight: 50;  }
+.outline-3 h3,
 .outline-text-2,
 .outline-text-3       { margin-left: 50px; }
 
