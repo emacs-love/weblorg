@@ -97,7 +97,7 @@
   "The weblorg's library version.")
 
 (defvar weblorg-meta
-  `(("meta" ("generator" . ,(format "weblorg %s (https://github.com/clarete/weblorg)" weblorg-version))))
+  `(("meta" ("generator" . ,(format "weblorg %s (https://emacs.love/weblorg)" weblorg-version))))
   "Collection of variables that always get added to templates.")
 
 (defvar weblorg-default-url "http://localhost:8000"
