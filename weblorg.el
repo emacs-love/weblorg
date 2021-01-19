@@ -725,7 +725,11 @@ that is accessible with the same syntax as the template filter."
     (templatel-env-add-filter
      env "strftime" (lambda(time format)
                       (when time (format-time-string format time))))
-
+    ;; current time (not formatted)
+    (templatel-env-add-filter
+     env "now" (lambda(&optional _)
+                      (encode-time (decode-time))))
+    ;; interact with routes
     (templatel-env-add-filter
      env "weblorg_route_posts"
      (lambda(route-name)
