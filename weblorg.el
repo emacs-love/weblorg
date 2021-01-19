@@ -5,7 +5,7 @@
 ;; Version: 0.1.0
 ;; Package-Requires: ((templatel "0.1.3") (emacs "26.1"))
 ;;
-;; Copyright (C) 2020  Lincoln Clarete
+;; Copyright (C) 2020-2021  Lincoln Clarete
 ;;
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
