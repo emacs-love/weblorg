@@ -945,7 +945,11 @@ expression (not a glob)."
      (lambda (f)
        (not (string-match input-exclude f)))
      (let* ((glob (concat (file-name-as-directory base-dir) input-pattern))
-            (result (eshell-extended-glob glob)))
+            ;; directory paths filtered off results
+            (result (seq-filter
+                     (lambda(p)
+                       (not (string= (file-name-nondirectory p) "")))
+                     (eshell-extended-glob glob))))
        (if (and (stringp result)
                 (string= result glob))
            (signal
