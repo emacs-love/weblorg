@@ -6,20 +6,21 @@
 
 {% block page %}
   <div class="page doc">
-
     <div class="left-pane">
       <h3>
-        <a href="{{ url_for("doc") }}">
+        <a href="{{ url_for(route.name, slug="index") }}">
           Getting Started
         </a>
       </h3>
 
-      {% for subpost in weblorg_route_posts("docs") %}
-        <h3>
-          <a href="{{ url_for("docs", slug=subpost.slug) }}">
-            {{ subpost.title }}
-          </a>
-        </h3>
+      {% for subpost in weblorg_route_posts(route.name) %}
+        {% if subpost.slug != "index" %}
+          <h3>
+            <a href="{{ url_for(route.name, slug=subpost.slug) }}">
+              {{ subpost.title }}
+            </a>
+          </h3>
+        {% endif %}
       {% endfor %}
     </div>
 

@@ -194,6 +194,7 @@ code                  { background: var(--cl-preformatted); }
     .nav h1           { width: auto; float: none; }
     .nav ul           { justify-content: center; }
     .nav li:first-child { display: none; }
+    .nav .menu        { font-size: 1.2rem; }
 
     /* Page */
     .page               { flex-direction: column-reverse;}

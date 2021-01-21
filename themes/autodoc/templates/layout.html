@@ -23,7 +23,7 @@
           <div class="menu">
             <ul>
               <li><a href="{{ url_for("index") }}">home</a></li>
-              <li><a href="{{ url_for("doc") }}">documentation</a></li>
+              <li><a href="{{ url_for("docs", slug="index") }}">documentation</a></li>
               <li><a href="{{ url_for("api") }}">api reference</a></li>
               <li><a href="{{ project_github }}" target="_blank">github</a></li>
             </ul>
@@ -40,7 +40,7 @@
         <div class="footer">
           <ul>
             <li><a href="{{ url_for("index") }}">home</a></li>
-            <li><a href="{{ url_for("doc") }}">documentation</a></li>
+            <li><a href="{{ url_for("docs", slug="index") }}">documentation</a></li>
             <li><a href="{{ url_for("api") }}">api reference</a></li>
             <li><a href="{{ project_github }}" target="_blank">github</a></li>
           </ul>
