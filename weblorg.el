@@ -945,17 +945,17 @@ expression (not a glob)."
      (lambda (f)
        (not (string-match input-exclude f)))
      (let* ((glob (concat (file-name-as-directory base-dir) input-pattern))
-            ;; directory paths filtered off results
-            (result (seq-filter
-                     (lambda(p)
-                       (not (string= (file-name-nondirectory p) "")))
-                     (eshell-extended-glob glob))))
+            (result (eshell-extended-glob glob)))
        (if (and (stringp result)
                 (string= result glob))
            (signal
             'weblorg-error-config
             (format "no matches for input-pattern `%s` in route `%s`" input-pattern route-name))
-         result)))))
+         ;; directory paths filtered off results
+         (seq-filter
+          (lambda(p)
+            (not (string= (file-name-nondirectory p) "")))
+          result))))))
 
 (defun weblorg--slugify (s)
   "Make slug of S."
