@@ -1,186 +1,118 @@
-<!DOCTYPE HTML>
-<!--
-     Stellar by HTML5 UP
-     html5up.net | @ajlkn
-     Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
+
+<!doctype html>
+<html lang="en-us">
   <head>
-    <title>Weblorg - The unicorn dairy</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <link rel="stylesheet" href="https://emacs.love/weblorg/static/css/main.css" />
-    <meta name="description" content="Org-mode blog static generator">
-    <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+    
+      <meta charset="utf-8">
+      <title>weblorg - Home</title>
+      <meta name="description" content="A Static HTML Generator for Emacs and Org-Mode">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+      <link rel="stylesheet" href="http://guinho.local:8000/static/css/main.css" />
+    
   </head>
-  <body class="is-preload">
-    <!-- Wrapper -->
-    <div id="wrapper">
+  <body>
+    <div class="document">
+      
 
-      <!-- Header -->
-      <header id="header" class="alt">
-        <span class="logo"><img src="https://emacs.love/weblorg/static/images/logo.svg" alt="Weblorg purple unicord logo" /></span>
-        <h1>Weblorg - The unicorn dairy</h1>
-        <p>
-          Magicly transform your org files into static websites and blogs.
-        </p>
-      </header>
+      
+      
+  <div class="page index">
+    <header>
+      <div class="banner">
+        <h1>
+          <img
+            src="http://guinho.local:8000/static/images/logo.svg"
+            alt="weblorg">
+          weblorg
+        </h1>
+        <div class="sub">
+          A Static HTML Generator for Emacs and Org-Mode
+        </div>
+      </div>
+    </header>
 
-      <!-- Nav -->
-      <nav id="nav">
-        <ul>
-          <li><a href="/"  class="active" >Home</a></li>
-          <li><a href="https://emacs.love/weblorg/api.html" >API Docs</a></li>
-        </ul>
-      </nav>
+    
 
-      <div id="main">
-        
-<section id="intro" class="main">
-  <div class="spotlight">
     <div class="content">
-      <p>
-The weblorg an Emacs-Lisp API rather than a command line tool. The use of the API becomes the description of a pipeline that takes lists of Org-Mode files as input, templatize them and generate HTML files as an output.
-</p>
-
-<div id="outline-container-org03f859c" class="outline-2 features no-heading">
-<h2 id="org03f859c">Highlights</h2>
-<div class="outline-text-2" id="text-org03f859c">
-</div>
-
-<div id="outline-container-org9e8ccec" class="outline-3 feature">
-<h3 id="org9e8ccec">Pure Emacs Lisp</h3>
-<div class="outline-text-3" id="text-org9e8ccec">
-<p>
-No python, ruby, go or other language
-</p>
-</div>
-</div>
-
-<div id="outline-container-org205d083" class="outline-3 feature">
-<h3 id="org205d083">Static</h3>
-<div class="outline-text-3" id="text-org205d083">
-<p>
-org, templatel, HTML &amp; CSS.
-Everyting inside your emacs!
-</p>
-</div>
-</div>
-
-<div id="outline-container-org4aa0ef6" class="outline-3 feature">
-<h3 id="org4aa0ef6">Powered by Templatel</h3>
-<div class="outline-text-3" id="text-org4aa0ef6">
-<p>
-<a href="//clarete.li/templatel/">templatel</a> is the modern templating language that was missing for Emacs-Lisp. It provides variable substitution and control flow through a clean and powerful language inspired by Python's Jinja.
-</p>
-</div>
-</div>
-
-<div id="outline-container-org01331bf" class="outline-3 feature">
-<h3 id="org01331bf">Blog ready</h3>
-<div class="outline-text-3" id="text-org01331bf">
-<p>
-Permalink, categories, pages, posts and custom layouts.
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-orgc34be43" class="outline-2">
-<h2 id="orgc34be43">Getting started</h2>
-<div class="outline-text-2" id="text-orgc34be43">
-<p>
-This is the minimal structure for a blog powered by Weblorg!
-</p>
-
-<div class="org-src-container">
-<pre class="src src-shell">blog/
-&#9500;&#9472;&#9472; pages
-&#9474;&#160;&#160; &#9492;&#9472;&#9472; about.org
-&#9500;&#9472;&#9472; posts
-&#9474;&#160;&#160; &#9492;&#9472;&#9472; my-first-post.org
-&#9492;&#9472;&#9472; publish.el
-</pre>
-</div>
-
-<p>
-On <code>publish.el</code> is the Weblorg configuration file, you can configure routes, theme and other things. This is the minimal setup for a blog.
-</p>
-
-<div class="org-src-container">
-<pre class="src src-lisp">(use-package weblorg)
-(use-package templatel)
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Org-Mode depends on `</span><span class="org-comment"><span class="org-constant">htmlize</span></span><span class="org-comment">' in order to produce HTML off Org-Mode</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">blocks with syntax highlighting.</span>
-(use-package htmlize)
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Tells `</span><span class="org-comment"><span class="org-constant">htmlize</span></span><span class="org-comment">' library to output HTML with css classes instead of</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">directly formatting the output.</span>
-(setq org-html-htmlize-output-type 'css)
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Generate blog posts</span>
-(weblorg-route
- <span class="org-builtin">:name</span> <span class="org-string">"posts"</span>
- <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
- <span class="org-builtin">:template</span> <span class="org-string">"post.html"</span>
- <span class="org-builtin">:output</span> <span class="org-string">"output/posts/{{ slug }}.html"</span>
- <span class="org-builtin">:url</span> <span class="org-string">"/posts/{{ slug }}.html"</span>)
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Generate pages</span>
-(weblorg-route
- <span class="org-builtin">:name</span> <span class="org-string">"pages"</span>
- <span class="org-builtin">:input-pattern</span> <span class="org-string">"pages/.*\\.org$"</span>
- <span class="org-builtin">:template</span> <span class="org-string">"page.html"</span>
- <span class="org-builtin">:output</span> <span class="org-string">"output/{{ slug }}/index.html"</span>
- <span class="org-builtin">:url</span> <span class="org-string">"/{{ slug }}"</span>)
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Generate posts summary</span>
-(weblorg-route
- <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
- <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
- <span class="org-builtin">:input-aggregate</span> #'weblorg-input-aggregate-all
- <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
- <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
- <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
-
-(weblorg-copy-static
- <span class="org-builtin">:output</span> <span class="org-string">"output/static/{{ file }}"</span>
- <span class="org-builtin">:url</span> <span class="org-string">"/static/{{ file }}"</span>)
-
-(weblorg-export)
-</pre>
-</div>
-
-<p>
-To generate your blog touched by unicorn just run
-</p>
-
-<div class="org-src-container">
-<pre class="src src-shell">emacs --script publish.el 2&gt;&amp;1
-</pre>
-</div>
-</div>
-</div>
-
-<div id="outline-container-org236941f" class="outline-2">
-<h2 id="org236941f">Theming</h2>
-<div class="outline-text-2" id="text-org236941f">
-<p>
-Weblorg came with a default theme for you can focus on content, but if you want to create modify existing template just create a folder <b>templates</b> on the same level of <code>publish.el</code>
-</p>
-</div>
-</div>
-
-    </div>
-  </div>
-</section>
-
+      <div class="action">
+        <a href="http://guinho.local:8000/doc/index.html">Get Started</a>
       </div>
 
-      <!-- Footer -->
-      <footer id="footer">
-        <p class="copyright">&copy; Made with love <3 by Weblorg. Design by: <a href="https://html5up.net">HTML5 UP</a>.</p>
-      </footer>
+      <article>
+        
+<div id="outline-container-org757efa0" class="outline-2 features no-heading">
+<h2 id="org757efa0">Highlights</h2>
+<div class="outline-text-2" id="text-org757efa0">
+</div>
+
+<div id="outline-container-org3d6b2fd" class="outline-3 feature emacs-lisp">
+<h3 id="org3d6b2fd">Pure Emacs Lisp</h3>
+<div class="outline-text-3" id="text-org3d6b2fd">
+<p>
+No other language, no other framework. Just Org-Mode, HTML, CSS and
+Weblorg. Do everyting inside Emacs!
+</p>
+</div>
+</div>
+
+<div id="outline-container-org11b15b2" class="outline-3 feature static">
+<h3 id="org11b15b2">Static</h3>
+<div class="outline-text-3" id="text-org11b15b2">
+<p>
+Easily hosted on GitHub pages, Amazon S3 or any other HTTP service;
+builds can be automated via GitHub Actions, Travis or any other CI.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org79588fd" class="outline-3 feature templating">
+<h3 id="org79588fd">Powerful Templating</h3>
+<div class="outline-text-3" id="text-org79588fd">
+<p>
+with <a href="https://clarete.li/templatel/">templatel</a>, weblorg can be themed with a language that provides
+variable substitution and control flow, inspired by Python's Jinja.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0423844" class="outline-3 feature blog">
+<h3 id="org0423844">Blog Ready</h3>
+<div class="outline-text-3" id="text-org0423844">
+<p>
+Permalinks, categories, pages, posts, theming and custom templates.
+</p>
+</div>
+</div>
+</div>
+
+      </article>
+    </div>
+
+  </div>
+
+
+      
+      
+        <div class="footer">
+          <ul>
+            <li><a href="http://guinho.local:8000/">home</a></li>
+            <li><a href="http://guinho.local:8000/doc/index.html">documentation</a></li>
+            <li><a href="http://guinho.local:8000/api.html">api reference</a></li>
+            <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+          </ul>
+          <div class="ack">
+            Made with &#x2665; and
+            <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
+              <img src="http://guinho.local:8000/static/emacs-bw.svg" width="16" height="16" />
+            </a>
+            by
+            <a href="https://clarete.li" target="_blank">
+              @clarete
+            </a>
+          </div>
+        </div>
+      
     </div>
   </body>
 </html>

@@ -1,100 +1,37 @@
 #+OPTIONS: toc:nil num:nil
 
-The weblorg an Emacs-Lisp API rather than a command line tool. The use of the API becomes the description of a pipeline that takes lists of Org-Mode files as input, templatize them and generate HTML files as an output.
-
 * Highlights
   :PROPERTIES:
   :HTML_CONTAINER_CLASS: features no-heading
   :END:
 
 ** Pure Emacs Lisp
-:PROPERTIES:
-:HTML_CONTAINER_CLASS: feature
-:END:
-No python, ruby, go or other language
+   :PROPERTIES:
+   :HTML_CONTAINER_CLASS: feature emacs-lisp
+   :END:
+
+   No other language, no other framework. Just Org-Mode, HTML, CSS and
+   Weblorg. Do everyting inside Emacs!
 
 ** Static
-:PROPERTIES:
-:HTML_CONTAINER_CLASS: feature
-:END:
-org, templatel, HTML & CSS.
-Everyting inside your emacs!
+   :PROPERTIES:
+   :HTML_CONTAINER_CLASS: feature static
+   :END:
 
-** Powered by Templatel
-:PROPERTIES:
-:HTML_CONTAINER_CLASS: feature
-:END:
-[[Https://clarete.li/templatel/][templatel]] is the modern templating language that was missing for Emacs-Lisp. It provides variable substitution and control flow through a clean and powerful language inspired by Python's Jinja.
+   Easily hosted on GitHub pages, Amazon S3 or any other HTTP service;
+   builds can be automated via GitHub Actions, Travis or any other CI.
 
-** Blog ready
-:PROPERTIES:
-:HTML_CONTAINER_CLASS: feature
-:END:
-Permalink, categories, pages, posts and custom layouts.
+** Powerful Templating
+   :PROPERTIES:
+   :HTML_CONTAINER_CLASS: feature templating
+   :END:
 
-* Getting started
+   with [[https://clarete.li/templatel/][templatel]], weblorg can be themed with a language that provides
+   variable substitution and control flow, inspired by Python's Jinja.
 
-This is the minimal structure for a blog powered by Weblorg!
+** Blog Ready
+   :PROPERTIES:
+   :HTML_CONTAINER_CLASS: feature blog
+   :END:
 
-#+begin_src shell
-blog/
-├── pages
-│   └── about.org
-├── posts
-│   └── my-first-post.org
-└── publish.el
-#+end_src
-
-On ~publish.el~ is the Weblorg configuration file, you can configure routes, theme and other things. This is the minimal setup for a blog.
-
-#+begin_src lisp
-(use-package weblorg)
-(use-package templatel)
-;; Org-Mode depends on `htmlize' in order to produce HTML off Org-Mode
-;; blocks with syntax highlighting.
-(use-package htmlize)
-
-;; Tells `htmlize' library to output HTML with css classes instead of
-;; directly formatting the output.
-(setq org-html-htmlize-output-type 'css)
-
-;; Generate blog posts
-(weblorg-route
- :name "posts"
- :input-pattern "posts/.*\\.org$"
- :template "post.html"
- :output "output/posts/{{ slug }}.html"
- :url "/posts/{{ slug }}.html")
-
-;; Generate pages
-(weblorg-route
- :name "pages"
- :input-pattern "pages/.*\\.org$"
- :template "page.html"
- :output "output/{{ slug }}/index.html"
- :url "/{{ slug }}")
-
-;; Generate posts summary
-(weblorg-route
- :name "index"
- :input-pattern "posts/.*\\.org$"
- :input-aggregate #'weblorg-input-aggregate-all
- :template "blog.html"
- :output "output/index.html"
- :url "/")
-
-(weblorg-copy-static
- :output "output/static/{{ file }}"
- :url "/static/{{ file }}")
-
-(weblorg-export)
-#+end_src
-
-To generate your blog touched by unicorn just run
-
-#+begin_src shell
-emacs --script publish.el 2>&1
-#+end_src
-
-* Theming
-Weblorg came with a default theme for you can focus on content, but if you want to create modify existing template just create a folder *templates* on the same level of ~publish.el~
+   Permalinks, categories, pages, posts, theming and custom templates.
