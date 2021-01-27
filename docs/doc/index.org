@@ -1,0 +1,44 @@
+#+TITLE: Getting Started
+#+SLUG: index
+
+Weblorg is an Emacs-Lisp API rather than a command line tool. The use
+of the API becomes the description of a pipeline that takes lists of
+Org-Mode files as input, templatize them and generate HTML files as an
+output. e.g.:
+
+#+begin_src shell
+blog/
+├── posts
+│   └── my-first-post.org
+└── publish.el
+#+end_src
+
+On ~publish.el~ is the Weblorg configuration file, you can configure
+routes, theme and other things. This is the minimal setup for a blog.
+
+#+begin_src lisp
+(use-package weblorg)
+
+(weblorg-route
+ :name "posts"
+ :input-pattern "posts/.*\\.org$"
+ :template "post.html"
+ :output "output/posts/{{ slug }}.html"
+ :url "/posts/{{ slug }}.html")
+
+(weblorg-route
+ :name "index"
+ :input-pattern "posts/.*\\.org$"
+ :input-aggregate #'weblorg-input-aggregate-all-desc
+ :template "blog.html"
+ :output "output/index.html"
+ :url "/")
+     
+(weblorg-export)
+#+end_src
+
+To generate your blog touched by unicorn just run
+
+#+begin_src shell
+emacs --script publish.el
+#+end_src

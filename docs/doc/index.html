@@ -1,0 +1,151 @@
+
+<!doctype html>
+<html lang="en-us">
+  <head>
+    
+      <meta charset="utf-8">
+      <title>weblorg - documentation</title>
+      <meta name="description" content="A Static HTML Generator for Emacs and Org-Mode">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+      <link rel="stylesheet" href="https://emacs.love/weblorg/static/css/main.css" />
+    
+  </head>
+  <body>
+    <div class="document">
+      
+        <header>
+          <h1>
+            <a href="https://emacs.love/weblorg/">
+              <img
+                src="https://emacs.love/weblorg/static/images/logo.svg"
+                alt="weblorg">
+              <div>
+                weblorg
+              </div>
+            </a>
+          </h1>
+
+          <div class="menu">
+            <ul>
+              <li><a href="https://emacs.love/weblorg/">home</a></li>
+              <li class="active">
+                <a href="https://emacs.love/weblorg/doc/index.html">documentation</a>
+              </li>
+              <li>
+                <a href="https://emacs.love/weblorg/api.html">api reference</a>
+              </li>
+              <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+            </ul>
+          </div>
+        </header>
+      
+
+      
+      
+  <div class="page doc">
+
+    
+    <div class="left-pane">
+      <h3>
+        <a href="https://emacs.love/weblorg/doc/index.html">
+          Getting Started
+        </a>
+      </h3>
+
+      
+        
+      
+    </div>
+
+    
+    <div class="content">
+      <article>
+        
+        <div class="title">
+          <h1>Getting Started</h1>
+        </div>
+        
+
+        <div class="content">
+          <p>
+Weblorg is an Emacs-Lisp API rather than a command line tool. The use
+of the API becomes the description of a pipeline that takes lists of
+Org-Mode files as input, templatize them and generate HTML files as an
+output. e.g.:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">blog/
+&#9500;&#9472;&#9472; posts
+&#9474;   &#9492;&#9472;&#9472; my-first-post.org
+&#9492;&#9472;&#9472; publish.el
+</pre>
+</div>
+
+<p>
+On <code>publish.el</code> is the Weblorg configuration file, you can configure
+routes, theme and other things. This is the minimal setup for a blog.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(use-package weblorg)
+
+(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"posts"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
+ <span class="org-builtin">:template</span> <span class="org-string">"post.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/posts/{{ slug }}.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/posts/{{ slug }}.html"</span>)
+
+(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
+ <span class="org-builtin">:input-aggregate</span> #'weblorg-input-aggregate-all-desc
+ <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
+
+(weblorg-export)
+</pre>
+</div>
+
+<p>
+To generate your blog touched by unicorn just run
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">emacs --script publish.el
+</pre>
+</div>
+
+        </div>
+      </article>
+    </div>
+  </div>
+
+
+      
+      
+        <div class="footer">
+          <ul>
+            <li><a href="https://emacs.love/weblorg/">home</a></li>
+            <li><a href="https://emacs.love/weblorg/doc/index.html">documentation</a></li>
+            <li><a href="https://emacs.love/weblorg/api.html">api reference</a></li>
+            <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+          </ul>
+          <div class="ack">
+            Made with &#x2665; and
+            <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
+              <img src="https://emacs.love/weblorg/static/emacs-bw.svg" width="16" height="16" />
+            </a>
+            by
+            <a href="https://clarete.li" target="_blank">
+              @clarete
+            </a>
+          </div>
+        </div>
+      
+    </div>
+  </body>
+</html>
