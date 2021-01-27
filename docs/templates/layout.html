@@ -1,0 +1,70 @@
+{# layout.html --- base template for the theme -*- Mode: Jinja2; -*- #}
+<!doctype html>
+<html lang="en-us">
+  <head>
+    {% block head %}
+      <meta charset="utf-8">
+      <title>{{ project_name }} - {% block title %}Home{% endblock %}</title>
+      <meta name="description" content="{% block description %}{{ project_description }}{% endblock %}">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+      <link rel="stylesheet" href="{{ url_for("static", file="css/main.css") }}" />
+    {% endblock %}
+  </head>
+  <body>
+    <div class="document">
+      {% block nav %}
+        <header>
+          <h1>
+            <a href="{{ url_for("index") }}">
+              <img
+                src="{{ url_for("static", file="images/logo.svg") }}"
+                alt="{{ project_name }}">
+              <div>
+                {{ project_name }}
+              </div>
+            </a>
+          </h1>
+
+          <div class="menu">
+            <ul>
+              <li><a href="{{ url_for("index") }}">home</a></li>
+              <li{% if route.name == "docs" %} class="active"{% endif %}>
+                <a href="{{ url_for("docs", slug="index") }}">documentation</a>
+              </li>
+              <li{% if route.name == "api" %} class="active"{% endif %}>
+                <a href="{{ url_for("api") }}">api reference</a>
+              </li>
+              <li><a href="{{ project_github }}" target="_blank">github</a></li>
+            </ul>
+          </div>
+        </header>
+      {% endblock %}
+
+      {# Probably where most of the action will happen #}
+      {% block page %}{% endblock %}
+
+      {# Links, copyright notice, etc #}
+      {% block footer %}
+        <div class="footer">
+          <ul>
+            <li><a href="{{ url_for("index") }}">home</a></li>
+            <li><a href="{{ url_for("docs", slug="index") }}">documentation</a></li>
+            <li><a href="{{ url_for("api") }}">api reference</a></li>
+            <li><a href="{{ project_github }}" target="_blank">github</a></li>
+          </ul>
+          <div class="ack">
+            Made with &#x2665; and
+            <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
+              <img src="{{ url_for("static", file="emacs-bw.svg") }}" width="16" height="16" />
+            </a>
+            by
+            <a href="https://clarete.li" target="_blank">
+              @clarete
+            </a>
+          </div>
+        </div>
+      {% endblock %}
+    </div>
+  </body>
+</html>
