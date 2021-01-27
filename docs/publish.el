@@ -26,9 +26,15 @@
 ;; Defaults to localhost:8000
 (if (string= (getenv "ENV") "prod")
     (setq weblorg-default-url "https://emacs.love/weblorg"))
+(if (string= (getenv "ENV") "local")
+    (setq weblorg-default-url "http://guinho.local:8000"))
 
 ;; Set site wide configuration
-(weblorg-site :theme "site")
+(weblorg-site
+ :theme "autodoc"
+ :template-vars '(("project_name" . "weblorg")
+                  ("project_github" . "https://github.com/emacs-love/weblorg")
+                  ("project_description" . "A Static HTML Generator for Emacs and Org-Mode")))
 
 ;; Generate index
 (weblorg-route
@@ -37,6 +43,13 @@
  :template "index.html"
  :output "./index.html"
  :url "/")
+
+(weblorg-route
+ :name "docs"
+ :input-pattern "./doc/*.org"
+ :template "doc.html"
+ :output "./doc/{{ slug }}.html"
+ :url "/doc/{{ slug }}.html")
 
 (weblorg-route
  :name "api"
@@ -49,10 +62,12 @@
  :output "api.html"
  :url "/api.html")
 
-
-(weblorg-copy-static
+(weblorg-route
+ :name "static"
  :output "static/{{ file }}"
  :url "/static/{{ file }}")
+
+(setq debug-on-error t)
 
 (weblorg-export)
 ;;; publish.el ends here
