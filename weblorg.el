@@ -533,7 +533,9 @@ last."
                              (t
                               `(("type" . "variable")
                                 ("name" . ,sym))))))
-                    (apropos-internal pattern))))))
+                    (if (stringp pattern)
+                        (apropos-internal pattern)
+                      (mapcan #'apropos-internal pattern)))))))
 
 (defun weblorg-input-source-autodoc-sections (sections)
   "Run `weblorg-input-source-autodoc' for various SECTIONS."
