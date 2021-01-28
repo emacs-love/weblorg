@@ -1,4 +1,4 @@
-{# doc.html --- Documentation Article Template; -*- Mode: Jinja2; -*- #}
+{# doc.html --- documentation article template -*- Mode: Jinja2; -*- #}
 
 {% extends "layout.html" %}
 
@@ -6,6 +6,8 @@
 
 {% block page %}
   <div class="page doc">
+
+    {# Links for all entries in the same route; always starts with index #}
     <div class="left-pane">
       <h3>
         <a href="{{ url_for(route.name, slug="index") }}">
@@ -24,6 +26,7 @@
       {% endfor %}
     </div>
 
+    {# Content of the currently selected post #}
     <div class="content">
       <article>
         {% if post.title %}

@@ -19,7 +19,6 @@
             <a href="{{ url_for("index") }}">{{ project_name }}</a>
             {% block title %}{% endblock %}
           </h1>
-
           <div class="menu">
             <ul>
               <li><a href="{{ url_for("index") }}">home</a></li>
@@ -27,8 +26,7 @@
               <li><a href="{{ url_for("api") }}">api reference</a></li>
               <li><a href="{{ project_github }}" target="_blank">github</a></li>
             </ul>
-        </div>
-
+          </div>
         </div>
       {% endblock %}
 
