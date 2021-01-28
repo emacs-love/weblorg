@@ -115,13 +115,13 @@
 
 OPTIONS can contain the following parameters:
 
- * ~:base-url~: Website's base URL.  Can be protocol followed by
+ * *:base-url* Website's base URL.  Can be protocol followed by
    domain and optionally by path.  Notice that each site is
    registered within a global hash table `weblorg--sites'.  If one
    tries to register two sites with the same ~:base-url~, an
    error will be raised.
 
- * `:template-vars': Association list of extra variables to be
+ * *:template-vars* Association list of extra variables to be
    passed down to all templates."
   (let* ((opt (seq-partition options 2))
          (base-url (weblorg--get opt :base-url weblorg-default-url))
@@ -146,8 +146,13 @@ OPTIONS can contain the following parameters:
 (defun weblorg-route (&rest options)
   "Add a new route defined with parameters within OPTIONS.
 
-A route is an abstraction to manage how Org-Mode files are found
-and how they are transformed in HTML.
+A route contains enough information to find content to be
+rendered, which template to use to render such content, where to
+save the rendered output and how to create hyperlinks to it.  It
+sounds like it's a lot of responsibilities for a single
+abstraction, but one can think of it as an HTTP route in a
+website with some helpers for also finding which content to
+render in that route.
 
 Examples:
 
@@ -182,23 +187,23 @@ Examples:
 
 Parameters in ~OPTIONS~:
 
- * `:input-pattern': glob expression for selecting files within
+ * *:input-pattern* glob expression for selecting files within
     path `:base-dir'.  It defaults to \"*.org\";
 
- * `:input-exclude': Regular expression for excluding files from
+ * *:input-exclude* Regular expression for excluding files from
     the input list.  Defaults to \"^$\";
 
- * `:input-filter': Function for filtering out files after they
+ * *:input-filter* Function for filtering out files after they
    were parsed.  This allows using data from within the Org-Mode
    file to decide if it should be included or not in the input
    list.
 
- * `:input-aggregate': Function for grouping files into
+ * *:input-aggregate* Function for grouping files into
    collections.  Templates are applied to collections, not to
    files from the input list.  The variables available for the
    template come from the return of this function.
 
- * `:input-source': List of collections of data to be written
+ * *:input-source* List of collections of data to be written
    directly to templates.  In other words, this parameter
    replaces the pipeline `pattern` > `exclude` > `filter` >
    `aggregate` and will feed data directly into the function that
@@ -206,28 +211,28 @@ Parameters in ~OPTIONS~:
    files off template variables read from whatever source you
    want.
 
- * `:output': String with a template for generating the output
+ * *:output* String with a template for generating the output
    file name.  The variables available are the variables of each
    item of a collection returned by `:input-aggregate'.
 
- * `:url': Similarly to the `:output' parameter, it takes a
+ * *:url* Similarly to the `:output' parameter, it takes a
    template string as input and returns the URL of an entry of a
    given entry in this route.
 
- * `:template': Name of the template that should be used to
+ * *:template* Name of the template that should be used to
    render a collection of files.  Notice that this is the name of
    the template, not its path (neither relative or absolute).
    The value provided here will be searched within 1. the
    directory *template* within `:base-dir' 2. the directory
    *templates* within weblorg's source code.
 
- * `:template-vars': Association list of extra variables to be
+ * *:template-vars* Association list of extra variables to be
    passed down to the template.
 
- * `:base-dir': Base path for `:input-pattern' and `:output'; If
+ * *:base-dir* Base path for `:input-pattern' and `:output'; If
     not provided, will default to the `:base-dir' of the website;
 
- * `:site': Instance of a weblorg site created by the function
+ * *:site* Instance of a weblorg site created by the function
    [[anchor:symbol-weblorg-site][weblorg-site]].  If not provided, it
    will use a default value.  The most valuable information a
    site carries is its base URL, and that's why it's relevant for
@@ -313,22 +318,22 @@ Examples:
 
 Parameters in ~OPTIONS~:
 
- * `:output': String with a template for generating the output
+ * *:output* String with a template for generating the output
    file name.  The variables available are the variables of each
    item of a collection returned by `:input-aggregate'.
 
- * `:url': Similarly to the `:output' parameter, it takes a
+ * *:url* Similarly to the `:output' parameter, it takes a
    template string as input and returns the URL of an entry of a
    given entry in this route.
 
- * `:site': Instance of a weblorg site created by the function
+ * *:site* Instance of a weblorg site created by the function
    [[anchor:symbol-weblorg-site][weblorg-site]].  If not provided, it
    will use a default value.  The most valuable information a
    site carries is its base URL, and that's why it's relevant for
    routes.  That way one can have multiple sites in one single
    program.
 
- * `:name': name of the route.  This defaults to ~\"static\"~.
+ * *:name* name of the route.  This defaults to ~\"static\"~.
    Notice that if you are using this function to copy assets from
    a built-in theme, the template of such a theme will reference
    the route ~\"static\"~ when including assets.  Which means
@@ -520,7 +525,43 @@ last."
 ;; ---- Input Source: autodoc ----
 
 (defun weblorg-input-source-autodoc (pattern)
-  "Pull metadata from Emacs-Lisp symbols that match PATTERN."
+  "Pull metadata from Emacs-Lisp symbols that match PATTERN.
+
+Input source functions allow using custom code for feeding the
+renderization pipeline.  It replaces the \"Collect -> Aggregate\"
+step with the output of a custom function.
+
+This function is one of these input sources.  Its input, PATTERN,
+is used to find which Emacs Lisp symbols should have its metadata
+returned.
+
+PATTERN can be either a string or a list of strings.  If it's a
+string, we parse all symbols found by `apropos-internal':
+
+  #+BEGIN_SRC emacs-lisp
+  (weblorg-route
+   :name \"templatel-api\"
+   :input-source (weblorg-input-source-autodoc \"^templatel-\")
+   :template \"autodoc.html\"
+   :output \"api.html\"
+   :url \"/api.html\")
+  #+END_SRC
+
+If PATTERN a list of strings, we'll build a list of all calls to
+`apropos-internal' for each of the strings in the list.  e.g.:
+
+  #+BEGIN_SRC emacs-lisp
+  (weblorg-route
+   :name \"templatel-api\"
+   :input-source (weblorg-input-source-autodoc
+                  '(\"^templatel-env\" \"^templatel-filter\"))
+   :template \"autodoc.html\"
+   :output \"api.html\"
+   :url \"/api.html\")
+  #+END_SRC
+
+If you want to group functions into sections, take a look at
+[[anchor:symbol-weblorg-input-source-autodoc-sections][weblorg-input-source-autodoc-sections]]."
   `((("symbols" . ,(mapcar
                     (lambda(sym)
                       (cons
