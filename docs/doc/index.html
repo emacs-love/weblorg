@@ -68,55 +68,179 @@
         
 
         <div class="content">
-          <p>
-Weblorg is an Emacs-Lisp API rather than a command line tool. The use
-of the API becomes the description of a pipeline that takes lists of
-Org-Mode files as input, templatize them and generate HTML files as an
-output. e.g.:
+          <div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orga8b3838">1. Installation</a>
+<ul>
+<li><a href="#org6523b5f">1.1. Via Melpa</a></li>
+<li><a href="#org1c66c53">1.2. Manually</a></li>
+</ul>
+</li>
+<li><a href="#orga9509bb">2. Setup a website</a>
+<ul>
+<li><a href="#org012ebff">2.1. Directory structure</a></li>
+<li><a href="#org06316ed">2.2. Publish script</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga8b3838" class="outline-2">
+<h2 id="orga8b3838"><span class="section-number-2">1</span> Installation</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org6523b5f" class="outline-3">
+<h3 id="org6523b5f"><span class="section-number-3">1.1</span> Via Melpa</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+The simplest and recommended way to install <code>weblorg</code> is via <a href="https://melpa.org">MELPA</a>.
+You must have something along these lines on your Emacs
+configuration for that to work:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(package-initialize)
+(add-to-list
+ 'package-archives
+ '(<span class="org-string">"melpa"</span> . <span class="org-string">"http://melpa.org/packages/"</span>))
+</pre>
+</div>
+
+<p>
+And then run <code>M-x package-install RET weblorg RET</code>.  Notice that
+you might need to run <code>M-x package-refresh-contents RET</code> if you
+haven't done that in a while.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1c66c53" class="outline-3">
+<h3 id="org1c66c53"><span class="section-number-3">1.2</span> Manually</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+If you don't want to use any package installer, you can just clone
+the repository somewhere on your computer, let's say
+<code>$HOME/src/weblorg</code>.  And then you need to add that directory to
+your Emacs configuration so the library can be found by <code>require</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(add-to-list 'load-path <span class="org-string">"~/src/weblorg"</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga9509bb" class="outline-2">
+<h2 id="orga9509bb"><span class="section-number-2">2</span> Setup a website</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Weblorg is an Emacs-Lisp API rather than a command line tool. The
+use of the API becomes the description of a pipeline that takes
+lists of Org-Mode files as input, templatize them and generate HTML
+files as an output.  Although it can be used just like any other
+Emacs Lisp API, there are some conventions for creating a weblorg.
+</p>
+</div>
+
+<div id="outline-container-org012ebff" class="outline-3">
+<h3 id="org012ebff"><span class="section-number-3">2.1</span> Directory structure</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Here's an example of a directory structure that is known to work
+well:
 </p>
 
 <div class="org-src-container">
 <pre class="src src-shell">blog/
 &#9500;&#9472;&#9472; posts
-&#9474;   &#9492;&#9472;&#9472; my-first-post.org
+&#9474;   &#9500;&#9472;&#9472; how-far-can-spiders-see.org
+&#9474;   &#9500;&#9472;&#9472; what-music-do-sloths-like.org
+&#9474;   &#9492;&#9472;&#9472; which-computers-would-crickets-use.org
+&#9500;&#9472;&#9472; pages
+&#9474;   &#9500;&#9472;&#9472; index.org
+&#9474;   &#9500;&#9472;&#9472; about.org
+&#9474;   &#9492;&#9472;&#9472; faq.org
+&#9500;&#9472;&#9472; templates
+&#9474;   &#9500;&#9472;&#9472; layout.html
+&#9474;   &#9500;&#9472;&#9472; blog.html
+&#9474;   &#9500;&#9472;&#9472; post.html
+&#9474;   &#9492;&#9472;&#9472; page.html
 &#9492;&#9472;&#9472; publish.el
 </pre>
 </div>
 
 <p>
-On <code>publish.el</code> is the Weblorg configuration file, you can configure
-routes, theme and other things. This is the minimal setup for a blog.
+There is very little convention besides the <code>publish.el</code> script and
+the <code>templates</code> directory.  Both <code>posts</code> and <code>pages</code> could be named
+anything and it'd still be a good example.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org06316ed" class="outline-3">
+<h3 id="org06316ed"><span class="section-number-3">2.2</span> Publish script</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+The <code>publish.el</code> file is where we configure the routes and execute
+the export.  Let's look at an example of script that could be used
+to generate a blog with the above directory structure.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-lisp">(use-package weblorg)
+<pre class="src src-lisp">(<span class="org-keyword">require</span> '<span class="org-constant">weblorg</span>)
 
+<span class="org-comment-delimiter">;; </span><span class="org-comment">route for rendering each post</span>
 (weblorg-route
  <span class="org-builtin">:name</span> <span class="org-string">"posts"</span>
- <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/*.org"</span>
  <span class="org-builtin">:template</span> <span class="org-string">"post.html"</span>
  <span class="org-builtin">:output</span> <span class="org-string">"output/posts/{{ slug }}.html"</span>
  <span class="org-builtin">:url</span> <span class="org-string">"/posts/{{ slug }}.html"</span>)
 
+<span class="org-comment-delimiter">;; </span><span class="org-comment">route for rendering the index page of the blog</span>
 (weblorg-route
- <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
- <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/.*\\.org$"</span>
+ <span class="org-builtin">:name</span> <span class="org-string">"blog"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/*.org"</span>
  <span class="org-builtin">:input-aggregate</span> #'weblorg-input-aggregate-all-desc
  <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
  <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
  <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
 
+<span class="org-comment-delimiter">;; </span><span class="org-comment">route for rendering each page</span>
+(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"pages"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"pages/*.org"</span>
+ <span class="org-builtin">:template</span> <span class="org-string">"page.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/{{ slug }}.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/{{ slug }}.html"</span>)
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">fire the engine and export all the files declared in the routes above</span>
 (weblorg-export)
 </pre>
 </div>
 
 <p>
-To generate your blog touched by unicorn just run
+To generate your blog touched by the unicorn, just run the
+following shell command:
 </p>
 
 <div class="org-src-container">
 <pre class="src src-shell">emacs --script publish.el
 </pre>
+</div>
+
+<p>
+To go further and explore what's possible, take a look at the API
+documentation.  It explains every single flag that <a href="https://emacs.love/weblorg/api.html#symbol-weblorg-route">weblorg-route</a>
+and all other public functions take.
+</p>
+</div>
+</div>
 </div>
 
         </div>

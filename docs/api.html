@@ -51,9 +51,9 @@
         </h3>
         <ul>
           
-            <li><a href="#symbol-weblorg-copy-static">weblorg-copy-static</a></li>
-          
             <li><a href="#symbol-weblorg-route">weblorg-route</a></li>
+          
+            <li><a href="#symbol-weblorg-copy-static">weblorg-copy-static</a></li>
           
         </ul>
       
@@ -94,6 +94,130 @@
           <h1>Routing</h1>
 
           <div class="symbols">
+            
+              <div class="symbol" id="symbol-weblorg-route">
+                
+                  <h2>(weblorg-route (&amp;rest options))</h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Add a new route defined with parameters within OPTIONS.
+</p>
+
+<p>
+A route contains enough information to find content to be
+rendered, which template to use to render such content, where to
+save the rendered output and how to create hyperlinks to it.  It
+sounds like it’s a lot of responsibilities for a single
+abstraction, but one can think of it as an HTTP route in a
+website with some helpers for also finding which content to
+render in that route.
+</p>
+
+<p>
+Examples:
+</p>
+
+<ol class="org-ol">
+<li><p>
+Route that finds all the Org-Mode files within the <code>posts</code>
+directory, aggregate them all in one single collection made
+available to the also template called <code>posts</code> so it can be
+used to build summary pages
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/*org"</span>
+ <span class="org-builtin">:input-aggregate</span> #<span class="org-warning">&#8217;</span>weblorg-input-aggregate-all
+ <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
+</pre>
+</div></li>
+
+<li><p>
+Route for rendering each Org-Mode file under the directory
+<code>pages</code> as a separate HTML using the template <code>page.html</code>.
+Notice the <code>:output</code> parameter will create all the
+directories in the path that don’t exist
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"pages"</span>
+ <span class="org-builtin">:input-pattern</span> <span class="org-string">"pages/*.org"</span>
+ <span class="org-builtin">:template</span> <span class="org-string">"page.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"output/{{ slug }}/index.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/{{ slug }}"</span>)
+</pre>
+</div></li>
+</ol>
+
+<p>
+Parameters in <code>OPTIONS</code>:
+</p>
+
+<ul class="org-ul">
+<li><b>:input-pattern</b> glob expression for selecting files within
+path ‘:base-dir’.  It defaults to "*.org";</li>
+
+<li><b>:input-exclude</b> Regular expression for excluding files from
+the input list.  Defaults to "^$";</li>
+
+<li><b>:input-filter</b> Function for filtering out files after they
+were parsed.  This allows using data from within the Org-Mode
+file to decide if it should be included or not in the input
+list.</li>
+
+<li><b>:input-aggregate</b> Function for grouping files into
+collections.  Templates are applied to collections, not to
+files from the input list.  The variables available for the
+template come from the return of this function.</li>
+
+<li><b>:input-source</b> List of collections of data to be written
+directly to templates.  In other words, this parameter
+replaces the pipeline ‘pattern‘ &gt; ‘exclude‘ &gt; ‘filter‘ &gt;
+‘aggregate‘ and will feed data directly into the function that
+writes down templates.  This is useful for generating HTML
+files off template variables read from whatever source you
+want.</li>
+
+<li><b>:output</b> String with a template for generating the output
+file name.  The variables available are the variables of each
+item of a collection returned by ‘:input-aggregate’.</li>
+
+<li><b>:url</b> Similarly to the ‘:output’ parameter, it takes a
+template string as input and returns the URL of an entry of a
+given entry in this route.</li>
+
+<li><b>:template</b> Name of the template that should be used to
+render a collection of files.  Notice that this is the name of
+the template, not its path (neither relative or absolute).
+The value provided here will be searched within 1. the
+directory <b>template</b> within ‘:base-dir’ 2. the directory
+<b>templates</b> within weblorg’s source code.</li>
+
+<li><b>:template-vars</b> Association list of extra variables to be
+passed down to the template.</li>
+
+<li><b>:base-dir</b> Base path for ‘:input-pattern’ and ‘:output’; If
+not provided, will default to the ‘:base-dir’ of the website;</li>
+
+<li><b>:site</b> Instance of a weblorg site created by the function
+<a href="#symbol-weblorg-site">weblorg-site</a>.  If not provided, it
+will use a default value.  The most valuable information a
+site carries is its base URL, and that’s why it’s relevant for
+routes.  That way one can have multiple sites in one single
+program.</li>
+</ul>
+
+                  </div>
+                
+              </div>
             
               <div class="symbol" id="symbol-weblorg-copy-static">
                 
@@ -158,145 +282,26 @@ Parameters in <code>OPTIONS</code>:
 </p>
 
 <ul class="org-ul">
-<li>‘:output’: String with a template for generating the output
+<li><b>:output</b> String with a template for generating the output
 file name.  The variables available are the variables of each
 item of a collection returned by ‘:input-aggregate’.</li>
 
-<li>‘:url’: Similarly to the ‘:output’ parameter, it takes a
+<li><b>:url</b> Similarly to the ‘:output’ parameter, it takes a
 template string as input and returns the URL of an entry of a
 given entry in this route.</li>
 
-<li>‘:site’: Instance of a weblorg site created by the function
+<li><b>:site</b> Instance of a weblorg site created by the function
 <a href="#symbol-weblorg-site">weblorg-site</a>.  If not provided, it
 will use a default value.  The most valuable information a
 site carries is its base URL, and that’s why it’s relevant for
 routes.  That way one can have multiple sites in one single
 program.</li>
 
-<li>‘:name’: name of the route.  This defaults to <code>"static"</code>.
+<li><b>:name</b> name of the route.  This defaults to <code>"static"</code>.
 Notice that if you are using this function to copy assets from
 a built-in theme, the template of such a theme will reference
 the route <code>"static"</code> when including assets.  Which means
 that you need at least one <code>"static"</code> route in your site.</li>
-</ul>
-
-                  </div>
-                
-              </div>
-            
-              <div class="symbol" id="symbol-weblorg-route">
-                
-                  <h2>(weblorg-route (&amp;rest options))</h2>
-                
-
-                
-                  <div class="docstring">
-                    <p>
-Add a new route defined with parameters within OPTIONS.
-</p>
-
-<p>
-A route is an abstraction to manage how Org-Mode files are found
-and how they are transformed in HTML.
-</p>
-
-<p>
-Examples:
-</p>
-
-<ol class="org-ol">
-<li><p>
-Route that finds all the Org-Mode files within the <code>posts</code>
-directory, aggregate them all in one single collection made
-available to the also template called <code>posts</code> so it can be
-used to build summary pages
-</p>
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(weblorg-route
- <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
- <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/*org"</span>
- <span class="org-builtin">:input-aggregate</span> #<span class="org-warning">&#8217;</span>weblorg-input-aggregate-all
- <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
- <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
- <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
-</pre>
-</div></li>
-
-<li><p>
-Route for rendering each Org-Mode file under the directory
-<code>pages</code> as a separate HTML using the template <code>page.html</code>.
-Notice the <code>:output</code> parameter will create all the
-directories in the path that don’t exist
-</p>
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(weblorg-route
- <span class="org-builtin">:name</span> <span class="org-string">"pages"</span>
- <span class="org-builtin">:input-pattern</span> <span class="org-string">"pages/*.org"</span>
- <span class="org-builtin">:template</span> <span class="org-string">"page.html"</span>
- <span class="org-builtin">:output</span> <span class="org-string">"output/{{ slug }}/index.html"</span>
- <span class="org-builtin">:url</span> <span class="org-string">"/{{ slug }}"</span>)
-</pre>
-</div></li>
-</ol>
-
-<p>
-Parameters in <code>OPTIONS</code>:
-</p>
-
-<ul class="org-ul">
-<li>‘:input-pattern’: glob expression for selecting files within
-path ‘:base-dir’.  It defaults to "*.org";</li>
-
-<li>‘:input-exclude’: Regular expression for excluding files from
-the input list.  Defaults to "^$";</li>
-
-<li>‘:input-filter’: Function for filtering out files after they
-were parsed.  This allows using data from within the Org-Mode
-file to decide if it should be included or not in the input
-list.</li>
-
-<li>‘:input-aggregate’: Function for grouping files into
-collections.  Templates are applied to collections, not to
-files from the input list.  The variables available for the
-template come from the return of this function.</li>
-
-<li>‘:input-source’: List of collections of data to be written
-directly to templates.  In other words, this parameter
-replaces the pipeline ‘pattern‘ &gt; ‘exclude‘ &gt; ‘filter‘ &gt;
-‘aggregate‘ and will feed data directly into the function that
-writes down templates.  This is useful for generating HTML
-files off template variables read from whatever source you
-want.</li>
-
-<li>‘:output’: String with a template for generating the output
-file name.  The variables available are the variables of each
-item of a collection returned by ‘:input-aggregate’.</li>
-
-<li>‘:url’: Similarly to the ‘:output’ parameter, it takes a
-template string as input and returns the URL of an entry of a
-given entry in this route.</li>
-
-<li>‘:template’: Name of the template that should be used to
-render a collection of files.  Notice that this is the name of
-the template, not its path (neither relative or absolute).
-The value provided here will be searched within 1. the
-directory <b>template</b> within ‘:base-dir’ 2. the directory
-<b>templates</b> within weblorg’s source code.</li>
-
-<li>‘:template-vars’: Association list of extra variables to be
-passed down to the template.</li>
-
-<li>‘:base-dir’: Base path for ‘:input-pattern’ and ‘:output’; If
-not provided, will default to the ‘:base-dir’ of the website;</li>
-
-<li>‘:site’: Instance of a weblorg site created by the function
-<a href="#symbol-weblorg-site">weblorg-site</a>.  If not provided, it
-will use a default value.  The most valuable information a
-site carries is its base URL, and that’s why it’s relevant for
-routes.  That way one can have multiple sites in one single
-program.</li>
 </ul>
 
                   </div>
@@ -341,7 +346,55 @@ Export all sites.</p>
                 
                   <div class="docstring">
                     <p>
-Pull metadata from Emacs-Lisp symbols that match PATTERN.</p>
+Pull metadata from Emacs-Lisp symbols that match PATTERN.
+</p>
+
+<p>
+Input source functions allow using custom code for feeding the
+renderization pipeline.  It replaces the "Collect -&gt; Aggregate"
+step with the output of a custom function.
+</p>
+
+<p>
+This function is one of these input sources.  Its input, PATTERN,
+is used to find which Emacs Lisp symbols should have its metadata
+returned.
+</p>
+
+<p>
+PATTERN can be either a string or a list of strings.  If it’s a
+string, we parse all symbols found by ‘apropos-internal’:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"templatel-api"</span>
+ <span class="org-builtin">:input-source</span> (weblorg-input-source-autodoc <span class="org-string">"^templatel-"</span>)
+ <span class="org-builtin">:template</span> <span class="org-string">"autodoc.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"api.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/api.html"</span>)
+</pre>
+</div>
+
+<p>
+If PATTERN a list of strings, we’ll build a list of all calls to
+‘apropos-internal’ for each of the strings in the list.  e.g.:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(weblorg-route
+ <span class="org-builtin">:name</span> <span class="org-string">"templatel-api"</span>
+ <span class="org-builtin">:input-source</span> (weblorg-input-source-autodoc
+                <span class="org-warning">&#8217;</span>(<span class="org-string">"^templatel-env"</span> <span class="org-string">"^templatel-filter"</span>))
+ <span class="org-builtin">:template</span> <span class="org-string">"autodoc.html"</span>
+ <span class="org-builtin">:output</span> <span class="org-string">"api.html"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/api.html"</span>)
+</pre>
+</div>
+
+<p>
+If you want to group functions into sections, take a look at
+<a href="#symbol-weblorg-input-source-autodoc-sections">weblorg-input-source-autodoc-sections</a>.</p>
 
                   </div>
                 
