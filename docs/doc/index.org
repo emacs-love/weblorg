@@ -1,44 +1,116 @@
 #+TITLE: Getting Started
 #+SLUG: index
 
-Weblorg is an Emacs-Lisp API rather than a command line tool. The use
-of the API becomes the description of a pipeline that takes lists of
-Org-Mode files as input, templatize them and generate HTML files as an
-output. e.g.:
+* Installation
 
-#+begin_src shell
-blog/
-├── posts
-│   └── my-first-post.org
-└── publish.el
-#+end_src
+** Via Melpa
 
-On ~publish.el~ is the Weblorg configuration file, you can configure
-routes, theme and other things. This is the minimal setup for a blog.
+   The simplest and recommended way to install ~weblorg~ is via [[https://melpa.org][MELPA]].
+   You must have something along these lines on your Emacs
+   configuration for that to work:
 
-#+begin_src lisp
-(use-package weblorg)
+   #+BEGIN_SRC emacs-lisp
+   (package-initialize)
+   (add-to-list
+    'package-archives
+    '("melpa" . "http://melpa.org/packages/"))
+   #+END_SRC
 
-(weblorg-route
- :name "posts"
- :input-pattern "posts/.*\\.org$"
- :template "post.html"
- :output "output/posts/{{ slug }}.html"
- :url "/posts/{{ slug }}.html")
+   And then run ~M-x package-install RET weblorg RET~.  Notice that
+   you might need to run ~M-x package-refresh-contents RET~ if you
+   haven't done that in a while.
 
-(weblorg-route
- :name "index"
- :input-pattern "posts/.*\\.org$"
- :input-aggregate #'weblorg-input-aggregate-all-desc
- :template "blog.html"
- :output "output/index.html"
- :url "/")
-     
-(weblorg-export)
-#+end_src
+** Manually
 
-To generate your blog touched by unicorn just run
+   If you don't want to use any package installer, you can just clone
+   the repository somewhere on your computer, let's say
+   ~$HOME/src/weblorg~.  And then you need to add that directory to
+   your Emacs configuration so the library can be found by ~require~.
 
-#+begin_src shell
-emacs --script publish.el
-#+end_src
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'load-path "~/src/weblorg")
+   #+END_SRC
+
+* Setup a website
+
+  Weblorg is an Emacs-Lisp API rather than a command line tool. The
+  use of the API becomes the description of a pipeline that takes
+  lists of Org-Mode files as input, templatize them and generate HTML
+  files as an output.  Although it can be used just like any other
+  Emacs Lisp API, there are some conventions for creating a weblorg.
+
+** Directory structure
+
+   Here's an example of a directory structure that is known to work
+   well:
+
+   #+begin_src shell
+   blog/
+   ├── posts
+   │   ├── how-far-can-spiders-see.org
+   │   ├── what-music-do-sloths-like.org
+   │   └── which-computers-would-crickets-use.org
+   ├── pages
+   │   ├── index.org
+   │   ├── about.org
+   │   └── faq.org
+   ├── templates
+   │   ├── layout.html
+   │   ├── blog.html
+   │   ├── post.html
+   │   └── page.html
+   └── publish.el
+   #+end_src
+
+   There is very little convention besides the ~publish.el~ script and
+   the ~templates~ directory.  Both ~posts~ and ~pages~ could be named
+   anything and it'd still be a good example.
+
+** Publish script
+
+   The ~publish.el~ file is where we configure the routes and execute
+   the export.  Let's look at an example of script that could be used
+   to generate a blog with the above directory structure.
+
+   #+begin_src lisp
+   (require 'weblorg)
+
+   ;; route for rendering each post
+   (weblorg-route
+    :name "posts"
+    :input-pattern "posts/*.org"
+    :template "post.html"
+    :output "output/posts/{{ slug }}.html"
+    :url "/posts/{{ slug }}.html")
+
+   ;; route for rendering the index page of the blog
+   (weblorg-route
+    :name "blog"
+    :input-pattern "posts/*.org"
+    :input-aggregate #'weblorg-input-aggregate-all-desc
+    :template "blog.html"
+    :output "output/index.html"
+    :url "/")
+
+   ;; route for rendering each page
+   (weblorg-route
+    :name "pages"
+    :input-pattern "pages/*.org"
+    :template "page.html"
+    :output "output/{{ slug }}.html"
+    :url "/{{ slug }}.html")
+
+   ;; fire the engine and export all the files declared in the routes above
+   (weblorg-export)
+   #+end_src
+
+   To generate your blog touched by the unicorn, just run the
+   following shell command:
+
+   #+begin_src shell
+   emacs --script publish.el
+   #+end_src
+
+   To go further and explore what's possible, take a look at the API
+   documentation.  It explains every single flag that [[url_for:api,anchor=symbol-weblorg-route][weblorg-route]]
+   and all other public functions take.
