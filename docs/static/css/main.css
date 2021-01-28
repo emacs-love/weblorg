@@ -6,6 +6,28 @@
     --page-width: 1240px;
     --logo-width: 120px;
     --logo-height: 120px;
+
+    /* --- Parasol Theme */
+    --cl-code-parasol-background:   #F8F8F2;
+    --cl-code-parasol-foreground:   #004260;
+    --cl-code-parasol-builtin:      #80A5E9;
+    --cl-code-parasol-doc:          #BFBFBF;
+    --cl-code-parasol-functions:    #7540CA;
+    --cl-code-parasol-keyword:      #F73D8A;
+    --cl-code-parasol-string:       #00B664;
+    --cl-code-parasol-type:         #F73D8A;
+    --cl-code-parasol-variables:    #008ED4;
+
+    /* --- Theme Variables */
+    --cl-code-background:           var(--cl-code-parasol-background);
+    --cl-code-foreground:           var(--cl-code-parasol-foreground);
+    --cl-code-builtin:              var(--cl-code-parasol-builtin);
+    --cl-code-doc:                  var(--cl-code-parasol-doc);
+    --cl-code-function-name:        var(--cl-code-parasol-functions);
+    --cl-code-keyword:              var(--cl-code-parasol-keyword);
+    --cl-code-string:               var(--cl-code-parasol-string);
+    --cl-code-type:                 var(--cl-code-parasol-type);
+    --cl-code-variable-name:        var(--cl-code-parasol-variables);
 }
 
 body {
