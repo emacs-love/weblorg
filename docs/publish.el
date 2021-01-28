@@ -54,7 +54,7 @@
 (weblorg-route
  :name "api"
  :input-source (weblorg-input-source-autodoc-sections
-                `(("Routing" . "^weblorg-\\(?:route\\|copy-static\\)")
+                `(("Routing" . ("^weblorg-route" "^weblorg-copy-static"))
                   ("Exporting" . "^weblorg-export$")
                   ("Data Sources" . "^weblorg-input-source-")
                   ("Filters" . "^weblorg-input-filter-")))
