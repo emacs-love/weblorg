@@ -1,0 +1,231 @@
+
+<!doctype html>
+<html lang="en-us">
+  <head>
+    
+      <meta charset="utf-8">
+      <title>weblorg - documentation</title>
+      <meta name="description" content="A Static HTML Generator for Emacs and Org-Mode">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+      <link rel="stylesheet" href="https://emacs.love/weblorg/static/css/main.css" />
+    
+  </head>
+  <body>
+    <div class="document">
+      
+        <header>
+          <h1>
+            <a href="https://emacs.love/weblorg/">
+              <img
+                src="https://emacs.love/weblorg/static/images/logo.svg"
+                alt="weblorg">
+              <div>
+                weblorg
+              </div>
+            </a>
+          </h1>
+
+          <div class="menu">
+            <ul>
+              <li><a href="https://emacs.love/weblorg/">home</a></li>
+              <li class="active">
+                <a href="https://emacs.love/weblorg/doc/index.html">documentation</a>
+              </li>
+              <li>
+                <a href="https://emacs.love/weblorg/api.html">api reference</a>
+              </li>
+              <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+            </ul>
+          </div>
+        </header>
+      
+
+      
+      
+  <div class="page doc">
+
+    
+    <div class="left-pane">
+      <h3>
+        <a href="https://emacs.love/weblorg/doc/index.html">
+          Getting Started
+        </a>
+      </h3>
+
+      
+        
+          <h3>
+            <a href="https://emacs.love/weblorg/doc/file-properties.html">
+              File Properties
+            </a>
+          </h3>
+        
+      
+        
+          <h3>
+            <a href="https://emacs.love/weblorg/doc/hyperlinks.html">
+              Hyperlinks
+            </a>
+          </h3>
+        
+      
+        
+      
+    </div>
+
+    
+    <div class="content">
+      <article>
+        
+        <div class="title">
+          <h1>File Properties</h1>
+        </div>
+        
+
+        <div class="content">
+          <div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org9014fb5">1. Intro</a></li>
+<li><a href="#orgf6bd9fb">2. slug</a></li>
+<li><a href="#org279a1e7">3. draft</a></li>
+<li><a href="#org2487fe7">4. filetags</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org9014fb5" class="outline-2">
+<h2 id="org9014fb5"><span class="section-number-2">1</span> Intro</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+When an Org-Mode file is parsed by weblorg, all the file level
+properties are collected and made available to templates as
+properties to a <code>post</code> object.  Let's look at an example of an
+Org-Mode file:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org-mode">#+TITLE: A quick reminder
+#+SLUG: reminder
+#+DRAFT: t
+#+DATE: &lt;2021-01-31 Sun&gt;
+
+This is an exciting post reminding everyone that Emacs is not only
+an editor, but a *powerful* and *friendly* tool for the creatives out
+there :)
+</pre>
+</div>
+
+<p>
+Let's now think of how a template to render the above file could
+look like:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-jinja2">&lt;<span class="org-function-name">h1</span>&gt;<span class="org-type">{{</span><span class="org-underline"><span class="org-bold"> </span></span><span class="org-variable-name">post.title</span><span class="org-underline"><span class="org-bold"> </span></span><span class="org-type">}}</span>&lt;/<span class="org-function-name">h1</span>&gt;
+&lt;<span class="org-function-name">div</span> <span class="org-variable-name">class</span>=<span class="org-string">"date"</span>&gt;<span class="org-type">{{</span> <span class="org-variable-name">post.date </span><span class="org-keyword">| </span><span class="org-warning">strftime</span>(<span class="org-string">"%m-%d-%Y"</span>) <span class="org-type">}}</span>&lt;/<span class="org-function-name">div</span>&gt;
+&lt;<span class="org-function-name">div</span> <span class="org-variable-name">class</span>=<span class="org-string">"content"</span>&gt;
+  <span class="org-type">{{</span> <span class="org-variable-name">post.html </span><span class="org-keyword">| </span><span class="org-function-name">safe</span> <span class="org-type">}}</span>
+&lt;/<span class="org-function-name">div</span>&gt;
+</pre>
+</div>
+
+<p>
+Values for attributes <code>title</code> and <code>date</code> come straight from the file
+properties.  Notice that <code>date</code> isn't a string though.  It is a time
+tuple that can be formatted with the template filter <code>strftime</code>.
+</p>
+
+<p>
+The <code>html</code> attribute is the exception, not really coming from file
+properties, but rather storing the content of the Org-Mode file
+rendered by <code>ox-html</code>.
+</p>
+
+<p>
+All file properties used to control the Org-Mode rendering via
+<code>ox-html</code> are untouched, so you can still use things like
+<code>#+OPTIONS: toc:nil num:nil</code> for example.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf6bd9fb" class="outline-2">
+<h2 id="orgf6bd9fb"><span class="section-number-2">2</span> slug</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+The <code>slug</code> property takes precedence over the tile when generating
+an output file name.  The HTML file generated from our example
+Org-Mode above, would be named <code>reminder.html</code> the way it is or
+<code>a-quick-reminder.html</code> if we removed the <code>slug</code> file property.
+</p>
+
+<p>
+Notice: If an Org-Mode file does not have either the <code>slug</code> or the
+<code>title</code> file property, weblorg uses the name of the Org-Mode file itself
+as the output file name, replacing the <code>.org</code> extension by <code>.html</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org279a1e7" class="outline-2">
+<h2 id="org279a1e7"><span class="section-number-2">3</span> draft</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+If a given Org-Mode file isn't ready to be published on your
+website, mark it with <code>#+DRAFT: t</code> and weblorg will skip rendering
+it.
+</p>
+
+<p>
+This feature works in tandem with the <code>:input-filter</code> option of
+<a href="https://emacs.love/weblorg/api.html#symbol-weblorg-route">weblorg-route</a>.  If you want to disable filtering drafts, set
+<code>:input-filter</code> to <code>nil</code> on your route.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2487fe7" class="outline-2">
+<h2 id="org2487fe7"><span class="section-number-2">4</span> filetags</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+To organize posts in categories, use the <code>filetags</code> property.  One
+single post can belong to more than one category. For example, to
+say that a post belongs to both <code>blogging</code> and <code>emacs</code> categories,
+you can use: <code>#+FILETAGS: :blogging:emacs:</code>
+</p>
+</div>
+</div>
+
+        </div>
+      </article>
+    </div>
+  </div>
+
+
+      
+      
+        <div class="footer">
+          <ul>
+            <li><a href="https://emacs.love/weblorg/">home</a></li>
+            <li><a href="https://emacs.love/weblorg/doc/index.html">documentation</a></li>
+            <li><a href="https://emacs.love/weblorg/api.html">api reference</a></li>
+            <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+          </ul>
+          <div class="ack">
+            Made with &#x2665; and
+            <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
+              <img src="https://emacs.love/weblorg/static/emacs-bw.svg" width="16" height="16" />
+            </a>
+            by
+            <a href="https://clarete.li" target="_blank">
+              @clarete
+            </a>
+          </div>
+        </div>
+      
+    </div>
+  </body>
+</html>
