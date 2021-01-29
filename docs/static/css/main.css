@@ -38,7 +38,8 @@ body {
     /* Color and background */
     color: #FFFFFF;
     background-color: #935D8C;
-    background-image: linear-gradient(-45deg, #E37682, #5F4D93);
+    background-image: linear-gradient(to bottom right, #5F4D93, #E37682);
+    min-height: 100vh;
 }
 
 /* Font settings */
@@ -75,7 +76,7 @@ h3 span:after,
 h4 span:after { content: "."; }
 
 /* Menu */
-.menu                 { flex-grow: 1; font-size: 1.3rem; display: flex; justify-content: right; align-items: end; }
+.menu                 { flex-grow: 1; font-size: 1.3rem; display: flex; justify-content: flex-end; align-items: flex-end; }
 .menu ul              { margin: 0; padding: 0; list-style: none; display: flex; }
 .menu li              { margin-right: 20px; }
 .menu li.active       { color: gold; font-weight: bold; }
@@ -153,7 +154,7 @@ header h1 img         { width: var(--logo-width); height: var(--logo-height); }
 .feature.blog       h3 { background-image: url("../images/rss-bw-icon.svg"); }
 
 /* -- Left menu with index of all sections & symbols  */
-.left-pane            { min-width: 200px; width: 20%; padding: 20px; font-size: 1.5rem; }
+.left-pane            { min-width: 200px; width: 20%; padding: 20px; font-size: 18px; font-weight: 300; letter-spacing: .5px; }
 .left-pane a          { text-decoration: none; color: #fff; }
 .left-pane a:hover    { color: gold; }
 .left-pane ul         { list-style: square; }
