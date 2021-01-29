@@ -50,6 +50,9 @@ body, input, select, textarea {
     line-height: 1.65;
 }
 
+/* TOC; it already generates numbers, so we need to hide the HTML bullets */
+#text-table-of-contents * { list-style: none; }
+
 /* -- Inline Code -- */
 code                  { background: var(--cl-preformatted); font-size: 17px; }
 
