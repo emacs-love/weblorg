@@ -57,7 +57,7 @@
                 `(("Routing" . ("^weblorg-route" "^weblorg-copy-static"))
                   ("Exporting" . "^weblorg-export$")
                   ("Data Sources" . "^weblorg-input-source-")
-                  ("Filters" . "^weblorg-input-filter-")))
+                  ("Input Filters" . "^weblorg-input-filter-")))
  :template "autodoc.html"
  :output "api.html"
  :url "/api.html")
