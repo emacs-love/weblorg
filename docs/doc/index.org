@@ -16,16 +16,16 @@
     '("melpa" . "http://melpa.org/packages/"))
    #+END_SRC
 
-   And then run ~M-x package-install RET weblorg RET~.  Notice that
-   you might need to run ~M-x package-refresh-contents RET~ if you
-   haven't done that in a while.
+   Then run ~M-x package-install RET weblorg RET~.  Notice that you
+   might need to run ~M-x package-refresh-contents RET~ if you haven't
+   done that in a while.
 
 ** Manually
 
    If you don't want to use any package installer, you can just clone
    the repository somewhere on your computer, let's say
-   ~$HOME/src/weblorg~.  And then you need to add that directory to
-   your Emacs configuration so the library can be found by ~require~.
+   ~$HOME/src/weblorg~.  Then add that directory to your Emacs
+   configuration so the library can be found by ~require~.
 
    #+BEGIN_SRC emacs-lisp
    (add-to-list 'load-path "~/src/weblorg")
@@ -46,15 +46,15 @@
 
    #+begin_src shell
    blog/
-   ├── posts
+   ├── posts/
    │   ├── how-far-can-spiders-see.org
    │   ├── what-music-do-sloths-like.org
    │   └── which-computers-would-crickets-use.org
-   ├── pages
+   ├── pages/
    │   ├── index.org
    │   ├── about.org
    │   └── faq.org
-   ├── templates
+   ├── templates/
    │   ├── layout.html
    │   ├── blog.html
    │   ├── post.html
