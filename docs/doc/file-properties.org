@@ -1,0 +1,70 @@
+#+TITLE: File Properties
+
+* Intro
+
+  When an Org-Mode file is parsed by weblorg, all the file level
+  properties are collected and made available to templates as
+  properties to a ~post~ object.  Let's look at an example of an
+  Org-Mode file:
+
+  #+BEGIN_SRC org-mode
+  #+TITLE: A quick reminder
+  #+SLUG: reminder
+  #+DRAFT: t
+  #+DATE: <2021-01-31 Sun>
+
+  This is an exciting post reminding everyone that Emacs is not only
+  an editor, but a *powerful* and *friendly* tool for the creatives out
+  there :)
+  #+END_SRC
+
+  Let's now think of how a template to render the above file could
+  look like:
+
+  #+BEGIN_SRC jinja2
+  <h1>{{ post.title }}</h1>
+  <div class="date">{{ post.date | strftime("%m-%d-%Y") }}</div>
+  <div class="content">
+    {{ post.html | safe }}
+  </div>
+  #+END_SRC
+
+  Values for attributes ~title~ and ~date~ come straight from the file
+  properties.  Notice that ~date~ isn't a string though.  It is a time
+  tuple that can be formatted with the template filter ~strftime~.
+
+  The ~html~ attribute is the exception, not really coming from file
+  properties, but rather storing the content of the Org-Mode file
+  rendered by ~ox-html~.
+
+  All file properties used to control the Org-Mode rendering via
+  ~ox-html~ are untouched, so you can still use things like
+  ~#+OPTIONS: toc:nil num:nil~ for example.
+
+* slug
+
+  The ~slug~ property takes precedence over the tile when generating
+  an output file name.  The HTML file generated from our example
+  Org-Mode above, would be named ~reminder.html~ the way it is or
+  ~a-quick-reminder.html~ if we removed the ~slug~ file property.
+
+  Notice: If an Org-Mode file does not have either the ~slug~ or the
+  ~title~ file property, weblorg uses the name of the Org-Mode file itself
+  as the output file name, replacing the ~.org~ extension by ~.html~.
+
+* draft
+
+  If a given Org-Mode file isn't ready to be published on your
+  website, mark it with ~#+DRAFT: t~ and weblorg will skip rendering
+  it.
+
+  This feature works in tandem with the ~:input-filter~ option of
+  [[url_for:api,anchor=symbol-weblorg-route][weblorg-route]].  If you want to disable filtering drafts, set
+  ~:input-filter~ to ~nil~ on your route.
+
+* filetags
+
+  To organize posts in categories, use the ~filetags~ property.  One
+  single post can belong to more than one category. For example, to
+  say that a post belongs to both ~blogging~ and ~emacs~ categories,
+  you can use: ~#+FILETAGS: :blogging:emacs:~
