@@ -955,11 +955,7 @@ be added ad an entry to the returned assoc."
        ;; Don't override existing value, so users can still put
        ;; whatever they want
        (unless (org-element-property :CUSTOM_ID headline)
-         (let ((headline-slug
-                (weblorg--slugify
-                 ;; Add ".0" suffix because weblorg--slugify strips
-                 ;; away the file extension
-                 (format "%s.0" (org-element-property :raw-value headline)))))
+         (let ((headline-slug (weblorg--slugify (org-element-property :raw-value headline))))
            (org-element-put-property headline :CUSTOM_ID headline-slug)))
        ;; Replace these IDs that don't have much use within weblorg. That
        ;; will cause way less noise when re-generating a project without
@@ -1023,10 +1019,24 @@ expression (not a glob)."
           result))))))
 
 (defun weblorg--slugify (s)
-  "Make slug of S."
+  "Make slug of S.
+
+It replaces anything that isn't between a-z and 0-9 with dashes
+return the lower case version of the string.  e.g.:
+
+#+BEGIN_SRC emacs-lisp
+  (weblorg--slugify \"We've come a long way, friend!\")
+  \"we-ve-come-a-long-way-friend\"
+#+END_SRC"
   (downcase
-   (replace-regexp-in-string
-    "\s" "-" (file-name-sans-extension (file-name-nondirectory s)))))
+   (seq-reduce
+    (lambda(accum item)
+      (replace-regexp-in-string (car item) (cdr item)  accum))
+    '(("[^[:alnum:]]" . "-")
+      ("--+"          . "-")
+      ("^-"           . "")
+      ("-$"           . ""))
+    s)))
 
 (defun weblorg--get (seq item &optional default)
   "Pick ITEM from SEQ or return DEFAULT from list of cons."

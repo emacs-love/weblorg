@@ -26,6 +26,10 @@
 (require 'cl-lib)
 (require 'weblorg)
 
+(ert-deftest weblorg--slugify ()
+  (should (equal (weblorg--slugify "!v0.1.1 - We've come a long way, friend!")
+                 "v0-1-1-we-ve-come-a-long-way-friend")))
+
 (ert-deftest weblorg--collect-n-aggr ()
   (weblorg-route
    :base-dir (expand-file-name "t/fixtures/test1/" default-directory)
