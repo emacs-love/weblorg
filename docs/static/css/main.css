@@ -1,5 +1,4 @@
 @charset "UTF-8";
-@import 'fontawesome-all.min.css';
 @import 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400';
 
 :root {
@@ -11,7 +10,7 @@
     --cl-code-parasol-background:   #F8F8F2;
     --cl-code-parasol-foreground:   #004260;
     --cl-code-parasol-builtin:      #80A5E9;
-    --cl-code-parasol-doc:          #BFBFBF;
+    --cl-code-parasol-doc:          #9F9F9F;
     --cl-code-parasol-functions:    #7540CA;
     --cl-code-parasol-keyword:      #F73D8A;
     --cl-code-parasol-string:       #00B664;
@@ -59,6 +58,8 @@ code                  { background: var(--cl-preformatted); font-size: 17px; }
 /* -- Code Blocks -- */
 .org-builtin          { color: var(--cl-code-builtin); }
 .org-doc              { color: var(--cl-code-doc); }
+.org-comment          { color: var(--cl-code-doc); }
+.org-comment-delimiter{ color: var(--cl-code-doc); }
 .org-function-name    { color: var(--cl-code-function-name); }
 .org-keyword          { color: var(--cl-code-keyword); }
 .org-string           { color: var(--cl-code-string); }
