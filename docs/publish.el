@@ -44,6 +44,7 @@
  :output "./index.html"
  :url "/")
 
+;; Generate documentation articles
 (weblorg-route
  :name "docs"
  :input-pattern "./doc/*.org"
@@ -51,6 +52,7 @@
  :output "./doc/{{ slug }}.html"
  :url "/doc/{{ slug }}.html")
 
+;; Generate API reference
 (weblorg-route
  :name "api"
  :input-source (weblorg-input-source-autodoc-sections
@@ -62,6 +64,7 @@
  :output "api.html"
  :url "/api.html")
 
+;; Map out the static directory with an empty route
 (weblorg-route
  :name "static"
  :output "static/{{ file }}"
