@@ -41,9 +41,16 @@
   ~ox-html~ are untouched, so you can still use things like
   ~#+OPTIONS: toc:nil num:nil~ for example.
 
+* title
+
+  The [[https://en.wikipedia.org/wiki/Clean_URL#Slug][slugified]] version of the property ~title~ is used as the name of
+  the output file (with the extension ~.html~ concatenated to it).  As
+  you'll see next, the ~slug~ property can override the output file
+  name.
+
 * slug
 
-  The ~slug~ property takes precedence over the tile when generating
+  The ~slug~ property takes precedence over the title when generating
   an output file name.  The HTML file generated from our example
   Org-Mode above, would be named ~reminder.html~ the way it is or
   ~a-quick-reminder.html~ if we removed the ~slug~ file property.

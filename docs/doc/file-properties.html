@@ -89,9 +89,10 @@
 <div id="text-table-of-contents">
 <ul>
 <li><a href="#intro">1. Intro</a></li>
-<li><a href="#slug">2. slug</a></li>
-<li><a href="#draft">3. draft</a></li>
-<li><a href="#filetags">4. filetags</a></li>
+<li><a href="#title">2. title</a></li>
+<li><a href="#slug">3. slug</a></li>
+<li><a href="#draft">4. draft</a></li>
+<li><a href="#filetags">5. filetags</a></li>
 </ul>
 </div>
 </div>
@@ -153,10 +154,22 @@ All file properties used to control the Org-Mode rendering via
 </div>
 
 <div class="outline-2">
-<h2 id="slug"><span class="section-number-2">2</span> slug</h2>
+<h2 id="title"><span class="section-number-2">2</span> title</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-The <code>slug</code> property takes precedence over the tile when generating
+The <a href="https://en.wikipedia.org/wiki/Clean_URL#Slug">slugified</a> version of the property <code>title</code> is used as the name of
+the output file (with the extension <code>.html</code> concatenated to it).  As
+you'll see next, the <code>slug</code> property can override the output file
+name.
+</p>
+</div>
+</div>
+
+<div class="outline-2">
+<h2 id="slug"><span class="section-number-2">3</span> slug</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+The <code>slug</code> property takes precedence over the title when generating
 an output file name.  The HTML file generated from our example
 Org-Mode above, would be named <code>reminder.html</code> the way it is or
 <code>a-quick-reminder.html</code> if we removed the <code>slug</code> file property.
@@ -171,8 +184,8 @@ as the output file name, replacing the <code>.org</code> extension by <code>.htm
 </div>
 
 <div class="outline-2">
-<h2 id="draft"><span class="section-number-2">3</span> draft</h2>
-<div class="outline-text-2" id="text-3">
+<h2 id="draft"><span class="section-number-2">4</span> draft</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 If a given Org-Mode file isn't ready to be published on your
 website, mark it with <code>#+DRAFT: t</code> and weblorg will skip rendering
@@ -188,8 +201,8 @@ This feature works in tandem with the <code>:input-filter</code> option of
 </div>
 
 <div class="outline-2">
-<h2 id="filetags"><span class="section-number-2">4</span> filetags</h2>
-<div class="outline-text-2" id="text-4">
+<h2 id="filetags"><span class="section-number-2">5</span> filetags</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 To organize posts in categories, use the <code>filetags</code> property.  One
 single post can belong to more than one category. For example, to
