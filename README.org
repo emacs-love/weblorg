@@ -4,7 +4,7 @@
 
 #+CAPTION: Melpa
 #+NAME:    Melpa
-[[https://melpa.org/#/templatel][file:https://melpa.org/packages/weblorg-badge.svg]]
+[[https://melpa.org/#/weblorg][file:https://melpa.org/packages/weblorg-badge.svg]]
 
 * weblorg
 
