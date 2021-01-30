@@ -36,7 +36,7 @@
     --cl-link-menu-hover: var(--cl-blue2);
     --cl-link-page:       var(--cl-blue2);
     --cl-h1:              var(--cl-blue1);
-    --cl-h2:              var(--cl-blue3);
+    --cl-h2:              var(--cl-blue1);
     --cl-banner-bg:       var(--cl-blue1);
     --cl-banner-fg:       var(--cl-gray2);
     --cl-border-src:      var(--cl-gray3);
