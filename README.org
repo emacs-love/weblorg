@@ -1,101 +1,18 @@
+#+CAPTION: CI Status
+#+NAME:    CI
+[[https://github.com/emacs-love/weblorg/workflows/CI/badge.svg]]
+
+#+CAPTION: Melpa
+#+NAME:    Melpa
+[[https://melpa.org/#/templatel][file:https://melpa.org/packages/weblorg-badge.svg]]
+
 * weblorg
 
-  Generate Static HTML websites from Org-Mode files.
+  A Static HTML Generator entirely written in Emacs-Lispa
 
-  The weblorg is designed as an Emacs-Lisp API rather than a command line tool.  The
-  use of the API becomes the description of a pipeline that finds collections of
-  Org-Mode files as input, templatize them and generate HTML files as an output.
+** Documentation
 
-** Quick Start
-
-   Either if you're creating a new blog or porting an existing body of
-   Org-Mode posts, you can use a structure similar to this:
-
-   #+begin_src sh
-   $ tree your-new-blog
-   your-new-blog
-   ├─ publish.el
-   ├─ posts/
-   │   ├─ fun-with-org-mode.org
-   │   ├─ what-if-emacs-was-your-operating-system.org
-   │   └─ write-yourself-a-nice-weblorg.org
-   └─ templates/
-       ├─ custom-template.html
-       └─ yet-another-template.html
-   #+end_src
-
-   * The ~posts~ directory is where your blog posts go.
-
-   * The ~templates~ directory is where custom templates go.  The
-     weblorg ships with some themes so if don't need anything special,
-     chances are you won't need this directory.  Tutorials on how to
-     create custom themes will come, but for now you can take a peak at the
-     source code of the [[https://github.com/emacs-love/weblorg/tree/main/themes][existing themes]].
-
-   * The ~publish.el~ script is where routes are declared and the
-     export is invoked.  Let's say we want to generate one HTML file
-     for each blog post and we also want to generate an index listing
-     all the posts.
-
-     #+begin_src emacs-lisp
-(weblorg-route
- :name "posts"
- :input-pattern "posts/*.org"
- :template "post.html"
- :output "{{ slug }}.html"
- :url "/{{ slug }}.html")
-
-(weblorg-route
- :name "blog"
- :input-pattern "posts/*.org"
- :input-aggregate #'weblorg-input-aggregate-all-desc
- :template "blog.html"
- :output "index.html"
- :url "/")
-
-(weblorg-export)
-   #+end_src
-
-   The most important parameters that must be passed to ~weblorg-route~
-   are:
-
-   1. ~name~: this is used everywhere that requires identifying a
-      route. e.g.: creating links ~url_for("posts", slug=post.slug)~.
-
-   2. ~input-pattern~: That's a glob expression that will be used to
-      match which files belong to that route.  It uses the same glob
-      that ~eshell~ understands.  If an expression doesn't match any
-      files, an error will be presented identifying the route by its
-      name and showing the glob expression.
-
-   3. ~template~: Which HTML file will be picked as the template.
-
-   4. ~output~: It takes a template expression that allows customizing
-      the output file name. All the ~post~ variables are available.
-      If your input expression matches more than one file, this option
-      allows you to name the diffent output files based on data from
-      the input file. Notice how a route that generates a single file
-      doesn't need anything but the file itself (index.html) but a
-      route that generates multiple files will need something more
-      sophisticated, like ~{{ slug }}.html~.
-
-      Also, if sub directories that appear in the output path don't
-      exist in the file system, they will be created automatically.
-      Which allows you to do something like ~{{ slug }}/index.html~
-      and allow URLs without extensions.
-
-   5. ~url~: Similar to the ~output~ variable, but is used to render
-      the URL of a link to a given document under a route.
-
-   One common thing between the three variables above is that they're
-   all relative to the ~:base-dir~.  Which also happens to be a
-   parameter to ~weblorg-route~ and defaults to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Names.html#index-default-directory_002c-of-a-buffer-1187][default-directory]].
-
-** HTML Generation
-
-   We're using the powerful ~ox~ and ~ox-html~ native capabilities of
-   ~org-mode~.  The ~org-html-template~ function is overwritten with
-   an advice and a [[https://clarete.li/templatel][template system]] is used instead of simply
-   concatenating a preamble and a post amble strings.  There isn't
-   currently a good way of configuring how that HTML is
-   generated. Ideas are welcome.
+   * Website: https://emacs.love/weblorg
+   * Documentation: https://emacs.love/weblorg/doc
+   * Code: https://github.com/emacs-love/weblorg
+   * Issues: https://github.com/emacs-love/weblorg/issues
