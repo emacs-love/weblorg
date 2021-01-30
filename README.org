@@ -16,3 +16,8 @@
    * Documentation: https://emacs.love/weblorg/doc
    * Code: https://github.com/emacs-love/weblorg
    * Issues: https://github.com/emacs-love/weblorg/issues
+** Websites built with Weblorg:
+
+   * https://emacs.love/weblorg
+   * https://clarete.li/templatel
+   * https://clarete.li and https://clarete.li/blog
