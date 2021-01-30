@@ -43,14 +43,16 @@
 ** Links on Org-Mode files
 
    If the goal is to link to that post from another Org-Mode file,
-   ~url_for~ can also be used as an Org-Mode link:
+   ~url_for~ can also be used as an Org-Mode link.  Weblorg allows
+   that by temporarily [[https://orgmode.org/manual/Adding-Hyperlink-Types.html#Adding-Hyperlink-Types][adding a hyperlink type]] for it:
 
    #+BEGIN_SRC org-mode
    [[url_for:posts,slug=full-moon][A Bright Night]]
    #+END_SRC
 
    Both the template and the Org-Mode versions of ~url_for~ have
-   exactly the same outcome: ~http://localhost:8000~.
+   exactly the same outcome:
+   ~http://localhost:8000/posts/full-moon.html~.
 
 ** Base URL
 
