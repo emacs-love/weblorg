@@ -8,7 +8,7 @@
 
 * weblorg
 
-  A Static HTML Generator entirely written in Emacs-Lispa
+  A Static HTML Generator entirely written in Emacs-Lisp
 
 ** Documentation
 
@@ -16,6 +16,7 @@
    * Documentation: https://emacs.love/weblorg/doc
    * Code: https://github.com/emacs-love/weblorg
    * Issues: https://github.com/emacs-love/weblorg/issues
+
 ** Websites built with Weblorg:
 
    * https://emacs.love/weblorg
