@@ -19,7 +19,7 @@
   (package-install 'use-package))
 
 ;; Install and configure dependencies
-(use-package templatel)
+(use-package templatel :ensure t)
 (use-package htmlize)
 (setq org-html-htmlize-output-type 'css)
 
@@ -28,7 +28,7 @@
 ;; Generate blog posts
 (weblorg-route
  :name "posts"
- :input-pattern "posts/.*\\.org$"
+ :input-pattern "posts/*.org"
  :template "post.html"
  :output "output/posts/{{ slug }}.html"
  :url "/posts/{{ slug }}.html")
@@ -36,7 +36,7 @@
 ;; Generate pages
 (weblorg-route
  :name "pages"
- :input-pattern "pages/.*\\.org$"
+ :input-pattern "pages/*.org"
  :template "page.html"
  :output "output/{{ slug }}/index.html"
  :url "/{{ slug }}")
@@ -44,8 +44,8 @@
 ;; Generate posts summary
 (weblorg-route
  :name "index"
- :input-pattern "posts/.*\\.org$"
- :input-aggregate #'weblorg-input-aggregate-all
+ :input-pattern "posts/*.org"
+ :input-aggregate #'weblorg-input-aggregate-all-desc
  :template "blog.html"
  :output "output/index.html"
  :url "/")
