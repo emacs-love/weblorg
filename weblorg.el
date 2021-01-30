@@ -947,6 +947,27 @@ be added ad an entry to the returned assoc."
        (weblorg--prepend
         keywords
         (weblorg--parse-org-keyword keyword))))
+    ;; Opinionated setting for generating headline anchor links with
+    ;; the headline text and to strip away the auto-generated IDs
+    (advice-add
+     #'org-html-headline :around
+     (lambda(fn headline contents info)
+       ;; Don't override existing value, so users can still put
+       ;; whatever they want
+       (unless (org-element-property :CUSTOM_ID headline)
+         (let ((headline-slug
+                (weblorg--slugify
+                 ;; Add ".0" suffix because weblorg--slugify strips
+                 ;; away the file extension
+                 (format "%s.0" (org-element-property :raw-value headline)))))
+           (org-element-put-property headline :CUSTOM_ID headline-slug)))
+       ;; Replace these IDs that don't have much use within weblorg. That
+       ;; will cause way less noise when re-generating a project without
+       ;; any changes.
+       (replace-regexp-in-string
+        " id=\".+-org[0-9a-f]\\{7\\}\""
+        ""
+        (funcall fn headline contents info))))
     ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
       (insert input-data)
@@ -954,6 +975,7 @@ be added ad an entry to the returned assoc."
     ;; Uninstall advices
     (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
+    (ad-unadvise 'org-element-property)
     ;; Add the generated HTML as a property to the collected keywords
     ;; as well
     (weblorg--prepend keywords (cons "html" html))
