@@ -64,6 +64,14 @@
  :output "api.html"
  :url "/api.html")
 
+;; Generate blog posts
+(weblorg-route
+ :name "posts"
+ :input-pattern "./posts/*.org"
+ :template "post.html"
+ :output "./posts/{{ slug }}.html"
+ :url "/posts/{{ slug }}.html")
+
 ;; Map out the static directory with an empty route
 (weblorg-route
  :name "static"

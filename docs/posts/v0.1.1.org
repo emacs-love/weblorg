@@ -1,0 +1,93 @@
+#+TITLE: v0.1.1 - We're live!
+#+DATE: <2021-01-31 Sun>
+
+* Intro
+
+  This is the first public release of *weblorg*, a static HTML
+  generator for [[https://gnu.org/software/emacs][Emacs]] and [[https://orgmode.org][Org-Mode]].  It leverages [[https://orgmode.org/manual/HTML-Export.html#HTML-export][ox-html]] and adds a
+  powerful templating language to give more creative freedom to people
+  looking exclusively to publishing Org-Mode documents to the web.
+
+  It goes beyond just exporting Org-Mode to HTML by adding
+  abstractions that are well known for people familiar with web
+  development.  Like routes, static asset management and templates.
+
+  We want to give a great experience for people looking into using
+  Emacs to build beautiful static websites and blogs.  The work is far
+  from complete, but it's being done with a lot of love and hope to
+  contribute back to a community that together has built an incredible
+  tool.
+
+* What currently works
+
+  With weblorg, one can first automate the process of finding Org-Mode
+  files, parsing them and feeding them into a template and then
+  rendering the final output into an HTML file.  Without further ado,
+  that's how one would do it in Emacs-Lisp:
+
+  #+BEGIN_SRC emacs-lisp
+  (require 'weblorg)
+
+  (weblorg-route
+   :name "posts"
+   :input-pattern "./posts/*.org"
+   :template "post.html"
+   :output "./posts/{{ slug }}.html"
+   :url "/posts/{{ slug }}.html")
+
+  (weblorg-export)
+  #+END_SRC
+
+  That is enough to tell weblorg to find all Org-Mode files within the
+  directory posts and render them with the template ~post.html~.
+
+  If you don't want to flex your design skills while spinning up a new
+  website or blog, worry not. A lean but mean theme is shipped by
+  default with weblorg.  To allow users to easily copy static assets
+  from a theme, one can use the following:
+
+  #+BEGIN_SRC emacs-lisp
+  ;; this has to go before callikng `weblorg-export'.
+  (weblorg-copy-static
+   :output "static/{{ file }}"
+   :url "/static/{{ file }}")
+  #+END_SRC
+
+  Check out the [[url_for:docs,slug=index][Documentation]] with a full article on how to setup a
+  new website and more.
+
+* Next Steps
+
+  We currently can do more than the documentation covers, which isn't
+  ideal for a tool that aims to be friendly.  For that reason, all the
+  efforts are currently centered in fixing that by writing articles
+  and API docstrings to bring the documentation to a good place.
+
+  After we're over that, there's a lot of work to be done on the
+  default theme.  It's far away from being finished and it's essential
+  for people that don't want to do much CSS work.
+
+  Please get in touch with any questions, comments or bugs through our
+  [[https://github.com/emacs-love/weblorg/issues][Github Issues]] page.  If you don't do the Github thing, just send me
+  an [[mailto:lincoln@clarete.li?subject=weblorg][email]] :)
+
+* Changelog 0.1.1
+
+  - chore: upgrade templatel dependency to 0.1.4
+  - feat: enable auto-escaping of HTML entities by default
+  - feat: cache for parsed Org-Mode files
+  - feat: added ~:template-vars~ parameter to ~weblorg-site~.
+  - feat: enable ~weblorg-input-filter-drafts~ by default in the
+    parameter ~:input-filter~ of ~weblorg-route~
+  - feat: allow ordered list of patterns as a parameter for
+    ~weblorg-input-source-autodoc~ on top of already receiving a
+    string pattern
+  - fix: reading non-quoted strings with dashes on ~url_for~.
+  - feat: add anchor special parameter to ~url_for~
+  - feat: way more encompassing slugify function generating cleaner
+    output
+  - feat: Use /slugified/ text of the headline for their anchor links
+    and IDs instead of random text
+  - fix: skip trying to copy directory as a file in
+    ~weblorg-copy-static~.
+  * doc: we have a website with some documentation now
