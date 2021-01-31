@@ -11,7 +11,7 @@
    :END:
 
    No other language, no other framework. Just Org-Mode, HTML, CSS and
-   Weblorg. Do everyting inside Emacs!
+   Weblorg. Do everything inside Emacs!
 
 ** Static
    :PROPERTIES:
