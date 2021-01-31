@@ -25,16 +25,6 @@
       </div>
     </header>
 
-    {#
-    <div class="menu">
-      <ul>
-        <li><a href="{{ url_for("docs", slug="index") }}">documentation</a></li>
-        <li><a href="{{ url_for("api") }}">api reference</a></li>
-        <li><a href="{{ project_github }}" target="_blank">github</a></li>
-      </ul>
-    </div>
-    #}
-
     <div class="content">
       <div class="action">
         <a href="{{ url_for("docs", slug="index") }}">Get Started</a>
@@ -43,6 +33,21 @@
       <article>
         {{ post.html|safe }}
       </article>
+
+      <div class="news">
+        <h2>News</h2>
+
+        <ul>
+          {% for p in weblorg_route_posts("posts") %}
+            <li>
+              <a href="{{ url_for("posts", slug=p.slug) }}">
+                {{ p.date|strftime("%b %d, %Y") }} -
+                {{ p.title|default(p.slug) }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
 
   </div>
