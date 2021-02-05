@@ -619,31 +619,39 @@ If you want to group functions into sections, take a look at
 
 The LINK string has the following syntax:
 
-   Link    <- Route ',' Vars
-   Route   <- Identifier
-   Vars    <- NamedParams
-
-These are inherited from templatel's parser:
-
-   NamedParams <- NamedParam (',' NamedParam)*
-   NamedParam  <- Identifier '=' Expr
-   Identifier  <- [A-Za-z_][0-9A-Za-z_]*
+  Link        <- Route ',' Vars
+  Route       <- Identifier
+  Vars        <- NamedParams
+  NamedParams <- NamedParam (',' NamedParam)*
+  NamedParam  <- Identifier '=' Expr
+  Identifier  <- (!',' .)*
 
 With the above rules, we're able to parse entries like these:
   * index
   * docs,slug=overview
   * route,param1=val,param2=10
+  * blog-posts,slug=morning-coffee
 
 Notice: We're using an API that isn't really intended for public
 consumption from templatel."
   (let* ((scanner (templatel--scanner-new link "<string>"))
-         (route (cdr (templatel--parser-identifier scanner)))
+         (route (weblorg--url-for-parser-identifier scanner))
          (vars (templatel--scanner-optional
                 scanner
                 (lambda()
                   (templatel--token-comma scanner)
                   (weblorg--url-for-parser-namedparams scanner)))))
     (cons route vars)))
+
+(defun weblorg--url-for-parser-identifier (scanner)
+  "Read the identifier off SCANNER."
+  (templatel--join-chars
+   (templatel--scanner-zero-or-more
+    scanner
+    (lambda()
+      (templatel--scanner-not
+       scanner (lambda() (templatel--scanner-match scanner ?,)))
+      (templatel--scanner-any scanner)))))
 
 (defun weblorg--url-for-parser-namedparams (scanner)
   "Read a list of named parameters off SCANNER."

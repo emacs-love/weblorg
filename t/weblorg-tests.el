@@ -26,6 +26,32 @@
 (require 'cl-lib)
 (require 'weblorg)
 
+(ert-deftest weblorg--url-parse ()
+  (should (equal
+           '("doc" . (("slug" . "how-to-skydive")
+                      ("section" . "breathing")))
+           (weblorg--url-parse "doc,slug=how-to-skydive,section=breathing")))
+  (should (equal
+           '("blog-posts" . (("slug" . "moon-phases")))
+           (weblorg--url-parse "blog-posts,slug=moon-phases"))))
+
+(ert-deftest weblorg--url-for ()
+  (let ((site (weblorg-site :base-url "https://example.com")))
+    (weblorg-route
+     :name "docs"
+     :input-pattern "*.org"
+     :input-exclude "index.org$"
+     :template "post.html"
+     :url "/documentation/{{ slug }}-{{ stuff }}.html"
+     :site site)
+    (should
+     (equal
+      "https://example.com/documentation/something-else.html"
+      (weblorg--url-for-v "docs"
+                        '(("slug" . "something")
+                          ("stuff" . "else"))
+                        site)))))
+
 (ert-deftest weblorg--slugify ()
   (should (equal (weblorg--slugify "!v0.1.1 - We've come a long way, friend!")
                  "v0-1-1-we-ve-come-a-long-way-friend")))
