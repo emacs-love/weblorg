@@ -54,11 +54,14 @@
    │   ├── index.org
    │   ├── about.org
    │   └── faq.org
-   ├── templates/
-   │   ├── layout.html
-   │   ├── blog.html
-   │   ├── post.html
-   │   └── page.html
+   ├── theme/
+   │   ├── static/
+   │   │   └── main.css
+   │   └── templates/
+   │       ├── layout.html
+   │       ├── blog.html
+   │       ├── post.html
+   │       └── page.html
    └── publish.el
    #+end_src
 

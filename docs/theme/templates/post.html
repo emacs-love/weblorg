@@ -1,0 +1,40 @@
+{# post.html --- template for blog posts -*- Mode: Jinja2; -*- #}
+
+{% extends "layout.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block page %}
+  <div class="page post">
+
+    {# Links for all entries in the same route; always starts with index #}
+    <div class="left-pane">
+      {% for subpost in weblorg_route_posts(route.name) %}
+        <h3>
+          <a href="{{ url_for(route.name, slug=subpost.slug) }}">
+            {{ subpost.title }}
+          </a>
+        </h3>
+      {% endfor %}
+    </div>
+
+    {# Content of the currently selected post #}
+    <div class="content">
+      <article>
+        {% if post.title %}
+          <div class="title">
+            <h1>{{ post.title }}</h1>
+          </div>
+        {% endif %}
+
+        <div class="pubdate">
+          {{ post.date|strftime("%b %d, %Y") }}
+        </div>
+
+        <div class="content">
+          {{ post.html|safe }}
+        </div>
+      </article>
+    </div>
+  </div>
+{% endblock %}

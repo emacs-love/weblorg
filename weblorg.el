@@ -255,8 +255,17 @@ Parameters in ~OPTIONS~:
          ;; Notice the templates directory close to `base-dir` has
          ;; higher precedence over the templates directory within
          ;; weblorg's source code.
-         (template-dirs (list (expand-file-name "templates" base-dir)
-                              (weblorg--theme-dir theme "templates"))))
+         (template-dirs (list
+                         ;; DEPRECATED[to be removed at 0.1.3]: we
+                         ;; used to support a `templates` directory
+                         ;; within the root of a website
+                         (expand-file-name "templates" base-dir)
+                         ;; Here are the locations we currently
+                         ;; support: <site>/theme/templates
+                         (weblorg--site-theme-dir base-dir "templates")
+                         ;; And <weblorg-src>/themes/<theme-name>/templates
+                         (weblorg--theme-dir theme "templates"))))
+
     (puthash :name name route)
     (puthash :site site route)
     (puthash :url url route)
@@ -701,6 +710,13 @@ consumption from templatel."
 
 ;; Template Resolution
 
+(defun weblorg--site-theme-dir (base-dir dir)
+  "Path for DIR within BASE-DIR.
+
+This function builds the path BASE-DIR/theme/templates which is
+the path for templates within the weblorg website root."
+  (expand-file-name dir (expand-file-name "theme" base-dir)))
+
 (defun weblorg--theme-dir (theme dir)
   "Path for DIR within a THEME.
 
@@ -893,15 +909,7 @@ can be found in the ROUTE."
 
     (dolist (data collections)
       (let* (;; Render the template
-             (rendered
-              (templatel-env-render
-               (gethash :template-env route)
-               (gethash :template route)
-               (append (gethash :template-vars (gethash :site route))
-                       (gethash :template-vars route)
-                       weblorg-meta
-                       data
-                       (weblorg--vars-from-route route))))
+             (rendered (weblorg--template-render route data))
              ;; Render the relative output path
              (rendered-output
               (templatel-render-string
@@ -913,6 +921,17 @@ can be found in the ROUTE."
         (weblorg--log-info "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
         (write-region rendered nil rendered-output)))))
+
+(defun weblorg--template-render (route data)
+  "Render template within ROUTE passing DATA as template vars."
+  (templatel-env-render
+   (gethash :template-env route)
+   (gethash :template route)
+   (append (gethash :template-vars (gethash :site route))
+           (gethash :template-vars route)
+           weblorg-meta
+           data
+           (weblorg--vars-from-route route))))
 
 (defun weblorg--export-site-route (site route)
   "SITE ROUTE."

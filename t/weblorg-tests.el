@@ -153,7 +153,7 @@
     (should (equal (gethash :input-exclude route) "index.org$"))
     (should (equal (gethash :theme route) "stuff"))
     (should (equal (gethash :template-dirs route)
-                   (list "/tmp/site/templates" (weblorg--theme-dir "stuff" "templates")))))
+                   (list "/tmp/site/theme/templates" (weblorg--theme-dir "stuff" "templates")))))
 
   ;; reset the global to its initial state
   (clrhash weblorg--sites))
