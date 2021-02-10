@@ -56,6 +56,14 @@
       
         
           <h3>
+            <a href="https://emacs.love/weblorg/doc/file-paths.html">
+              File Paths
+            </a>
+          </h3>
+        
+      
+        
+          <h3>
             <a href="https://emacs.love/weblorg/doc/file-properties.html">
               File Properties
             </a>
@@ -182,7 +190,7 @@ well:
 &#9474;   &#9500;&#9472;&#9472; about.org
 &#9474;   &#9492;&#9472;&#9472; faq.org
 &#9500;&#9472;&#9472; theme/
-&#9474;   &#9500;&#9472;&#9472; styles/
+&#9474;   &#9500;&#9472;&#9472; static/
 &#9474;   &#9474;   &#9492;&#9472;&#9472; main.css
 &#9474;   &#9492;&#9472;&#9472; templates/
 &#9474;       &#9500;&#9472;&#9472; layout.html
@@ -194,9 +202,14 @@ well:
 </div>
 
 <p>
-There is very little convention besides the <code>publish.el</code> script and
-the <code>templates</code> directory.  Both <code>posts</code> and <code>pages</code> could be named
-anything and it'd still be a good example.
+Note that the <code>theme</code> directory is only needed if you're creating
+your own theme or overriding a file of a theme that you're
+inherinting from.
+</p>
+
+<p>
+The <code>publish.el</code> file is where we describe our routes and execute
+to generate our website.
 </p>
 </div>
 </div>
@@ -237,6 +250,11 @@ to generate a blog with the above directory structure.
  <span class="org-builtin">:template</span> <span class="org-string">"page.html"</span>
  <span class="org-builtin">:output</span> <span class="org-string">"output/{{ slug }}.html"</span>
  <span class="org-builtin">:url</span> <span class="org-string">"/{{ slug }}.html"</span>)
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">route for static assets that also copies files to output directory</span>
+(weblorg-copy-static
+ <span class="org-builtin">:output</span> <span class="org-string">"static/{{ file }}"</span>
+ <span class="org-builtin">:url</span> <span class="org-string">"/static/{{ file }}"</span>)
 
 <span class="org-comment-delimiter">;; </span><span class="org-comment">fire the engine and export all the files declared in the routes above</span>
 (weblorg-export)

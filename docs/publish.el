@@ -31,7 +31,7 @@
 
 ;; Set site wide configuration
 (weblorg-site
- :theme "autodoc"
+ :theme #'weblorg-theme-autodoc
  :template-vars '(("project_name" . "weblorg")
                   ("project_github" . "https://github.com/emacs-love/weblorg")
                   ("project_description" . "A Static HTML Generator for Emacs and Org-Mode")))

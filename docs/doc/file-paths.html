@@ -1,0 +1,219 @@
+
+<!doctype html>
+<html lang="en-us">
+  <head>
+    
+      <meta charset="utf-8">
+      <title>weblorg - documentation</title>
+      <meta name="description" content="A Static HTML Generator for Emacs and Org-Mode">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+      <link rel="stylesheet" href="https://emacs.love/weblorg/static/css/main.css" />
+    
+  </head>
+  <body>
+    <div class="document">
+      
+        <header>
+          <h1>
+            <a href="https://emacs.love/weblorg/">
+              <img
+                src="https://emacs.love/weblorg/static/images/logo.svg"
+                alt="weblorg">
+              <div>
+                weblorg
+              </div>
+            </a>
+          </h1>
+
+          <div class="menu">
+            <ul>
+              <li><a href="https://emacs.love/weblorg/">home</a></li>
+              <li class="active">
+                <a href="https://emacs.love/weblorg/doc/index.html">documentation</a>
+              </li>
+              <li>
+                <a href="https://emacs.love/weblorg/api.html">api reference</a>
+              </li>
+              <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+            </ul>
+          </div>
+        </header>
+      
+
+      
+      
+  <div class="page doc">
+
+    
+    <div class="left-pane">
+      <h3>
+        <a href="https://emacs.love/weblorg/doc/index.html">
+          Getting Started
+        </a>
+      </h3>
+
+      
+        
+          <h3>
+            <a href="https://emacs.love/weblorg/doc/file-paths.html">
+              File Paths
+            </a>
+          </h3>
+        
+      
+        
+          <h3>
+            <a href="https://emacs.love/weblorg/doc/file-properties.html">
+              File Properties
+            </a>
+          </h3>
+        
+      
+        
+          <h3>
+            <a href="https://emacs.love/weblorg/doc/hyperlinks.html">
+              Hyperlinks
+            </a>
+          </h3>
+        
+      
+        
+      
+    </div>
+
+    
+    <div class="content">
+      <article>
+        
+        <div class="title">
+          <h1>File Paths</h1>
+        </div>
+        
+
+        <div class="content">
+          <div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#intro">1. Intro</a></li>
+<li><a href="#the-site-theme">2. The site theme</a></li>
+<li><a href="#an-external-theme-directory">3. An external theme directory</a></li>
+<li><a href="#path-resolution">4. Path resolution</a></li>
+<li><a href="#default-external-theme">5. Default external theme</a></li>
+</ul>
+</div>
+</div>
+
+<div class="outline-2">
+<h2 id="intro"><span class="section-number-2">1</span> Intro</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+One single website can depend on templates and static assets
+distributed in a few different places.  There are a few key
+assumptions that govern how weblorg look for files within these
+directories.  Let's see the most notable ones.
+</p>
+</div>
+</div>
+
+<div class="outline-2">
+<h2 id="the-site-theme"><span class="section-number-2">2</span> The site theme</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+A weblorg website can ship its own templates and static assets by
+creating the directories <code>$SITE/theme/templates</code> and
+<code>$SITE/theme/static</code> respectively.  Directories in the user's
+website directory have precedence over directories within a theme.
+See more below about that.
+</p>
+
+<p>
+If an external theme does the job for you, these directories aren't
+needed at all. They're completely optional and only useful for who
+is either creating their own themes or adding/overriding to the
+theme they're using.
+</p>
+</div>
+</div>
+
+<div class="outline-2">
+<h2 id="an-external-theme-directory"><span class="section-number-2">3</span> An external theme directory</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+It is possible to create themes and ship them separately from
+weblorg and weblorg itself ships with a few themes. Both 3rd party
+and built-in themes might provide the directories <code>$THEME/templates</code>
+and <code>$THEME/static</code>.  Notice that websites default to using a
+default theme from one of those shipped with weblorg, though that
+can be disabled.  See more below.
+</p>
+</div>
+</div>
+
+<div class="outline-2">
+<h2 id="path-resolution"><span class="section-number-2">4</span> Path resolution</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Both templates and static files have the same path resolution.  The
+site theme directory has precedence over the external theme
+directory:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-text">template_path = $site/templates:$theme/templates
+static_path = $site/static:$theme/static
+</pre>
+</div>
+
+<p>
+Note: in case of static files, that means that files will be copied
+to the output directory from right to left. That allows static files
+within the site theme to override files from the external theme.
+</p>
+</div>
+</div>
+
+<div class="outline-2">
+<h2 id="default-external-theme"><span class="section-number-2">5</span> Default external theme</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+For a smooth experience, weblorg comes configured to use a default
+theme.  Users can either choose a different external theme or
+disable them completely.  A good reason for disabling a theme is to
+use <a href="https://emacs.love/weblorg/api.html">weblorg-copy-static</a> to copy only the static files of the site
+theme.
+</p>
+</div>
+</div>
+
+        </div>
+      </article>
+    </div>
+  </div>
+
+
+      
+      
+        <div class="footer">
+          <ul>
+            <li><a href="https://emacs.love/weblorg/">home</a></li>
+            <li><a href="https://emacs.love/weblorg/doc/index.html">documentation</a></li>
+            <li><a href="https://emacs.love/weblorg/api.html">api reference</a></li>
+            <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+          </ul>
+          <div class="ack">
+            Made with &#x2665; and
+            <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
+              <img src="https://emacs.love/weblorg/static/emacs-bw.svg" width="16" height="16" />
+            </a>
+            by
+            <a href="https://clarete.li" target="_blank">
+              @clarete
+            </a>
+          </div>
+        </div>
+      
+    </div>
+  </body>
+</html>

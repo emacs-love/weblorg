@@ -1,0 +1,55 @@
+#+TITLE: File Paths
+
+* Intro
+
+  One single website can depend on templates and static assets
+  distributed in a few different places.  There are a few key
+  assumptions that govern how weblorg look for files within these
+  directories.  Let's see the most notable ones.
+
+* The site theme
+
+  A weblorg website can ship its own templates and static assets by
+  creating the directories ~$SITE/theme/templates~ and
+  ~$SITE/theme/static~ respectively.  Directories in the user's
+  website directory have precedence over directories within a theme.
+  See more below about that.
+
+  If an external theme does the job for you, these directories aren't
+  needed at all. They're completely optional and only useful for who
+  is either creating their own themes or adding/overriding to the
+  theme they're using.
+
+* An external theme directory
+
+  It is possible to create themes and ship them separately from
+  weblorg and weblorg itself ships with a few themes. Both 3rd party
+  and built-in themes might provide the directories ~$THEME/templates~
+  and ~$THEME/static~.  Notice that websites default to using a
+  default theme from one of those shipped with weblorg, though that
+  can be disabled.  See more below.
+
+* Path resolution
+
+  Both templates and static files have the same path resolution.  The
+  site theme directory has precedence over the external theme
+  directory:
+
+  #+BEGIN_SRC text
+  template_path = $site/templates:$theme/templates
+  static_path = $site/static:$theme/static
+  #+END_SRC
+
+  Note: in case of static files, that means that files will be copied
+  to the output directory from right to left. That allows static files
+  within the site theme to override files from the external theme.
+
+* Default external theme
+
+  For a smooth experience, weblorg comes configured to use a default
+  theme.  Users can either choose a different external theme or
+  disable them completely.  A good reason for disabling a theme is to
+  use [[url_for:api,anchor:symbol-weblorg-copy-static][weblorg-copy-static]] to copy only the static files of the site
+  theme.
+
+  # TODO: link to the guide to creating a theme when it's written.

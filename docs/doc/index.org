@@ -65,9 +65,12 @@
    └── publish.el
    #+end_src
 
-   There is very little convention besides the ~publish.el~ script and
-   the ~templates~ directory.  Both ~posts~ and ~pages~ could be named
-   anything and it'd still be a good example.
+   Note that the ~theme~ directory is only needed if you're creating
+   your own theme or overriding a file of a theme that you're
+   inherinting from.
+
+   The ~publish.el~ file is where we describe our routes and execute
+   to generate our website.
 
 ** Publish script
 
@@ -102,6 +105,11 @@
     :template "page.html"
     :output "output/{{ slug }}.html"
     :url "/{{ slug }}.html")
+
+   ;; route for static assets that also copies files to output directory
+   (weblorg-copy-static
+    :output "static/{{ file }}"
+    :url "/static/{{ file }}")
 
    ;; fire the engine and export all the files declared in the routes above
    (weblorg-export)
