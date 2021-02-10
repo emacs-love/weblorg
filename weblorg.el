@@ -110,6 +110,17 @@
   "Prepend ITEM to SEQ."
   `(setq ,seq (cons ,item ,seq)))
 
+(defmacro weblorg--with-error (&rest body)
+  "Wraps BODY around error handling."
+  `(condition-case exc
+       ,@body
+     (templatel-error
+      (message "Template Error: %s" (cdr exc)))
+     (weblorg-error-config
+      (message "Configuration error: %s" (cdr exc)))
+     (file-missing
+      (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
+
 (defun weblorg-site (&rest options)
   "Create a new weblorg site.
 
@@ -238,56 +249,57 @@ Parameters in ~OPTIONS~:
    site carries is its base URL, and that's why it's relevant for
    routes.  That way one can have multiple sites in one single
    program."
-  (let* ((opt (seq-partition options 2))
-         (route (make-hash-table))
-         ;; all parameters the entry point takes
-         (name (weblorg--get opt :name))
-         ;; It's also the default for :output
-         (url (weblorg--get opt :url))
-         ;; Not using the `default' parameter in `weblorg--get' because
-         ;; it doesn't give the short circuit given by `or'.
-         (site (or (weblorg--get opt :site)
-                   (weblorg-site :base-url weblorg-default-url)))
-         ;; Prefix path for most file operations within a route
-         (base-dir (weblorg--get opt :base-dir default-directory))
-         ;; The default theme of the site is the defacto "default"
-         (theme (weblorg--get opt :theme (gethash :theme site)))
-         ;; Notice the templates directory close to `base-dir` has
-         ;; higher precedence over the templates directory within
-         ;; weblorg's source code.
-         (template-dirs (list
-                         ;; DEPRECATED[to be removed at 0.1.3]: we
-                         ;; used to support a `templates` directory
-                         ;; within the root of a website
-                         (expand-file-name "templates" base-dir)
-                         ;; Here are the locations we currently
-                         ;; support: <site>/theme/templates
-                         (weblorg--site-theme-dir route "templates")
-                         ;; And <weblorg-src>/themes/<theme-name>/templates
-                         (weblorg--theme-dir theme "templates"))))
+  (weblorg--with-error
+   (let* ((opt (seq-partition options 2))
+          (route (make-hash-table))
+          ;; all parameters the entry point takes
+          (name (weblorg--get opt :name))
+          ;; It's also the default for :output
+          (url (weblorg--get opt :url))
+          ;; Not using the `default' parameter in `weblorg--get' because
+          ;; it doesn't give the short circuit given by `or'.
+          (site (or (weblorg--get opt :site)
+                    (weblorg-site :base-url weblorg-default-url)))
+          ;; Prefix path for most file operations within a route
+          (base-dir (weblorg--get opt :base-dir default-directory))
+          ;; The default theme of the site is the defacto "default"
+          (theme (weblorg--get opt :theme (gethash :theme site)))
+          ;; Notice the templates directory close to `base-dir` has
+          ;; higher precedence over the templates directory within
+          ;; weblorg's source code.
+          (template-dirs (list
+                          ;; DEPRECATED[to be removed at 0.1.3]: we
+                          ;; used to support a `templates` directory
+                          ;; within the root of a website
+                          (expand-file-name "templates" base-dir)
+                          ;; Here are the locations we currently
+                          ;; support: <site>/theme/templates
+                          (weblorg--site-theme-dir route "templates")
+                          ;; And <weblorg-src>/themes/<theme-name>/templates
+                          (weblorg--theme-dir theme "templates"))))
 
-    (puthash :name name route)
-    (puthash :site site route)
-    (puthash :url url route)
-    (puthash :base-dir base-dir route)
-    (puthash :input-source (weblorg--get opt :input-source) route)
-    (puthash :input-pattern (weblorg--get opt :input-pattern) route)
-    (puthash :input-exclude (weblorg--get opt :input-exclude "^$") route)
-    (puthash :input-filter (weblorg--get opt :input-filter #'weblorg-input-filter-drafts) route)
-    (puthash :input-parser (weblorg--get opt :input-parser #'weblorg--parse-org-file) route)
-    (puthash :input-aggregate (weblorg--get opt :input-aggregate #'weblorg-input-aggregate-each) route)
-    (puthash :output (weblorg--get opt :output url) route)
-    (puthash :export (weblorg--get opt :export #'weblorg-export-templates) route)
-    (puthash :template (weblorg--get opt :template nil) route)
-    (puthash :template-vars (weblorg--get opt :template-vars nil) route)
-    (puthash :template-dirs template-dirs route)
-    (puthash :theme theme route)
-    (let ((env (templatel-env-new :importfn (weblorg--route-importfn route))))
-      (templatel-env-set-autoescape env t)
-      (puthash :template-env env route))
-    (puthash name route (gethash :routes site))
-    (weblorg--route-install-template-filters route)
-    route))
+     (puthash :name name route)
+     (puthash :site site route)
+     (puthash :url url route)
+     (puthash :base-dir base-dir route)
+     (puthash :input-source (weblorg--get opt :input-source) route)
+     (puthash :input-pattern (weblorg--get opt :input-pattern) route)
+     (puthash :input-exclude (weblorg--get opt :input-exclude "^$") route)
+     (puthash :input-filter (weblorg--get opt :input-filter #'weblorg-input-filter-drafts) route)
+     (puthash :input-parser (weblorg--get opt :input-parser #'weblorg--parse-org-file) route)
+     (puthash :input-aggregate (weblorg--get opt :input-aggregate #'weblorg-input-aggregate-each) route)
+     (puthash :output (weblorg--get opt :output url) route)
+     (puthash :export (weblorg--get opt :export #'weblorg-export-templates) route)
+     (puthash :template (weblorg--get opt :template nil) route)
+     (puthash :template-vars (weblorg--get opt :template-vars nil) route)
+     (puthash :template-dirs template-dirs route)
+     (puthash :theme theme route)
+     (let ((env (templatel-env-new :importfn (weblorg--route-importfn route))))
+       (templatel-env-set-autoescape env t)
+       (puthash :template-env env route))
+     (puthash name route (gethash :routes site))
+     (weblorg--route-install-template-filters route)
+     route)))
 
 (defun weblorg-copy-static (&rest options)
   "Utility and Route for static assets of a weblorg site.
@@ -347,42 +359,37 @@ Parameters in ~OPTIONS~:
    a built-in theme, the template of such a theme will reference
    the route ~\"static\"~ when including assets.  Which means
    that you need at least one ~\"static\"~ route in your site."
-  (let* ((opt (seq-partition options 2))
-         (route (make-hash-table))
-         (name (weblorg--get opt :name "static"))
-         (url (weblorg--get opt :url "/static/{{ file }}"))
-         (base-dir (weblorg--get opt :base-dir default-directory))
-         (site (or (weblorg--get opt :site)
-                   (weblorg-site :base-url weblorg-default-url))))
-    (puthash :name name route)
-    (puthash :site site route)
-    (puthash :url url route)
-    (puthash :base-dir base-dir route)
-    (puthash :theme-dir "static/" route)
-    (puthash :input-pattern (weblorg--get opt :input-pattern "**/*") route)
-    (puthash :input-exclude (weblorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
-    (puthash :input-filter (weblorg--get opt :input-filter) route)
-    (puthash :input-parser #'identity route)
-    (puthash :input-aggregate #'identity route)
-    (puthash :output (weblorg--get opt :output "output/static/{{ file }}") route)
-    (puthash :export (weblorg--get opt :export #'weblorg-export-assets) route)
-    (puthash name route (gethash :routes site))))
+  (weblorg--with-error
+   (let* ((opt (seq-partition options 2))
+          (route (make-hash-table))
+          (name (weblorg--get opt :name "static"))
+          (url (weblorg--get opt :url "/static/{{ file }}"))
+          (base-dir (weblorg--get opt :base-dir default-directory))
+          (site (or (weblorg--get opt :site)
+                    (weblorg-site :base-url weblorg-default-url))))
+     (puthash :name name route)
+     (puthash :site site route)
+     (puthash :url url route)
+     (puthash :base-dir base-dir route)
+     (puthash :theme-dir "static/" route)
+     (puthash :input-pattern (weblorg--get opt :input-pattern "**/*") route)
+     (puthash :input-exclude (weblorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
+     (puthash :input-filter (weblorg--get opt :input-filter) route)
+     (puthash :input-parser #'identity route)
+     (puthash :input-aggregate #'identity route)
+     (puthash :output (weblorg--get opt :output "output/static/{{ file }}") route)
+     (puthash :export (weblorg--get opt :export #'weblorg-export-assets) route)
+     (puthash name route (gethash :routes site)))))
 
 (defun weblorg-export ()
   "Export all sites."
-  (condition-case exc
-      ;; Iterate over each site available in our global registry
-      (maphash (lambda(_ site)
-                 ;; Iterate over each route of a given site
-                 (maphash (lambda(_ route) (funcall (gethash :export route) route))
-                          (gethash :routes site)))
-               weblorg--sites)
-    (templatel-error
-     (error "Template Error: %s" (cdr exc)))
-    (weblorg-error-config
-     (error "Configuration error: %s" (cdr exc)))
-    (file-missing
-     (error "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
+  (weblorg--with-error
+   (maphash
+    (lambda(_ site)
+      ;; Iterate over each route of a given site
+      (maphash (lambda(_ route) (funcall (gethash :export route) route))
+               (gethash :routes site)))
+    weblorg--sites)))
 
 (defun weblorg-export-templates (route)
   "Export a single ROUTE of a site with files to be templatized."
