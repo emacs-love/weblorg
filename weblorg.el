@@ -121,6 +121,14 @@
      (file-missing
       (message "%s: %s" (car (cddr exc)) (cadr (cddr exc))))))
 
+(defun weblorg-theme-default ()
+  "Return path to default theme."
+  (weblorg--theme-dir "default"))
+
+(defun weblorg-theme-autodoc ()
+  "Return path to default theme."
+  (weblorg--theme-dir "autodoc"))
+
 (defun weblorg-site (&rest options)
   "Create a new weblorg site.
 
@@ -133,10 +141,14 @@ OPTIONS can contain the following parameters:
    error will be raised.
 
  * *:template-vars* Association list of extra variables to be
-   passed down to all templates."
+   passed down to all templates.
+
+ * *:theme* function that returns the base path of a weblorg
+   theme.  It defaults to
+   [[anchor:symbol-weblorg-theme-default][weblorg-theme-default]]."
   (let* ((opt (seq-partition options 2))
          (base-url (weblorg--get opt :base-url weblorg-default-url))
-         (theme (weblorg--get opt :theme "default"))
+         (theme (weblorg--get opt :theme #'weblorg-theme-default))
          (site (weblorg--site-get base-url)))
     (if (null site)
         ;; Shape of the weblorg object is the following:
@@ -263,20 +275,7 @@ Parameters in ~OPTIONS~:
           ;; Prefix path for most file operations within a route
           (base-dir (weblorg--get opt :base-dir default-directory))
           ;; The default theme of the site is the defacto "default"
-          (theme (weblorg--get opt :theme (gethash :theme site)))
-          ;; Notice the templates directory close to `base-dir` has
-          ;; higher precedence over the templates directory within
-          ;; weblorg's source code.
-          (template-dirs (list
-                          ;; DEPRECATED[to be removed at 0.1.3]: we
-                          ;; used to support a `templates` directory
-                          ;; within the root of a website
-                          (expand-file-name "templates" base-dir)
-                          ;; Here are the locations we currently
-                          ;; support: <site>/theme/templates
-                          (weblorg--site-theme-dir route "templates")
-                          ;; And <weblorg-src>/themes/<theme-name>/templates
-                          (weblorg--theme-dir theme "templates"))))
+          (theme (weblorg--get opt :theme (gethash :theme site))))
 
      (puthash :name name route)
      (puthash :site site route)
@@ -292,7 +291,6 @@ Parameters in ~OPTIONS~:
      (puthash :export (weblorg--get opt :export #'weblorg-export-templates) route)
      (puthash :template (weblorg--get opt :template nil) route)
      (puthash :template-vars (weblorg--get opt :template-vars nil) route)
-     (puthash :template-dirs template-dirs route)
      (puthash :theme theme route)
      (let ((env (templatel-env-new :importfn (weblorg--route-importfn route))))
        (templatel-env-set-autoescape env t)
@@ -366,11 +364,14 @@ Parameters in ~OPTIONS~:
           (url (weblorg--get opt :url "/static/{{ file }}"))
           (base-dir (weblorg--get opt :base-dir default-directory))
           (site (or (weblorg--get opt :site)
-                    (weblorg-site :base-url weblorg-default-url))))
+                    (weblorg-site :base-url weblorg-default-url)))
+          ;; The default theme of the site is the defacto "default"
+          (theme (weblorg--get opt :theme (gethash :theme site))))
      (puthash :name name route)
      (puthash :site site route)
      (puthash :url url route)
      (puthash :base-dir base-dir route)
+     (puthash :theme theme route)
      (puthash :theme-dir "static/" route)
      (puthash :input-pattern (weblorg--get opt :input-pattern "**/*") route)
      (puthash :input-exclude (weblorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
@@ -403,31 +404,31 @@ Parameters in ~OPTIONS~:
 
 (defun weblorg-export-assets (route)
   "Export static assets ROUTE."
-  (dolist (source-file
-           (weblorg--find-source-files
-            (gethash :name route)
-            (weblorg--theme-dir-from-route route)
-            (gethash :input-pattern route)
-            (gethash :input-exclude route)))
-    (let* (;; path to the theme directory the route refers to
-           (base-path (weblorg--theme-dir-from-route route))
-           ;; file path without the base path above
-           (file (replace-regexp-in-string (regexp-quote base-path) "" source-file t t))
-           ;; rendered destination
-           (rendered-output
-            (templatel-render-string
-             (gethash :output route)
-             `(("file" . ,file))))
-           ;; Render the full path
-           (dest-file
-            (expand-file-name rendered-output (gethash :base-dir route))))
-      (weblorg--log-info  "copying: %s -> %s" source-file dest-file)
-      (mkdir (file-name-directory dest-file) t)
-      (condition-case exc
-          (copy-file source-file dest-file t)
-        (error
-         (if (not (string= (caddr exc) "Success"))
-             (message "error: %s: %s" (car (cddr exc)) (cadr (cddr exc)))))))))
+  (dolist (path (reverse (weblorg--path route "static")))
+    (dolist (file (condition-case nil
+                      (weblorg--find-source-files
+                       (gethash :name route)
+                       path
+                       (gethash :input-pattern route)
+                       (gethash :input-exclude route))
+                    ;; ignore signaling of no-files-matched
+                    (weblorg-error-config nil)))
+      (let* ((relative-path
+              (replace-regexp-in-string
+               (regexp-quote path) "" file t t))
+             (rendered-output
+              (templatel-render-string
+               (gethash :output route) `(("file" . ,relative-path))))
+             (dest-file
+              (expand-file-name
+               rendered-output (gethash :base-dir route))))
+        (weblorg--log-info  "copying: %s -> %s" file dest-file)
+        (mkdir (file-name-directory dest-file) t)
+        (condition-case exc
+            (copy-file file dest-file t)
+          (error
+           (if (not (string= (caddr exc) "Success"))
+               (message "error: %s: %s" (car (cddr exc)) (cadr (cddr exc))))))))))
 
 
 
@@ -717,28 +718,22 @@ consumption from templatel."
 
 ;; File Resolution
 
-(defun weblorg--site-theme-dir (route dir)
-  "Path for DIR within ROUTE's base-dir.
+(defun weblorg--path (route dir)
+  "Factory for making path variables for DIR with ROUTE data."
+  (let ((theme-fn (gethash :theme route))
+        (site-dir (expand-file-name
+                   dir (expand-file-name
+                        "theme" (gethash :base-dir route)))))
+    (if theme-fn
+        (list site-dir (expand-file-name dir (funcall theme-fn)))
+      (list site-dir))))
 
-This function builds the path BASE-DIR/theme/templates which is
-the path for templates within the weblorg website root."
-  (expand-file-name dir (expand-file-name "theme" (gethash :base-dir route))))
+(defun weblorg--theme-dir (theme)
+  "Path for THEME.
 
-(defun weblorg--theme-dir (theme dir)
-  "Path for DIR within a THEME.
-
-The weblorg ships with a gallery of themes.  This function returns
-the absolute path for THEME."
-  (expand-file-name
-   dir (expand-file-name
-        theme (expand-file-name
-               "themes" weblorg-module-dir))))
-
-(defun weblorg--theme-dir-from-route (route)
-  "Get the path of directory `:theme-dir' of a ROUTE."
-  (weblorg--theme-dir
-   (gethash :theme (gethash :site route))
-   (gethash :theme-dir route)))
+The weblorg ships with a gallery of themes.  This function
+returns the absolute path for THEME."
+  (expand-file-name theme (expand-file-name "themes" weblorg-module-dir)))
 
 (defun weblorg--template-find (directories name)
   "Find template NAME within DIRECTORIES.
@@ -830,7 +825,13 @@ are mainly two good places for calling this function:
     (templatel-env-add-template
      en name
      (templatel-new-from-file
-      (weblorg--template-find (gethash :template-dirs route) name)))))
+      (weblorg--template-find
+       (append
+        ;; DEPRECATED[to be removed at 0.1.3]: we used to support a
+        ;; `templates` directory within the root of a website
+        (expand-file-name "templates" (gethash :base-dir route))
+        (weblorg--path route "templates"))
+       name)))))
 
 ;; Exporting pipeline
 
@@ -861,23 +862,14 @@ pipeline again."
 (defun weblorg--route-collect-and-aggregate (route)
   "Find input files apply templates for a ROUTE."
   (let* ((input-filter (gethash :input-filter route))
-         (theme-dir (gethash :theme-dir route))
          ;; Find all files that match input pattern and don't match
          ;; exclude pattern
          (input-files
-          (append
-           ;; Routes can request scanner to visit the theme directory
-           (when theme-dir
-             (weblorg--find-source-files
-              (gethash :name route)
-              (weblorg--theme-dir-from-route route)
-              (gethash :input-pattern route)
-              (gethash :input-exclude route)))
-           (weblorg--find-source-files
-            (gethash :name route)
-            (gethash :base-dir route)
-            (gethash :input-pattern route)
-            (gethash :input-exclude route))))
+          (weblorg--find-source-files
+           (gethash :name route)
+           (gethash :base-dir route)
+           (gethash :input-pattern route)
+           (gethash :input-exclude route)))
          ;; Parse Org-mode files
          (parsed-files
           (mapcar (gethash :input-parser route) input-files))
@@ -1045,7 +1037,7 @@ expression (not a glob)."
                 (string= result glob))
            (signal
             'weblorg-error-config
-            (format "no matches for input-pattern `%s` in route `%s`" input-pattern route-name))
+            (format "No matches `%s/%s` in route `%s`" base-dir input-pattern route-name))
          ;; directory paths filtered off results
          (seq-filter
           (lambda(p)

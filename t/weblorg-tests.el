@@ -26,6 +26,29 @@
 (require 'cl-lib)
 (require 'weblorg)
 
+(ert-deftest weblorg--path ()
+  (let ((route (weblorg-route
+                :name "posts"
+                :input-pattern "*.org"
+                :template "post.html"
+                :base-dir "/tmp/site"
+                :url "/posts/{{ slug }}.html"
+                :theme (lambda() "/tmp/theme"))))
+    (should (equal
+             '("/tmp/site/theme/template" "/tmp/theme/template")
+             (weblorg--path route "template"))))
+  (let ((route (weblorg-route
+                :name "other-posts"
+                :input-pattern "*.org"
+                :template "post.html"
+                :base-dir "/tmp/site"
+                :url "/posts/{{ slug }}.html"
+                :theme nil)))
+    (should (equal
+             '("/tmp/site/theme/template")
+             (weblorg--path route "template"))))
+  (clrhash weblorg--sites))
+
 (ert-deftest weblorg--url-parse ()
   (should (equal
            '("doc" . (("slug" . "how-to-skydive")
@@ -50,7 +73,8 @@
       (weblorg--url-for-v "docs"
                         '(("slug" . "something")
                           ("stuff" . "else"))
-                        site)))))
+                        site)))
+    (clrhash weblorg--sites)))
 
 (ert-deftest weblorg--slugify ()
   (should (equal (weblorg--slugify "!v0.1.1 - We've come a long way, friend!")
@@ -151,11 +175,7 @@
     (should (equal (gethash :template route) "docs.html"))
     (should (equal (gethash :url route) "docs/{{ slug }}.html"))
     (should (equal (gethash :input-exclude route) "index.org$"))
-    (should (equal (gethash :theme route) "stuff"))
-    (should (equal (gethash :template-dirs route)
-                   (list "/tmp/site/templates" ; deprecated
-                         "/tmp/site/theme/templates"
-                         (weblorg--theme-dir "stuff" "templates")))))
+    (should (equal (gethash :theme route) "stuff")))
 
   ;; reset the global to its initial state
   (clrhash weblorg--sites))
