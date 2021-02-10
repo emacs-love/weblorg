@@ -262,7 +262,7 @@ Parameters in ~OPTIONS~:
                          (expand-file-name "templates" base-dir)
                          ;; Here are the locations we currently
                          ;; support: <site>/theme/templates
-                         (weblorg--site-theme-dir base-dir "templates")
+                         (weblorg--site-theme-dir route "templates")
                          ;; And <weblorg-src>/themes/<theme-name>/templates
                          (weblorg--theme-dir theme "templates"))))
 
@@ -708,14 +708,14 @@ consumption from templatel."
          (parsed (weblorg--url-parse link)))
     (weblorg--url-for-v (car parsed) (cdr parsed) site)))
 
-;; Template Resolution
+;; File Resolution
 
-(defun weblorg--site-theme-dir (base-dir dir)
-  "Path for DIR within BASE-DIR.
+(defun weblorg--site-theme-dir (route dir)
+  "Path for DIR within ROUTE's base-dir.
 
 This function builds the path BASE-DIR/theme/templates which is
 the path for templates within the weblorg website root."
-  (expand-file-name dir (expand-file-name "theme" base-dir)))
+  (expand-file-name dir (expand-file-name "theme" (gethash :base-dir route))))
 
 (defun weblorg--theme-dir (theme dir)
   "Path for DIR within a THEME.
