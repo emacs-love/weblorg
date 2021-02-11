@@ -826,7 +826,7 @@ are mainly two good places for calling this function:
      en name
      (templatel-new-from-file
       (weblorg--template-find
-       (append
+       (cons
         ;; DEPRECATED[to be removed at 0.1.3]: we used to support a
         ;; `templates` directory within the root of a website
         (expand-file-name "templates" (gethash :base-dir route))
