@@ -28,7 +28,9 @@
             {% for symbol in section.symbols %}
               <div class="symbol" id="symbol-{{ symbol.name }}">
                 {% if symbol.type == "function" %}
-                  <h2>({{ symbol.name }} {{ symbol.args }})</h2>
+                  <h2>
+                    ({{ symbol.name }}{% if symbol.args %} {{ symbol.args }}{% endif %})
+                  </h2>
                 {% else %}
                   <h2>{{ symbol.name }}</h2>
                 {% endif %}
