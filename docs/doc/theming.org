@@ -1,0 +1,89 @@
+#+TITLE: Theming
+
+One of the central ideas behind Weblorg is to allow web developers to
+leverage their skills to deliver content with the experience they can
+build with familiar tools like HTML and CSS.  Weblorg defines a
+convention for packaging a file 
+
+It's highly recommended to have read the [[url_for:docs,slug=][Getting Started]] document;
+this write up assumes that you understand the gist of how to declare
+routes that point to Org-Mode files and how to execute the
+~publish.el~ script to generate the static website.  That being said,
+there's enough context in the examples that illustrate this article to
+allow anyone to follow it.
+
+* Builtin Themes
+
+  The Weblorg [[https://melpa.org/#/weblorg][melpa]] package currently ships with two themes: ~default~
+  and ~autodoc~.  Unsurprisingly, if no other theme is informed,
+  ~default~ is picked.
+
+  In order to use a theme that's shipped with Weblorg, use the
+  following on your site configuration (this goes anywhere before
+  declaring the routes):
+
+  #+BEGIN_SRC emacs-lisp
+  (weblorg-site
+   :theme #'weblorg-theme-autodoc)
+  #+END_SRC
+
+* Disable the default theme
+
+  The default theme's function is ~weblorg-theme-default~.  If you
+  need to unset the default theme, you can set ~:theme~ to ~nil~ e.g.:
+
+  #+BEGIN_SRC emacs-lisp
+  (weblorg-site :theme nil)
+  #+END_SRC
+
+  Disabling the default theme might be useful if you want to build
+  your own theme from scratch and want to use [[url_for:api,anchor=symbol-weblorg-copy-static][weblorg-copy-static]] to
+  copy your own assets and not include any builtin theme's asset in
+  the copy list.
+
+* The theme directory
+
+  When a directory named ~theme~ exists within the root of the website
+  (same level as the ~publish.el~ script), then ~weblorg-route~ will
+  prioritize looking up templates within ~theme/templates~.  And
+  ~weblorg-copy-static~ will include ~theme/assets~ within it's search
+  for resources to copy.
+
+  This is useful for either creating a theme from scratch or
+  overriding a single piece of a theme you're inheriting from.  For
+  example, if you only want to override the index template of a theme,
+  create a file named ~theme/templates/index.html~ and weblorg will
+  use your file instead of the ~index.html~ file from whatever theme
+  you have selected via the ~:theme~ option in ~weblorg-site~.
+
+* Syntax Highlight of source code blocks
+
+  For properly generating syntax highlight for Org-Mode source code
+  blocks, the package for such mode must be installed and configured
+  at the time of the HTML generation.
+
+  When the HTML generation happens automatically, for example on a
+  continuous integration scenario, that can go within the ~publish.el~
+  template.  E.g.:
+
+  #+BEGIN_SRC emacs-lisp
+  ;; We need this to produce proper syntax highlight if any blog
+  ;; posts include Clojure code in source code blocks.  Notice that
+  ;; built-in modes don't require this.
+  (require 'clojure-mode)
+
+  ;; This is not required, but might be desired.  It configures the
+  ;; library that Org-Mode uses to generate syntax highlight with CSS
+  ;; classes instead of HTML font properties.
+  (require 'htmlize)
+  (setq org-html-htmlize-output-type 'css)
+
+  (weblorg-route
+   :name "posts"
+   :input-pattern "./posts/*.org"
+   :template "post.html"
+   :output "./posts/{{ slug }}.html"
+   :url "/posts/{{ slug }}.html")
+
+  (weblorg-export)
+  #+END_SRC
