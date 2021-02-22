@@ -50,6 +50,14 @@
  :output "output/index.html"
  :url "/")
 
+(weblorg-route
+ :name "feed"
+ :input-pattern "posts/*.org"
+ :input-aggregate #'weblorg-input-aggregate-all-desc
+ :template "feed.xml"
+ :output "output/feed.xml"
+ :url "/feed.xml")
+
 (weblorg-copy-static
  :output "output/static/{{ file }}"
  :url "/static/{{ file }}")
