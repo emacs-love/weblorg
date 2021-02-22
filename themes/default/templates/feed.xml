@@ -31,7 +31,7 @@
     <item>
       <title>{{ post.title }}</title>
       <link>{{ url_for("posts", slug=post.slug) }}</link>
-      <author>{{ post.author|default("lincoln@clarete.li (Lincoln Clarete)") }}</author>
+      <author>{{ post.author|default("author@mail.com (Blog Author)") }}</author>
       <guid isPermaLink="false">{{ url_for("posts", slug=post.slug) }}</guid>
       <pubDate>{{ post.date|strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
       <description><![CDATA[{{ post.html|safe }}]]></description>
