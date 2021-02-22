@@ -11,8 +11,7 @@
     :input-aggregate #'weblorg-input-aggregate-all-desc
     :template "feed.xml"
     :output "output/feed.xml"
-    :url "/feed.xml"
-    :template-vars site-template-vars)
+    :url "/feed.xml")
    #+END_SRC
 
 If you are creating you own theme besides create the route you will need the `feed.xml`, you can use this snippet:
