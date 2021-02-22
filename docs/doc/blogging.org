@@ -1,0 +1,68 @@
+#+TITLE: Blogging
+#+SLUG: blogging
+
+* Rss Feed
+  Weblorg came with built-in support to rss feed. If you are using the default theme, enable this feature should be easy, just create a route on your `publish.el` file like this:
+
+   #+BEGIN_SRC emacs-lisp
+   (weblorg-route
+    :name "feed"
+    :input-pattern "posts/*.org"
+    :input-aggregate #'weblorg-input-aggregate-all-desc
+    :template "feed.xml"
+    :output "output/feed.xml"
+    :url "/feed.xml"
+    :template-vars site-template-vars)
+   #+END_SRC
+
+If you are creating you own theme besides create the route you will need the `feed.xml`, you can use this snippet:
+
+#+BEGIN_SRC jinja2
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+     xmlns:georss="http://www.georss.org/georss"
+     xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+     xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>{{ SITE_NAME }}</title>
+    <atom:link
+      href="{{ url_for("feed") }}"
+      rel="self" type="application/rss+xml" />
+    <link>{{ SITE_URL }}</link>
+    <description><![CDATA[]]></description>
+    <language>en</language>
+    <pubDate>{{ posts | first | getattr("date") | strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
+    <lastBuildDate>{{ now() | strftime("%a, %d %b %Y %H:%M:%S %z") }}</lastBuildDate>
+    <generator>{{ meta.generator }}</generator>
+    <webMaster>{{ SITE_EMAIL }} ({{ SITE_AUTHOR }})</webMaster>
+    <image>
+      <url>{{ SITE_URL }}/favicon.png</url>
+      <title>{{ SITE_NAME }}</title>
+      <link>{{ SITE_URL }}</link>
+    </image>
+
+    {% for post in posts %}
+    <item>
+      <title>{{ post.title }}</title>
+      <link>{{ url_for("posts", slug=post.slug) }}</link>
+      <author>{{ post.author|default("{{ SITE_EMAIL }} ({{ SITE_AUTHOR }})") }}</author>
+      <guid isPermaLink="false">{{ url_for("posts", slug=post.slug) }}</guid>
+      <pubDate>{{ post.date|strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
+      <description>
+        <![CDATA[
+          {% if post.subtitle %}<p><strong>{{ post.subtitle|safe }}</strong></p>{% endif %}
+          {% if post.description %}<p>{{ post.description|safe }}</p>{% endif %}
+          {{ post.html|safe }}
+        ]]>
+      </description>
+    </item>
+    {% endfor %}
+  </channel>
+</rss>
+#+END_SRC
