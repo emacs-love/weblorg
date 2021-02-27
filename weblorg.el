@@ -364,6 +364,7 @@ Parameters in ~OPTIONS~:
           (name (weblorg--get opt :name "static"))
           (url (weblorg--get opt :url "/static/{{ file }}"))
           (base-dir (weblorg--get opt :base-dir default-directory))
+          (data-dir (weblorg--get opt :data-dir nil))
           (site (or (weblorg--get opt :site)
                     (weblorg-site :base-url weblorg-default-url)))
           ;; The default theme of the site is the defacto "default"
@@ -372,6 +373,7 @@ Parameters in ~OPTIONS~:
      (puthash :site site route)
      (puthash :url url route)
      (puthash :base-dir base-dir route)
+     (puthash :data-dir data-dir route)
      (puthash :theme theme route)
      (puthash :theme-dir "static/" route)
      (puthash :input-pattern (weblorg--get opt :input-pattern "**/*") route)
@@ -405,31 +407,33 @@ Parameters in ~OPTIONS~:
 
 (defun weblorg-export-assets (route)
   "Export static assets ROUTE."
-  (dolist (path (reverse (weblorg--path route "static")))
-    (dolist (file (condition-case nil
-                      (weblorg--find-source-files
-                       (gethash :name route)
-                       path
-                       (gethash :input-pattern route)
-                       (gethash :input-exclude route))
-                    ;; ignore signaling of no-files-matched
-                    (weblorg-error-config nil)))
-      (let* ((relative-path
-              (replace-regexp-in-string
-               (regexp-quote path) "" file t t))
-             (rendered-output
-              (templatel-render-string
-               (gethash :output route) `(("file" . ,relative-path))))
-             (dest-file
-              (expand-file-name
-               rendered-output (gethash :base-dir route))))
-        (weblorg--log-info  "copying: %s -> %s" file dest-file)
-        (mkdir (file-name-directory dest-file) t)
-        (condition-case exc
-            (copy-file file dest-file t)
-          (error
-           (if (not (string= (caddr exc) "Success"))
-               (message "error: %s: %s" (car (cddr exc)) (cadr (cddr exc))))))))))
+  (dolist (path (if (gethash :data-dir route) (list (gethash :data-dir route)) (reverse (weblorg--path route "static"))))
+    (progn
+      (message "Processing static path: %s" path)
+      (dolist (file (condition-case nil
+                        (weblorg--find-source-files
+                         (gethash :name route)
+                         path
+                         (gethash :input-pattern route)
+                         (gethash :input-exclude route))
+                      ;; ignore signaling of no-files-matched
+                      (weblorg-error-config nil)))
+        (let* ((relative-path
+                (replace-regexp-in-string
+                 (regexp-quote path) "" file t t))
+               (rendered-output
+                (templatel-render-string
+                 (gethash :output route) `(("file" . ,relative-path))))
+               (dest-file
+                (expand-file-name
+                 rendered-output (gethash :base-dir route))))
+          (weblorg--log-info  "copying: %s -> %s" file dest-file)
+          (mkdir (file-name-directory dest-file) t)
+          (condition-case exc
+              (copy-file file dest-file t)
+            (error
+             (if (not (string= (caddr exc) "Success"))
+                 (message "error: %s: %s" (car (cddr exc)) (cadr (cddr exc)))))))))))
 
 
 
