@@ -82,6 +82,7 @@
 ;;; Code:
 
 (require 'org)
+(require 'ox-org)
 (require 'ox-html)
 (require 'seq)
 (require 'em-glob)
@@ -939,7 +940,10 @@ can be found in the ROUTE."
 (defun weblorg--parse-org-file (input-path)
   "Parse an Org-Mode file located at INPUT-PATH."
   (let* ((input-data (with-temp-buffer
+                       ;; do an org-to-org export here to handle includes??
                        (insert-file-contents input-path)
+                       (set-visited-file-name input-path t t)
+                       (org-export-to-buffer 'org (buffer-name))
                        (buffer-string)))
          (keywords (weblorg--parse-org input-data))
          (slug
