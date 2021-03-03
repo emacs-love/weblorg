@@ -941,7 +941,7 @@ can be found in the ROUTE."
   (let* ((input-data (with-temp-buffer
                        (insert-file-contents input-path)
                        (buffer-string)))
-         (keywords (weblorg--parse-org input-data))
+         (keywords (weblorg--parse-org input-data input-path))
          (slug
           ;; First look for `slug` FILETAG, if it's not available, try
           ;; to use the `title` FILETAG. If both fail, use the file
@@ -953,12 +953,13 @@ can be found in the ROUTE."
     (weblorg--prepend keywords (cons "slug" (weblorg--slugify slug)))
     keywords))
 
-(defun weblorg--parse-org (input-data)
+(defun weblorg--parse-org (input-data &optional input-path)
   "Parse INPUT-DATA as an Org-Mode file & generate its HTML.
 
 An assoc will be returned with all the file properties collected
 from the file, like TITLE, OPTIONS etc.  The generated HTML will
-be added ad an entry to the returned assoc."
+be added ad an entry to the returned assoc.  Optionally, provide
+an INPUT-PATH to resolve relative links and INCLUDES from."
   (let (html keywords)
     ;; Replace the HTML generation code to prevent ox-html from adding
     ;; headers and stuff around the HTML generated for the `body` tag.
@@ -993,6 +994,7 @@ be added ad an entry to the returned assoc."
     ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
       (insert input-data)
+      (if input-path (set-visited-file-name input-path t t))
       (org-html-export-as-html))
     ;; Uninstall advices
     (ad-unadvise 'org-html-template)
