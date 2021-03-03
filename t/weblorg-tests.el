@@ -26,6 +26,27 @@
 (require 'cl-lib)
 (require 'weblorg)
 
+
+;; Test Helpers
+
+(defmacro tests-fixture (path)
+  "Expand the full PATH for a fixture."
+  `(expand-file-name (format "t/fixtures/%s" ,path) default-directory))
+
+(ert-deftest weblorg--bug26-export-org-with-right-include-path ()
+  (should
+            (equal
+             (weblorg--get-cdr (weblorg--parse-org-file (tests-fixture "bug26/index.org"))
+                               "html")
+             "<p>
+index
+</p>
+
+<p>
+Included from file
+</p>
+")))
+
 (ert-deftest weblorg--path ()
   (let ((route (weblorg-route
                 :name "posts"

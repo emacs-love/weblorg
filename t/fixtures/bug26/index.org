@@ -1,0 +1,6 @@
+#+TITLE: Regression test
+#+ISSUE: https://github.com/emacs-love/weblorg/issues/26
+
+index
+
+#+INCLUDE: "example.txt"
