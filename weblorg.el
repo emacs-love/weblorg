@@ -918,7 +918,7 @@ can be found in the ROUTE."
               (expand-file-name rendered-output (gethash :base-dir route))))
         (weblorg--log-info "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
-        (write-region rendered nil rendered-output)))))
+        (write-region rendered nil final-output)))))
 
 (defun weblorg--template-render (route data)
   "Render template within ROUTE passing DATA as template vars."
