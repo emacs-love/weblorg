@@ -1,0 +1,4 @@
+#+TITLE: Slug from the file name
+#+SLUG: a-slug-too
+
+Nothing to see here
