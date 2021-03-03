@@ -33,6 +33,14 @@
   "Expand the full PATH for a fixture."
   `(expand-file-name (format "t/fixtures/%s" ,path) default-directory))
 
+(ert-deftest weblorg--bug27-add-file-slug ()
+  (should
+            (equal
+             (weblorg--get-cdr (weblorg--parse-org-file (tests-fixture "bug27/a_funny+file~name.with.many=chars.org"))
+                               "file_slug")
+             "a-funny-file-name-with-many-chars-org")))
+
+
 (ert-deftest weblorg--bug26-export-org-with-right-include-path ()
   (should
             (equal

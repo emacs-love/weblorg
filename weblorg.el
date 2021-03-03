@@ -937,7 +937,8 @@ can be found in the ROUTE."
 
 (defun weblorg--parse-org-file (input-path)
   "Parse an Org-Mode file located at INPUT-PATH."
-  (let* ((input-data (with-temp-buffer
+  (let* ((file-slug (weblorg--slugify (file-name-nondirectory input-path)))
+         (input-data (with-temp-buffer
                        (insert-file-contents input-path)
                        (buffer-string)))
          (keywords (weblorg--parse-org input-data input-path))
@@ -950,6 +951,7 @@ can be found in the ROUTE."
            (weblorg--get-cdr keywords "title" input-path))))
     (weblorg--prepend keywords (cons "file" input-path))
     (weblorg--prepend keywords (cons "slug" (weblorg--slugify slug)))
+    (weblorg--prepend keywords (cons "file_slug" file-slug))
     keywords))
 
 (defun weblorg--parse-org (input-data &optional input-path)
