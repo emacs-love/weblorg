@@ -82,7 +82,6 @@
 ;;; Code:
 
 (require 'org)
-(require 'ox-org)
 (require 'ox-html)
 (require 'seq)
 (require 'em-glob)
@@ -961,7 +960,6 @@ An assoc will be returned with all the file properties collected
 from the file, like TITLE, OPTIONS etc.  The generated HTML will
 be added ad an entry to the returned assoc.  Optionally, provide
 an INPUT-PATH to resolve relative links and INCLUDES from."
-  (message "input-path: %s" input-path)
   (let (html keywords)
     ;; Replace the HTML generation code to prevent ox-html from adding
     ;; headers and stuff around the HTML generated for the `body` tag.
