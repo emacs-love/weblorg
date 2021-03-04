@@ -33,6 +33,41 @@
   "Expand the full PATH for a fixture."
   `(expand-file-name (format "t/fixtures/%s" ,path) default-directory))
 
+(ert-deftest weblorg--bug29--post-url ()
+  (weblorg-route
+   :base-dir (tests-fixture "test1/")
+   :name "my-route"
+   :input-pattern "src/*.org"
+   :template "my-post.html"
+   :url "/{{ slug }}--{{ date | strftime(\"%Y-%m-%d\") }}.html")
+
+  ;; When the collection and aggregation happen
+  (let* ((route (weblorg--site-route (weblorg--site-get) "my-route"))
+         (collection (weblorg--route-collect-and-aggregate route))
+         (posts (mapcar #'cdar collection)))
+
+    ;; Add template to be rendered; notice we still don't have the
+    ;; `post.` variable because we're testing it without calling
+    ;; aggregate.
+    (templatel-env-add-template
+     (gethash :template-env route)
+     "my-post.html" (templatel-new "MY URL IS {{ url }}"))
+
+    ;; We've only got one single post that's not a draft in that route
+    (should (equal 1 (length posts)))
+
+    ;; The post now gets the "post.route.name" name
+    (should (equal "my-route" (weblorg--get-cdr
+                               (weblorg--get-cdr (car posts) "route")
+                               "name")))
+
+    ;; Post is rendered with the URL link
+    (should (equal "MY URL IS http://localhost:8000/a-simple-post--2020-09-05.html"
+                   (weblorg--template-render route posts))))
+
+  ;; reset the global to its initial state
+  (clrhash weblorg--sites))
+
 (ert-deftest weblorg--bug27-add-file-slug ()
   (should
             (equal
@@ -111,7 +146,7 @@ Included from file
 
 (ert-deftest weblorg--collect-n-aggr ()
   (weblorg-route
-   :base-dir (expand-file-name "t/fixtures/test1/" default-directory)
+   :base-dir (tests-fixture "test1/")
    :name "route"
    :input-filter nil
    :input-pattern "src/*.org"

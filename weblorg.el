@@ -3,7 +3,7 @@
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
 ;; URL: https://emacs.love/weblorg
 ;; Version: 0.1.1
-;; Package-Requires: ((templatel "0.1.4") (emacs "26.1"))
+;; Package-Requires: ((templatel "0.1.5") (emacs "26.1"))
 ;;
 ;; Copyright (C) 2020-2021  Lincoln Clarete
 ;;
@@ -294,9 +294,9 @@ Parameters in ~OPTIONS~:
      (puthash :theme theme route)
      (let ((env (templatel-env-new :importfn (weblorg--route-importfn route))))
        (templatel-env-set-autoescape env t)
-       (puthash :template-env env route))
+       (puthash :template-env env route)
+       (weblorg--route-install-template-filters route))
      (puthash name route (gethash :routes site))
-     (weblorg--route-install-template-filters route)
      route)))
 
 (defun weblorg-copy-static (&rest options)
@@ -367,6 +367,7 @@ Parameters in ~OPTIONS~:
                     (weblorg-site :base-url weblorg-default-url)))
           ;; The default theme of the site is the defacto "default"
           (theme (weblorg--get opt :theme (gethash :theme site))))
+
      (puthash :name name route)
      (puthash :site site route)
      (puthash :url url route)
@@ -379,7 +380,15 @@ Parameters in ~OPTIONS~:
      (puthash :input-aggregate #'identity route)
      (puthash :output (weblorg--get opt :output "output/static/{{ file }}") route)
      (puthash :export (weblorg--get opt :export #'weblorg-export-assets) route)
-     (puthash name route (gethash :routes site)))))
+     ;; we need a template environment for the static routes because
+     ;; of the rendering of the expressions in the :url and :output
+     ;; parameters
+     (let ((env (templatel-env-new)))
+       (templatel-env-set-autoescape env t)
+       (puthash :template-env env route)
+       (weblorg--route-install-template-filters route))
+     (puthash name route (gethash :routes site))
+     route)))
 
 (defun weblorg-export ()
   "Export all sites."
@@ -703,7 +712,7 @@ consumption from templatel."
         (anchor (weblorg--get-cdr vars "anchor")))
     (if route
         (concat (gethash :base-url site)
-                (templatel-render-string (gethash :url route) vars)
+                (weblorg--render-route-prop route :url vars)
                 (if anchor (format "#%s" anchor) ""))
       (progn
         (warn "url_for: Can't find route %s" route-name)
@@ -871,7 +880,13 @@ pipeline again."
            (gethash :input-exclude route)))
          ;; Parse Org-mode files
          (parsed-files
-          (mapcar (gethash :input-parser route) input-files))
+          (mapcar (lambda(input-path)
+                    ;; Append the property `route.name` into each
+                    ;; parsed file
+                    (append
+                      (funcall (gethash :input-parser route) input-path)
+                      `(("route" . (("name" . ,(gethash :name route)))))))
+                  input-files))
          ;; Apply filters that depend on data read from parser
          (filtered-files
           (if (null input-filter) parsed-files
@@ -883,7 +898,7 @@ pipeline again."
     aggregated-data))
 
 (defun weblorg--vars-from-route (route)
-  "Pick some data from ROUTE to forward rendering templates."
+  "Build set of vars for template that depend on ROUTE."
   `(("route" . (("name" . ,(gethash :name route))))))
 
 (defun weblorg--export-templates (route collections)
@@ -910,15 +925,32 @@ can be found in the ROUTE."
              (rendered (weblorg--template-render route data))
              ;; Render the relative output path
              (rendered-output
-              (templatel-render-string
-               (gethash :output route)
-               (cdar data)))
+              (weblorg--render-route-prop route :output (cdar data)))
              ;; Render the full path
              (final-output
               (expand-file-name rendered-output (gethash :base-dir route))))
         (weblorg--log-info "writing: %s" final-output)
         (mkdir (file-name-directory final-output) t)
         (write-region rendered nil final-output)))))
+
+(defun weblorg--render-route-prop (route prop data)
+  "Render PROP of ROUTE with DATA as context."
+  ;; TODO: This should be something like templatel-env-render-string
+  ;; provided by templatel itself, but let's experiment with this
+  ;; here.  We go through all this work to allow using filters within
+  ;; the `:url' and `:output' strings.
+  (let ((env (gethash :template-env route))
+        (name (format "parameter %s of route %s" prop (gethash :name route))))
+    (templatel-env-add-template env name (templatel-new (gethash prop route)))
+    (let ((output (templatel-env-render env name data)))
+      (templatel-env-remove-template env name)
+      output)))
+
+(defun weblorg--template-render-url (route data)
+  "Render the url property of a post from ROUTE and DATA."
+  `(("url" . ,(weblorg--url-for-v (gethash :name route)
+                                  (cdar data)
+                                  (gethash :site route)))))
 
 (defun weblorg--template-render (route data)
   "Render template within ROUTE passing DATA as template vars."
@@ -929,10 +961,11 @@ can be found in the ROUTE."
            (gethash :template-vars route)
            weblorg-meta
            data
+           (weblorg--template-render-url route data)
            (weblorg--vars-from-route route))))
 
 (defun weblorg--export-site-route (site route)
-  "SITE ROUTE."
+  "Call export function of ROUTE from SITE."
   (funcall (gethash :export route) site route))
 
 (defun weblorg--parse-org-file (input-path)
