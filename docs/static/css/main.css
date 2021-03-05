@@ -114,7 +114,8 @@ header h1 img         { width: var(--logo-width); height: var(--logo-height); }
 
 /* General settings for the content area */
 .page                 { display: flex; width: var(--page-width); margin: auto; }
-.page > .content              { flex-grow: 1; margin-bottom: 50px; }
+.page > .content      { flex-grow: 1; margin-bottom: 50px; max-width: calc(var(--page-width) - 20%); }
+
 .page > .content article      { background: #fff; color: #333; border-radius: 15px; padding: 50px; margin-bottom: 50px; }
 .page > .content h1           { font-weight: 50; font-size: 2em; margin: 0; }
 .page > .content h2           { font-weight: 500; }
