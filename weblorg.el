@@ -970,7 +970,7 @@ can be found in the ROUTE."
 
 (defun weblorg--parse-org-file (input-path)
   "Parse an Org-Mode file located at INPUT-PATH."
-  (let* ((file-slug (weblorg--slugify (file-name-nondirectory input-path)))
+  (let* ((file-slug (weblorg--slugify (file-name-sans-extension (file-name-nondirectory input-path))))
          (input-data (with-temp-buffer
                        (insert-file-contents input-path)
                        (buffer-string)))

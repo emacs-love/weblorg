@@ -73,7 +73,7 @@
             (equal
              (weblorg--get-cdr (weblorg--parse-org-file (tests-fixture "bug27/a_funny+file~name.with.many=chars.org"))
                                "file_slug")
-             "a-funny-file-name-with-many-chars-org")))
+             "a-funny-file-name-with-many-chars")))
 
 
 (ert-deftest weblorg--bug26-export-org-with-right-include-path ()
