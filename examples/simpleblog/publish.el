@@ -20,8 +20,10 @@
 
 ;; Install and configure dependencies
 (use-package templatel :ensure t)
-(use-package htmlize)
-(setq org-html-htmlize-output-type 'css)
+(use-package htmlize
+  :ensure t
+  :config
+  (setq org-html-htmlize-output-type 'css))
 
 (require 'weblorg)
 
