@@ -86,6 +86,7 @@
 (require 'seq)
 (require 'em-glob)
 (require 'templatel)
+(require 'filenotify)
 
 (define-error 'weblorg-error-config "Configuration Error" 'weblorg-error-user)
 
@@ -389,6 +390,69 @@ Parameters in ~OPTIONS~:
        (weblorg--route-install-template-filters route))
      (puthash name route (gethash :routes site))
      route)))
+
+
+(defvar weblorg--watch-mutex (make-mutex "weblorg watch mutex"))
+
+(defvar weblorg--watch-cond (make-condition-variable weblorg--watch-mutex "weblorg watch condition variable"))
+
+(defun weblorg--watch-make-worker ()
+  "."
+  (lambda ()
+    (weblorg--log-info "watcher: worker started")
+    (while t
+      (with-mutex weblorg--watch-mutex
+        (condition-wait weblorg--watch-cond))
+      (weblorg--log-info "watcher: build triggered")
+      (weblorg-export)
+      (weblorg--log-info "watcher: build finished"))))
+
+(defun weblorg--watch-notify (event)
+  "EVENT."
+  (weblorg--log-info "watcher: notify worker")
+  (with-mutex weblorg--watch-mutex
+    (condition-notify weblorg--watch-cond)))
+
+(defun weblorg-watch ()
+  "."
+  (let* ((directories-to-be-watched '())
+         ;; Monitor exit status
+         (exit-flag nil)
+         (exit-mutex (make-mutex))
+         (exit-condv (make-condition-variable exit-mutex))
+         ;; Add request to re-build
+         ;; (rebuilds-mutex (make-mutex))
+         ;; (rebuilds-queue '())
+         )
+
+    ;; Iterate over each entry within weblorg--sites
+    (maphash
+     (lambda(_ site)
+       ;; Iterate over each route of a given site
+       (maphash
+        (lambda(_ route)
+          (let ((route-base-dir (file-truename (gethash :base-dir route))))
+            ;; If the `base-dir' of the route we're iterating
+            ;; over is not within the list of visited ones,
+            ;; let's install its file watcher and add it to
+            ;; the list.
+            (if (not (member route-base-dir directories-to-be-watched))
+                (progn
+                  ;; Install file watcher and Remeber we saw this
+                  ;; directory
+                  (weblorg--log-info "File Watcher installed for %s" route-base-dir)
+                  (file-notify-add-watch
+                   route-base-dir
+                   '(change attribute-change)
+                   #'weblorg--watch-notify)
+                  (setq directories-to-be-watched
+                        (cons route-base-dir directories-to-be-watched))))))
+                (gethash :routes site)))
+     weblorg--sites)
+
+    (let* ((worker-func (weblorg--watch-make-worker))
+           (worker-thread (make-thread worker-func "weblorg watch worker thread")))
+      (thread-join worker-thread))))
 
 (defun weblorg-export ()
   "Export all sites."
