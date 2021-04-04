@@ -9,6 +9,9 @@
 
 ;; Guarantee the freshest version of the weblorg
 (add-to-list 'load-path "../../")
+;; Also support loading weblorg form /opt/weblorg. This is for use with the nanzhong/weblorg image.
+;; See the volume mount in the Makefile for more context.
+(add-to-list 'load-path "/opt/weblorg")
 
 ;; Setup package management
 (require 'package)
@@ -20,8 +23,10 @@
 
 ;; Install and configure dependencies
 (use-package templatel :ensure t)
-(use-package htmlize)
-(setq org-html-htmlize-output-type 'css)
+(use-package htmlize
+  :ensure t
+  :config
+  (setq org-html-htmlize-output-type 'css))
 
 (require 'weblorg)
 
