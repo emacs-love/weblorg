@@ -1058,7 +1058,8 @@ The user will have to iterate over the collection to get all keywords."
             ;; compatibility to Emacs 26x.
             (apply #'encode-time (org-parse-time-string value)))
            ((string= key "filetags")
-            (split-string value ":" t))))))
+            (split-string value ":" t))
+           (t value)))))
 
 (defun weblorg--find-source-files (route-name base-dir input-pattern input-exclude)
   "Find source files with parameters extracted from a route ROUTE-NAME.
