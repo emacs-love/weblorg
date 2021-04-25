@@ -1045,16 +1045,21 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
 
 If it's a date field, it will return a timestamp tuple instead of
 the value string.  The user will have to use the `strftime`
-template filter to display a nicely formatted string."
+template filter to display a nicely formatted string.
+
+If it's a filetag field, it will return a collection of strings.
+The user will have to iterate over the collection to get all keywords."
   (let ((key (downcase (org-element-property :key keyword)))
         (value (org-element-property :value keyword)))
     (cons
      key
-     (if (string= key "date")
-         ;; use the deprecated signature of `encode-time' to keep
-         ;; compatibility to Emacs 26x.
-         (apply #'encode-time (org-parse-time-string value))
-       value))))
+     (cond ((string= key "date")
+            ;; use the deprecated signature of `encode-time' to keep
+            ;; compatibility to Emacs 26x.
+            (apply #'encode-time (org-parse-time-string value)))
+           ((string= key "filetags")
+            (split-string value ":" t))
+           (t value)))))
 
 (defun weblorg--find-source-files (route-name base-dir input-pattern input-exclude)
   "Find source files with parameters extracted from a route ROUTE-NAME.
