@@ -512,11 +512,7 @@ the posts."
   (let (output
         (ht (make-hash-table :test 'equal)))
     (dolist (post posts)
-      (dolist (tag (or (seq-filter
-                        (lambda(x) (not (equal x "")))
-                        (split-string
-                         (or (cdr (assoc "filetags" post)) "") ":"))
-                       '("none")))
+      (dolist (tag (assoc "filetags" post))
         ;; Append post to the list under each tag
         (puthash (downcase tag)
                  (cons post (gethash (downcase tag) ht))
