@@ -784,6 +784,10 @@ that is accessible with the same syntax as the template filter."
      "url_for"
      :export (lambda(path desc _backend)
                (format "<a href=\"%s\">%s</a>" (weblorg--url-for path site) desc)))
+    (org-link-set-parameters
+     "url_for_img"
+     :export (lambda(path desc _backend)
+               (format "<img src=\"%s\" />" (weblorg--url-for path site))))
     (templatel-env-add-filter
      env "url_for"
      (lambda(route-name &optional vars)
