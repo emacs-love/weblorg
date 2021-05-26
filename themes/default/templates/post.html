@@ -5,7 +5,9 @@
     {{ post.title }}
   </h1>
   <section class="post__meta">
-    {{ post.date|strftime("%b %d, %Y") }}
+    {% if post.date is defined %}
+      {{ post.date|strftime("%b %d, %Y") }}
+    {% endif %}
   </section>
   <section>
     {{ post.html|safe }}

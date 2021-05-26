@@ -4,7 +4,9 @@
     <a href="">{{ post.title }}</a>
   </h1>
   <section class="post-meta">
-    {{ post.date }}
+    {% if post.date is defined %}
+      {{ post.date|strftime("%b %d, %Y") }}
+    {% endif %}
   </section>
   <section>
     {{ post.html|safe }}

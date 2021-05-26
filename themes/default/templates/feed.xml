@@ -33,7 +33,9 @@
       <link>{{ url_for("posts", slug=post.slug) }}</link>
       <author>{{ post.author|default("author@mail.com (Blog Author)") }}</author>
       <guid isPermaLink="false">{{ url_for("posts", slug=post.slug) }}</guid>
-      <pubDate>{{ post.date|strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
+      {% if post.date is defined %}
+        <pubDate>{{ post.date|strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
+      {% endif %}
       <description><![CDATA[{{ post.html|safe }}]]></description>
     </item>
     {% endfor %}
