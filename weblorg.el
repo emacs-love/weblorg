@@ -391,8 +391,8 @@ Parameters in ~OPTIONS~:
      route)))
 
 (defun weblorg-export ()
-  (interactive)
   "Export all sites."
+  (interactive)
   (weblorg--with-error
    (maphash
     (lambda(_ site)
