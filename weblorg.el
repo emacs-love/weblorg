@@ -701,6 +701,7 @@ consumption from templatel."
                 (lambda() (templatel--scanner-range scanner ?A ?Z))
                 (lambda() (templatel--scanner-range scanner ?0 ?9))
                 (lambda() (templatel--scanner-match scanner ?-))
+                (lambda() (templatel--scanner-match scanner ?.))
                 (lambda() (templatel--scanner-match scanner ?_))))))))))
 
 (defun weblorg--url-for-v (route-name vars site)
