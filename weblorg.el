@@ -374,7 +374,7 @@ Parameters in ~OPTIONS~:
      (puthash :base-dir base-dir route)
      (puthash :theme theme route)
      (puthash :input-pattern (weblorg--get opt :input-pattern "**/*") route)
-     (puthash :input-exclude (weblorg--get opt :input-exclude (regexp-opt '("/." "/.." "/output"))) route)
+     (puthash :input-exclude (weblorg--get opt :input-exclude (regexp-opt '("../" "/output"))) route)
      (puthash :input-filter (weblorg--get opt :input-filter) route)
      (puthash :input-parser #'identity route)
      (puthash :input-aggregate #'identity route)
