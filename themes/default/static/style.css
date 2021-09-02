@@ -39,6 +39,9 @@ body {
     color: var(--cl-foreground);
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
@@ -47,6 +50,7 @@ header {
   align-items: center;
   border-bottom: 1px solid var(--cl-border);
   padding: 10px 30px;
+  margin-bottom: 40px;
 }
 header h1 { font-size: 24px; }
 header nav {
@@ -67,7 +71,7 @@ header nav ul li {
 }
 
 .menu li {
-  padding-right: 50px;
+  padding-left: 50px;
   cursor: pointer;
 }
 .menu a {
@@ -96,8 +100,7 @@ main {
     margin: 0 auto;
     flex-grow: 1;
 }
-.post__title { padding-top: 40px; }
-.post__meta  { color: var(--cl-gray) }
+.post__meta { color: var(--cl-gray) }
 
 /* -- Highlight Note Class -- */
 .note {
