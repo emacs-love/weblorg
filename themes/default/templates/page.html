@@ -1,12 +1,12 @@
-{% extends "base_layout.html" %}
+{% extends "base.html" %}
 
 {% block main %}
-<article class="page">
-  <h1 class="page__title">
-    {{ post.title }}
-  </h1>
-  <section>
-    {{ post.html|safe }}
-  </section>
-</article>
+  <article class="page">
+    <h1 class="page__title">
+      {{ post.title }}
+    </h1>
+    <section>
+      {{ post.html|safe }}
+    </section>
+  </article>
 {% endblock %}

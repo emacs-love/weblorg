@@ -1,16 +1,17 @@
-{% extends "base_layout.html" %}
+{% extends "base.html" %}
+
 {% block main %}
-<article class="post">
-  <h1 class="post__title">
-    {{ post.title }}
-  </h1>
-  <section class="post__meta">
-    {% if post.date is defined %}
-      {{ post.date|strftime("%b %d, %Y") }}
-    {% endif %}
-  </section>
-  <section>
-    {{ post.html|safe }}
-  </section>
-</article>
+  <article class="post">
+    <h1 class="post__title">
+      {{ post.title }}
+    </h1>
+    <section class="post__meta">
+      {% if post.date is defined %}
+        {{ post.date|strftime("%b %d, %Y") }}
+      {% endif %}
+    </section>
+    <section>
+      {{ post.html|safe }}
+    </section>
+  </article>
 {% endblock %}
