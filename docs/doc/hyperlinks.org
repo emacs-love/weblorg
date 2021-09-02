@@ -40,7 +40,7 @@
    The example above only requires ~slug~, and not providing it to
    ~url_for~ would cause an error exporting the template.
 
-** Links on Org-Mode files
+** Links in Org-Mode files
 
    If the goal is to link to that post from another Org-Mode file,
    ~url_for~ can also be used as an Org-Mode link.  Weblorg allows
@@ -53,6 +53,28 @@
    Both the template and the Org-Mode versions of ~url_for~ have
    exactly the same outcome:
    ~http://localhost:8000/posts/full-moon.html~.
+
+** Image URLs in Org-Mode files
+
+   The hyperlink type ~url_for~ always renders the ~<a>~ HTML tag.  If
+   the resource referenced is an image and the tag ~<img>~ is
+   preferred, please use ~url_for_img~. Both take exactly the same
+   parameters. e.g.:
+
+   #+BEGIN_SRC org-mode
+   [[url_for:static,file=sundown.png][orange]]
+   [[url_for_img:static,file=sundown.png][orange]]
+   #+END_SRC
+
+   Here's how they are rendered differently by weblorg:
+
+   #+BEGIN_SRC html
+   <a href="static/sundown.png">orange</a>
+   <img src="static/sundown.png" alt="orange">
+   #+END_SRC
+
+   Notice that ~url_for_img~ only exists as an Org-Mode hyperlink
+   type.
 
 ** Base URL
 
