@@ -3,40 +3,35 @@
   <head>
     {% block head %}
     <meta charset="utf-8">
-    <title>My personal weblorg - {% block title %}Home{% endblock %}</title>
-    <meta name="description" content="{% block description %}{% endblock %}">
+    <title>
+      {% block title %}{{ site_name | default("weblorg website") }}{% endblock %}
+      {% block subtitle %}{% endblock %}
+    </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="John Coltrane" />
-    <meta name="description" content="my personal blog" />
-    <meta name="keywords" content="" />
     <link rel="stylesheet" href="{{ url_for("static", file="style.css") }}" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora&family=Space+Mono&display=swap" />
+    {% if site_owner is defined %}<meta name="author" content="{{ site_owner }}" />{% endif %}
+    {% if site_description is defined %}<meta name="description" content="{{ site_description }}" /> {% endif %}
+    {% if site_keywords is defined %}<meta name="keywords" content="{{ site_keywords }}" />{% endif %}
     {% endblock %}
   </head>
   <body>
     {# Top navigation bar #}
-
     {% block nav %}
-    <header>
-      <h1 class="logo">
-        <a href="{{ url_for("index") }}">My personal weblorg</a>
-      </h1>
-      <a href="#main" class="visually-hidden">jump to main content</a>
-      <nav>
-        <ul class="menu">
-          <li class="menu__item"><a class="menu__link" href="{{ url_for("pages", slug="about") }}">about</a></li>
-          <li class="menu__item"><a class="menu__link" href="{{ url_for("index") }}">blog</a></li>
-        </ul>
-        <ul class="social">
-          <li class="social__item">
-            <a class="social__link github" href="http://github.com/clarete/weblorg">
-              <i class="fa fa-github" aria-hidden="true"></i>
-              <span class="visually-hidden">github</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </header>
+      <header>
+        <h1>
+          <a href="{{ url_for("index") }}">
+            {% block title %}{{ site_name | default("weblorg website") }}{% endblock %}
+          </a>
+        </h1>
+        <a href="#main" class="visually-hidden">jump to main content</a>
+        <nav>
+          <ul class="menu">
+            <li><a href="{{ url_for("pages", slug="about") }}">about</a></li>
+            <li><a href="{{ url_for("index") }}">blog</a></li>
+          </ul>
+        </nav>
+      </header>
     {% endblock %}
 
     {# Probably where most of the action will happen #}
@@ -44,17 +39,14 @@
       {% block main %}{% endblock %}
     </main>
 
-
     {# Links, copyright notice, etc #}
     {% block footer %}
-    <footer class="footer">
-      <div class="ack">
-        Made with &#x2665; by
+      <footer>
+        Made with &#x2665; and&nbsp;
         <a href="https://emacs.love/weblorg" target="_blank">
           weblorg
         </a>
-      </div>
-    </footer>
+      </footer>
     {% endblock %}
 
   </body>
