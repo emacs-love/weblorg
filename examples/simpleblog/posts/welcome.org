@@ -1,0 +1,55 @@
+#+TITLE: Welcome to Weblorg
+#+DATE: <2021-09-01>
+#+OPTIONS: toc:nil num:nil
+#+OPTIONS: ^:nil
+
+* Intro
+
+  Weblorg is a Static HTML Website Generator. It's built with Emacs
+  Lisp and takes advantage of the powers of Org-Mode as the source
+  format, and makes it easy to extend and customize the structure and
+  the theme of the generated website.
+
+  #+begin_note
+  It's easy to run Weblorg from a CI or from any other automated
+  environment with emacs --script publish.el from the root of your
+  website.
+  #+end_note
+
+* Templating
+
+  To make it more natural for people that have used other tools for
+  generating websites, Weblorg leverages templatel, a library that
+  provides a familiar syntax for stitching reusable templates together
+  for creating websites. e.g.:
+
+  #+begin_src jinja2
+    <ul>
+      {% for post in posts %}
+        <li>
+          <a href="{{ url_for("posts", slug=post.slug) }}">
+            {{ post.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  #+end_src
+
+* Org-Mode
+
+  You can format your posts using text-based annotations, very
+  similarly to markdown. Although they're similar in concept, Org-Mode
+  has it's own syntax. Check out the basics:
+
+  | Markup                          | Result      |
+  |---------------------------------+-------------|
+  | ~*bold*~                        | *bold*      |
+  | ~/italic/~                      | /italic/    |
+  | ~_underline_~                   | _underline_ |
+  | ~~code~~                        | ~code~      |
+  | ~=verbatim=~                    | =verbatim=  |
+  | ~[[https://orgmode.org][Link]]~ | [[https://orgmode.org][Link]]        |
+
+  Outlines, automatic generation of Table of Contents and many more
+  Org-Mode features are available. Make sure you take a look at their
+  extensive documentation to learn more about it.
