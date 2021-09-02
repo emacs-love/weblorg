@@ -100,6 +100,13 @@ main {
     margin: 0 auto;
     flex-grow: 1;
 }
+@media (max-width: 599px) {
+    main {
+        width: calc(100% - 20px);
+        padding: 10px;
+    }
+}
+
 article h1:first-child { font-size: 36px; }
 .post__meta {
     font-size: 14px;
