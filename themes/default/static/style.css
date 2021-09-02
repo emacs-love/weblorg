@@ -106,12 +106,15 @@ main {
         padding: 10px;
     }
 }
-
 article h1:first-child { font-size: 36px; }
 .post__meta {
     font-size: 14px;
     color: var(--cl-gray);
 }
+
+/* -- table -- */
+main table { width: 100% }
+main table th { text-align: left; }
 
 /* -- Highlight Note Class -- */
 .note {
