@@ -193,6 +193,7 @@ header h1 img         { width: var(--logo-width); height: var(--logo-height); }
     /* Page */
     .left-pane             { width: auto; padding: 20px; }
     .page                  { flex-direction: column-reverse; }
+    .page > .content       { max-width: 100%; }
     .page > .content article       { margin: 0 auto; padding: 10px; }
     .page > .content .section      { margin-bottom: 50px; }
     .page > .content .docstring    { padding-left: 0; }
