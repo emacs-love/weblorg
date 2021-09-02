@@ -3,7 +3,7 @@
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
 ;; URL: https://emacs.love/weblorg
 ;; Version: 0.1.1
-;; Package-Requires: ((templatel "0.1.5") (emacs "26.1"))
+;; Package-Requires: ((templatel "0.1.6") (emacs "26.1"))
 ;;
 ;; Copyright (C) 2020-2021  Lincoln Clarete
 ;;
@@ -795,11 +795,6 @@ that is accessible with the same syntax as the template filter."
        (weblorg--url-for-v route-name vars site)))
     ;; Usage: {{ len(listp) }} or {{ listp | len }}
     (templatel-env-add-filter env "len" #'length)
-    ;; Usage {{ maybe_nil | default("Stuff") }} to show "Stuff" in
-    ;; case `maybe_nil` actually contains `nil'
-    (templatel-env-add-filter
-     env "default" (lambda(value default)
-                     (if (null value) default value)))
     ;; time formatting
     (templatel-env-add-filter
      env "strftime" (lambda(time format)
