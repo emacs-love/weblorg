@@ -100,7 +100,11 @@ main {
     margin: 0 auto;
     flex-grow: 1;
 }
-.post__meta { color: var(--cl-gray) }
+article h1:first-child { font-size: 36px; }
+.post__meta {
+    font-size: 14px;
+    color: var(--cl-gray);
+}
 
 /* -- Highlight Note Class -- */
 .note {
