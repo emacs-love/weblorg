@@ -48,6 +48,15 @@
   you'll see next, the ~slug~ property can override the output file
   name.
 
+* date
+
+  The ~date~ field is parsed and transformed in a time tuple that can
+  be formatted with the help of the [[url_for:api,anchor=symbol-weblorg-filters-strftime][strftime]] template filter.  This
+  field is also used by [[url_for:api,anchor=symbol-weblorg-input-aggregate-all][weblorg-input-aggregate-all]],
+  [[url_for:api,anchor=symbol-weblorg-input-aggregate-all-desc][weblorg-input-aggregate-all-desc]],
+  [[url_for:api,anchor=symbol-weblorg-input-aggregate-by-category][weblorg-input-aggregate-by-category]] and
+  [[url_for:api,anchor=symbol-weblorg-input-aggregate-by-category-desc][weblorg-input-aggregate-by-category-desc]] to sort the posts.
+
 * slug
 
   The ~slug~ property takes precedence over the title when generating
@@ -66,8 +75,9 @@
   it.
 
   This feature works in tandem with the ~:input-filter~ option of
-  [[url_for:api,anchor=symbol-weblorg-route][weblorg-route]].  If you want to disable filtering drafts, set
-  ~:input-filter~ to ~nil~ on your route.
+  [[url_for:api,anchor=symbol-weblorg-route][weblorg-route]].  By default, it will be set to use
+  [[url_for:api,anchor=weblorg-input-filter-drafts][weblorg-input-filter-drafts]].  If you want to disable filtering
+  drafts, set ~:input-filter~ to ~nil~ on your route.
 
 * filetags
 
