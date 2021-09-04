@@ -67,6 +67,23 @@
         </ul>
       
         <h3>
+          <a href="#section-input-aggregations">Input Aggregations</a>
+        </h3>
+        <ul>
+          
+            <li><a href="#symbol-weblorg-input-aggregate-all">weblorg-input-aggregate-all</a></li>
+          
+            <li><a href="#symbol-weblorg-input-aggregate-all-desc">weblorg-input-aggregate-all-desc</a></li>
+          
+            <li><a href="#symbol-weblorg-input-aggregate-by-category">weblorg-input-aggregate-by-category</a></li>
+          
+            <li><a href="#symbol-weblorg-input-aggregate-by-category-desc">weblorg-input-aggregate-by-category-desc</a></li>
+          
+            <li><a href="#symbol-weblorg-input-aggregate-each">weblorg-input-aggregate-each</a></li>
+          
+        </ul>
+      
+        <h3>
           <a href="#section-exporting">Exporting</a>
         </h3>
         <ul>
@@ -347,6 +364,158 @@ Exclude POST from input list if it is a draft.
 <p>
 We use the DRAFT file property to define if an Org-Mode file is a
 draft or not.</p>
+
+                  </div>
+                
+              </div>
+            
+          </div>
+        </article>
+      
+        <article id="section-input-aggregations" class="section">
+          <h1>Input Aggregations</h1>
+
+          <div class="symbols">
+            
+              <div class="symbol" id="symbol-weblorg-input-aggregate-all">
+                
+                  <h2>
+                    (weblorg-input-aggregate-all (posts &amp;optional sorting-fn))
+                  </h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Aggregate all POSTS within a single collection.
+</p>
+
+<p>
+This aggregation function generate a single collection for all
+the input files.  It is useful for index pages, RSS pages, etc.
+</p>
+
+<p>
+If SORTING-FN is nil, posts are kept in the order they’re found,
+otherwise SORTING-FN is applied to the posts.</p>
+
+                  </div>
+                
+              </div>
+            
+              <div class="symbol" id="symbol-weblorg-input-aggregate-all-desc">
+                
+                  <h2>
+                    (weblorg-input-aggregate-all-desc (posts))
+                  </h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Aggregate all POSTS within a single collection in decreasing order.
+</p>
+
+<p>
+This aggregation function generate a single collection for all
+the input files.  It is useful for index pages, RSS pages, etc.
+</p>
+
+<p>
+Notice the results are sorted on a descending order comparing the
+value of the date file tag.  Posts without a date will be shown
+last.</p>
+
+                  </div>
+                
+              </div>
+            
+              <div class="symbol" id="symbol-weblorg-input-aggregate-by-category">
+                
+                  <h2>
+                    (weblorg-input-aggregate-by-category (posts &amp;optional sorting-fn))
+                  </h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Aggregate POSTS by category.
+</p>
+
+<p>
+This function reads the FILETAGS file property and put the file
+within each tag found there.
+</p>
+
+<p>
+If SORTING-FN is nil, posts within each category are kept in the
+order they’re found, otherwise SORTING-FN is applied function to
+the posts.</p>
+
+                  </div>
+                
+              </div>
+            
+              <div class="symbol" id="symbol-weblorg-input-aggregate-by-category-desc">
+                
+                  <h2>
+                    (weblorg-input-aggregate-by-category-desc (posts))
+                  </h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Aggregate POSTS by category.
+</p>
+
+<p>
+This function reads the FILETAGS file property and put the file
+within each tag found there.
+</p>
+
+<p>
+Notice the results are sorted on a descending order comparing the
+value of the date file tag.  Posts without a date will be shown
+last.</p>
+
+                  </div>
+                
+              </div>
+            
+              <div class="symbol" id="symbol-weblorg-input-aggregate-each">
+                
+                  <h2>
+                    (weblorg-input-aggregate-each (posts))
+                  </h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Aggregate each post within POSTS as a single collection.
+</p>
+
+<p>
+This is the default aggregation function used by ‘weblorg-route’
+and generate one collection per input file.
+</p>
+
+<p>
+It returns a list in the following format:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span class="org-warning">&#8217;</span>((<span class="org-string">"post"</span> . ((<span class="org-string">"title"</span> . <span class="org-string">"My post"</span>)
+               (<span class="org-string">"slug"</span> . <span class="org-string">"my-post"</span>))
+               ...)
+  (<span class="org-string">"post"</span> . ((<span class="org-string">"title"</span> . <span class="org-string">"Another Post"</span>)
+               (<span class="org-string">"slug"</span> . <span class="org-string">"another-post"</span>)
+               ...))
+  ...)
+</pre>
+</div>
 
                   </div>
                 

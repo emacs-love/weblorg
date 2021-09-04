@@ -58,6 +58,7 @@
  :input-source (weblorg-input-source-autodoc-sections
                 `(("Routing" . ("^weblorg-route" "^weblorg-copy-static"))
                   ("Input Filters" . "^weblorg-input-filter-")
+                  ("Input Aggregations" . "^weblorg-input-aggregate-")
                   ("Exporting" . "^weblorg-export$")
                   ("Data Sources" . "^weblorg-input-source-")
                   ("Template Filters" . "^weblorg-filters-")))
