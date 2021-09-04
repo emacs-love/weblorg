@@ -196,7 +196,10 @@ name.
 <p>
 The <code>date</code> field is parsed and transformed in a time tuple that can
 be formatted with the help of the <a href="https://emacs.love/weblorg/api.html#symbol-weblorg-filters-strftime">strftime</a> template filter.  This
-field is also
+field is also used by <a href="https://emacs.love/weblorg/api.html#symbol-weblorg-input-aggregate-all">weblorg-input-aggregate-all</a>,
+<a href="https://emacs.love/weblorg/api.html#symbol-weblorg-input-aggregate-all-desc">weblorg-input-aggregate-all-desc</a>,
+<a href="https://emacs.love/weblorg/api.html#symbol-weblorg-input-aggregate-by-category">weblorg-input-aggregate-by-category</a> and
+<a href="https://emacs.love/weblorg/api.html#symbol-weblorg-input-aggregate-by-category-desc">weblorg-input-aggregate-by-category-desc</a> to sort the posts.
 </p>
 </div>
 </div>
@@ -230,8 +233,9 @@ it.
 
 <p>
 This feature works in tandem with the <code>:input-filter</code> option of
-<a href="https://emacs.love/weblorg/api.html#symbol-weblorg-route">weblorg-route</a>.  If you want to disable filtering drafts, set
-<code>:input-filter</code> to <code>nil</code> on your route.
+<a href="https://emacs.love/weblorg/api.html#symbol-weblorg-route">weblorg-route</a>.  By default, it will be set to use
+<a href="https://emacs.love/weblorg/api.html#weblorg-input-filter-drafts">weblorg-input-filter-drafts</a>.  If you want to disable filtering
+drafts, set <code>:input-filter</code> to <code>nil</code> on your route.
 </p>
 </div>
 </div>
