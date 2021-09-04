@@ -1,63 +1,67 @@
 #+TITLE: Blogging
-#+SLUG: blogging
 
-* Rss Feed
-weblorg comes with builtin support for RSS feed. If you are using the default theme, enabling this feature should be easy.  Just create a route on your `publish.el` file as follows:
+* RSS Feed Generation
 
+  Weblorg comes with builtin support for RSS feed.  If you are using
+  the default theme, enabling this feature should be easy.  Just
+  create a route on your ~publish.el~ file as follows:
 
-#+BEGIN_SRC emacs-lisp
-   (weblorg-route
-    :name "feed"
-    :input-pattern "posts/*.org"
-    :input-aggregate #'weblorg-input-aggregate-all-desc
-    :template "feed.xml"
-    :output "output/feed.xml"
-    :url "/feed.xml")
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (weblorg-route
+     :name "feed"
+     :input-pattern "posts/*.org"
+     :input-aggregate #'weblorg-input-aggregate-all-desc
+     :template "feed.xml"
+     :output "output/feed.xml"
+     :url "/feed.xml")
+  #+END_SRC
 
-If you are creating your own theme, besides creating the route, you will need the `feed.xml` as well. For that, you can use this snippet:
+  If you are creating your own theme, besides creating the route, you
+  will need the ~feed.xml~ as well. For that, you can use this
+  snippet:
 
-#+BEGIN_SRC jinja2
-<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0"
-     xmlns:content="http://purl.org/rss/1.0/modules/content/"
-     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
-     xmlns:dc="http://purl.org/dc/elements/1.1/"
-     xmlns:atom="http://www.w3.org/2005/Atom"
-     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
-     xmlns:georss="http://www.georss.org/georss"
-     xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
-     xmlns:media="http://search.yahoo.com/mrss/">
-  <channel>
-    <title>Simple Blog</title>
-    <atom:link
-      href="{{ url_for("feed") }}"
-      rel="self" type="application/rss+xml" />
-    <link>{{ url_for("index") }}</link>
-    <description><![CDATA[]]></description>
-    <language>en</language>
-    <pubDate>{{ posts | first | getattr("date") | strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
-    <lastBuildDate>{{ now() | strftime("%a, %d %b %Y %H:%M:%S %z") }}</lastBuildDate>
-    <generator>{{ meta.generator }}</generator>
-    <webMaster>web@master (Blog Author)</webMaster>
-    <image>
-      <url>{{ url_for("index") }}media/img/8bitme.png</url>
-      <title>Blog Author</title>
-      <link>{{ url_for("index") }}</link>
-    </image>
+  #+BEGIN_SRC jinja2
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <rss version="2.0"
+         xmlns:content="http://purl.org/rss/1.0/modules/content/"
+         xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:atom="http://www.w3.org/2005/Atom"
+         xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+         xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+         xmlns:georss="http://www.georss.org/georss"
+         xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+         xmlns:media="http://search.yahoo.com/mrss/">
+      <channel>
+        <title>Simple Blog</title>
+        <atom:link
+          href="{{ url_for("feed") }}"
+          rel="self" type="application/rss+xml" />
+        <link>{{ url_for("index") }}</link>
+        <description><![CDATA[]]></description>
+        <language>en</language>
+        <pubDate>{{ posts | first | getattr("date") | strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
+        <lastBuildDate>{{ now() | strftime("%a, %d %b %Y %H:%M:%S %z") }}</lastBuildDate>
+        <generator>{{ meta.generator }}</generator>
+        <webMaster>web@master (Blog Author)</webMaster>
+        <image>
+          <url>{{ url_for("index") }}media/img/8bitme.png</url>
+          <title>Blog Author</title>
+          <link>{{ url_for("index") }}</link>
+        </image>
 
-    {% for post in posts %}
-    <item>
-      <title>{{ post.title }}</title>
-      <link>{{ url_for("posts", slug=post.slug) }}</link>
-      <author>{{ post.author|default("author@mail.com (Blog Author)") }}</author>
-      <guid isPermaLink="false">{{ url_for("posts", slug=post.slug) }}</guid>
-      <pubDate>{{ post.date|strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
-      <description><![CDATA[{{ post.html|safe }}]]></description>
-    </item>
-    {% endfor %}
+        {% for post in posts %}
+        <item>
+          <title>{{ post.title }}</title>
+          <link>{{ url_for("posts", slug=post.slug) }}</link>
+          <author>{{ post.author|default("author@mail.com (Blog Author)") }}</author>
+          <guid isPermaLink="false">{{ url_for("posts", slug=post.slug) }}</guid>
+          <pubDate>{{ post.date|strftime("%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
+          <description><![CDATA[{{ post.html|safe }}]]></description>
+        </item>
+        {% endfor %}
 
-  </channel>
-</rss>
-#+END_SRC
+      </channel>
+    </rss>
+  #+END_SRC
+
