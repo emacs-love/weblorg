@@ -796,13 +796,9 @@ that is accessible with the same syntax as the template filter."
     ;; Usage: {{ len(listp) }} or {{ listp | len }}
     (templatel-env-add-filter env "len" #'length)
     ;; time formatting
-    (templatel-env-add-filter
-     env "strftime" (lambda(time format)
-                      (when time (format-time-string format time))))
+    (templatel-env-add-filter env "strftime" #'weblorg-filters-strftime)
     ;; current time (not formatted)
-    (templatel-env-add-filter
-     env "now" (lambda(&optional _)
-                      (encode-time (decode-time))))
+    (templatel-env-add-filter env "now" #'weblorg-filters-now)
     ;; interact with routes
     (templatel-env-add-filter
      env "weblorg_route_posts"
@@ -811,6 +807,37 @@ that is accessible with the same syntax as the template filter."
                (weblorg--route-posts
                 ;; find route named `route-name'
                 (weblorg--site-route site route-name)))))))
+
+
+(defun weblorg-filters-strftime (time format)
+  "Display the TIME tuple according to the desired FORMAT.
+
+Can be used either with the
+[[anchor:symbol-weblorg-filters-now][strftime]] filter, or with
+the ~post.date~ property.  e.g.:
+
+#+begin_src jinja2
+  {{ post.date | strftime(\"%d %b %Y\") }}
+#+end_src
+
+The documentation on the accepted FORMAT for this template filter
+can be found in the documentation of the builtin Emacs-Lisp
+function
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html#index-format_002dtime_002dstring][format-time-string]]."
+  (when time (format-time-string format time)))
+
+
+(defun weblorg-filters-now (&optional _)
+  "Return the current time.
+
+This filter is supposed to be used in tandem with
+[[anchor:symbol-weblorg-filters-strftime][strftime]].  e.g.:
+
+#+begin_src jinja2
+  {{ now() | strftime(\"%x %X\") }}
+#+end_src"
+  (encode-time (decode-time)))
+
 
 (defun weblorg--route-importfn (route)
   "Build the import function for ROUTE.

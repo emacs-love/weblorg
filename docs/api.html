@@ -58,6 +58,15 @@
         </ul>
       
         <h3>
+          <a href="#section-input-filters">Input Filters</a>
+        </h3>
+        <ul>
+          
+            <li><a href="#symbol-weblorg-input-filter-drafts">weblorg-input-filter-drafts</a></li>
+          
+        </ul>
+      
+        <h3>
           <a href="#section-exporting">Exporting</a>
         </h3>
         <ul>
@@ -78,11 +87,13 @@
         </ul>
       
         <h3>
-          <a href="#section-input-filters">Input Filters</a>
+          <a href="#section-template-filters">Template Filters</a>
         </h3>
         <ul>
           
-            <li><a href="#symbol-weblorg-input-filter-drafts">weblorg-input-filter-drafts</a></li>
+            <li><a href="#symbol-weblorg-filters-now">weblorg-filters-now</a></li>
+          
+            <li><a href="#symbol-weblorg-filters-strftime">weblorg-filters-strftime</a></li>
           
         </ul>
       
@@ -315,6 +326,35 @@ that you need at least one <code>"static"</code> route in your site.</li>
           </div>
         </article>
       
+        <article id="section-input-filters" class="section">
+          <h1>Input Filters</h1>
+
+          <div class="symbols">
+            
+              <div class="symbol" id="symbol-weblorg-input-filter-drafts">
+                
+                  <h2>
+                    (weblorg-input-filter-drafts (post))
+                  </h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Exclude POST from input list if it is a draft.
+</p>
+
+<p>
+We use the DRAFT file property to define if an Org-Mode file is a
+draft or not.</p>
+
+                  </div>
+                
+              </div>
+            
+          </div>
+        </article>
+      
         <article id="section-exporting" class="section">
           <h1>Exporting</h1>
 
@@ -427,27 +467,67 @@ Run ‘weblorg-input-source-autodoc’ for various SECTIONS.</p>
           </div>
         </article>
       
-        <article id="section-input-filters" class="section">
-          <h1>Input Filters</h1>
+        <article id="section-template-filters" class="section">
+          <h1>Template Filters</h1>
 
           <div class="symbols">
             
-              <div class="symbol" id="symbol-weblorg-input-filter-drafts">
+              <div class="symbol" id="symbol-weblorg-filters-now">
                 
                   <h2>
-                    (weblorg-input-filter-drafts (post))
+                    (weblorg-filters-now (&amp;optional _))
                   </h2>
                 
 
                 
                   <div class="docstring">
                     <p>
-Exclude POST from input list if it is a draft.
+Return the current time.
 </p>
 
 <p>
-We use the DRAFT file property to define if an Org-Mode file is a
-draft or not.</p>
+This filter is supposed to be used in tandem with
+<a href="#symbol-weblorg-filters-strftime">strftime</a>.  e.g.:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-jinja2"><span class="org-type">{{</span> <span class="org-variable-name">now() </span><span class="org-keyword">| </span><span class="org-warning">strftime</span>(<span class="org-string">"%x %X"</span>) <span class="org-type">}}</span>
+</pre>
+</div>
+
+                  </div>
+                
+              </div>
+            
+              <div class="symbol" id="symbol-weblorg-filters-strftime">
+                
+                  <h2>
+                    (weblorg-filters-strftime (time format))
+                  </h2>
+                
+
+                
+                  <div class="docstring">
+                    <p>
+Display the TIME tuple according to the desired FORMAT.
+</p>
+
+<p>
+Can be used either with the
+<a href="#symbol-weblorg-filters-now">strftime</a> filter, or with
+the <code>post.date</code> property.  e.g.:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-jinja2"><span class="org-type">{{</span> <span class="org-variable-name">post.date </span><span class="org-keyword">| </span><span class="org-warning">strftime</span>(<span class="org-string">"%d %b %Y"</span>) <span class="org-type">}}</span>
+</pre>
+</div>
+
+<p>
+The documentation on the accepted FORMAT for this template filter
+can be found in the documentation of the builtin Emacs-Lisp
+function
+<a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Time-Parsing.html#index-format_002dtime_002dstring">format-time-string</a>.</p>
 
                   </div>
                 
