@@ -457,8 +457,9 @@ draft or not."
 (defun weblorg-input-aggregate-each (posts)
   "Aggregate each post within POSTS as a single collection.
 
-This is the default aggregation function used by `weblorg-route'
-and generate one collection per input file.
+This is the default aggregation function used by
+[[anchor:symbol-weblorg-route][weblorg-route]] and generate one
+collection per input file.
 
 It returns a list in the following format:
 
