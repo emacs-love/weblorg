@@ -396,6 +396,9 @@ Parameters in ~OPTIONS~:
   (weblorg--with-error
    (maphash
     (lambda(_ site)
+      ;; Clear cache site to prevent stale data on the next
+      ;; interactive export
+      (clrhash (gethash :cache site))
       ;; Iterate over each route of a given site
       (maphash (lambda(_ route) (funcall (gethash :export route) route))
                (gethash :routes site)))
