@@ -649,7 +649,7 @@ The LINK string has the following syntax:
   Route       <- Identifier
   Vars        <- NamedParams
   NamedParams <- NamedParam (',' NamedParam)*
-  NamedParam  <- Identifier '=' Expr
+  NamedParam  <- Identifier '=' Identifier
   Identifier  <- (!',' .)*
 
 With the above rules, we're able to parse entries like these:
