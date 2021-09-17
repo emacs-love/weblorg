@@ -114,14 +114,27 @@ Included from file
   (clrhash weblorg--sites))
 
 (ert-deftest weblorg--url-parse ()
+  ;; spaces are only relevant in values
+  (should (equal
+           '("route" . (("p1" . " v1 ")
+                        ("p2" . " 256 ")))
+           (weblorg--url-parse "route, p1 = v1 , p2 = 256 ")))
+  ;; commas can be escaped
+  (should (equal
+           '("route" . (("p1" . "commas are, escaped")
+                        ("p2" . "ok")))
+           (weblorg--url-parse "route,p1=commas are\\, escaped,p2=ok")))
+  ;; anything but unnescaped commas are valid as values
   (should (equal
            '("doc" . (("slug" . "with spaces")
                       ("section" . "with/+-()^")))
            (weblorg--url-parse "doc,slug=with spaces,section=with/+-()^")))
+  ;; many key-value pairs can be separated by commas
   (should (equal
            '("doc" . (("slug" . "how-to-skydive")
                       ("section" . "breathing")))
            (weblorg--url-parse "doc,slug=how-to-skydive,section=breathing")))
+  ;; nice key-value syntax
   (should (equal
            '("blog-posts" . (("slug" . "moon-phases")))
            (weblorg--url-parse "blog-posts,slug=moon-phases"))))

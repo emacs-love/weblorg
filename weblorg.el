@@ -649,8 +649,10 @@ The LINK string has the following syntax:
   Route       <- Identifier
   Vars        <- NamedParams
   NamedParams <- NamedParam (',' NamedParam)*
-  NamedParam  <- Identifier '=' Identifier
-  Identifier  <- (!',' .)*
+  NamedParam  <- TemplatelIdentifier '=' Identifier
+  Identifier  <- Char*
+  Char        <- '\\,'
+               / (!',' .)
 
 With the above rules, we're able to parse entries like these:
   * index
@@ -669,15 +671,25 @@ consumption from templatel."
                   (weblorg--url-for-parser-namedparams scanner)))))
     (cons route vars)))
 
+(defun weblorg--url-for-parser-identifier-char (scanner)
+  "Read single char for identifier off SCANNER."
+  (templatel--scanner-or
+   scanner (list
+            (lambda()
+              (templatel--scanner-match scanner ?\\)
+              (templatel--scanner-match scanner ?,))
+            (lambda()
+              (templatel--scanner-not
+               scanner (lambda() (templatel--scanner-match scanner ?,)))
+              (templatel--scanner-any scanner)))))
+
 (defun weblorg--url-for-parser-identifier (scanner)
   "Read the identifier off SCANNER."
   (templatel--join-chars
-   (templatel--scanner-zero-or-more
+   (templatel--scanner-one-or-more
     scanner
     (lambda()
-      (templatel--scanner-not
-       scanner (lambda() (templatel--scanner-match scanner ?,)))
-      (templatel--scanner-any scanner)))))
+      (weblorg--url-for-parser-identifier-char scanner)))))
 
 (defun weblorg--url-for-parser-namedparams (scanner)
   "Read a list of named parameters off SCANNER."
@@ -691,17 +703,10 @@ consumption from templatel."
 
 (defun weblorg--url-for-parser-namedparam (scanner)
   "Read one named parameter off SCANNER."
-  (let* ((id (cdr (templatel--parser-identifier scanner))))
-    (templatel--token-= scanner)
-    (cons
-     id
-     (templatel--join-chars
-      (templatel--scanner-zero-or-more
-       scanner
-       (lambda()
-         (templatel--scanner-not
-          scanner (lambda() (templatel--scanner-match scanner ?,)))
-         (templatel--scanner-any scanner)))))))
+  (let* ((id (cdr (templatel--parser-identifier scanner)))
+         (_ (templatel--scanner-matchs scanner "="))
+         (value (weblorg--url-for-parser-identifier scanner)))
+    (cons id value)))
 
 (defun weblorg--url-for-v (route-name vars site)
   "Find ROUTE-NAME within SITE and interpolate route url with VARS."
