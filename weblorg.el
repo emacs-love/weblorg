@@ -699,14 +699,9 @@ consumption from templatel."
       (templatel--scanner-zero-or-more
        scanner
        (lambda()
-         (templatel--scanner-or
-          scanner
-          (list (lambda() (templatel--scanner-range scanner ?a ?z))
-                (lambda() (templatel--scanner-range scanner ?A ?Z))
-                (lambda() (templatel--scanner-range scanner ?0 ?9))
-                (lambda() (templatel--scanner-match scanner ?-))
-                (lambda() (templatel--scanner-match scanner ?.))
-                (lambda() (templatel--scanner-match scanner ?_))))))))))
+         (templatel--scanner-not
+          scanner (lambda() (templatel--scanner-match scanner ?,)))
+         (templatel--scanner-any scanner)))))))
 
 (defun weblorg--url-for-v (route-name vars site)
   "Find ROUTE-NAME within SITE and interpolate route url with VARS."

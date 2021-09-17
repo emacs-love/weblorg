@@ -115,6 +115,10 @@ Included from file
 
 (ert-deftest weblorg--url-parse ()
   (should (equal
+           '("doc" . (("slug" . "with spaces")
+                      ("section" . "with/+-()^")))
+           (weblorg--url-parse "doc,slug=with spaces,section=with/+-()^")))
+  (should (equal
            '("doc" . (("slug" . "how-to-skydive")
                       ("section" . "breathing")))
            (weblorg--url-parse "doc,slug=how-to-skydive,section=breathing")))
