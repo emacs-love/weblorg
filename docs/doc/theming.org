@@ -5,7 +5,7 @@ leverage their skills to deliver content with the experience they can
 build with familiar tools like HTML and CSS.  Weblorg defines a
 convention for packaging a file 
 
-It's highly recommended to have read the [[url_for:docs,slug=][Getting Started]] document;
+It's highly recommended to have read the [[url_for:docs,slug=index][Getting Started]] document;
 this write up assumes that you understand the gist of how to declare
 routes that point to Org-Mode files and how to execute the
 ~publish.el~ script to generate the static website.  That being said,
