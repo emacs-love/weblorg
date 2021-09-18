@@ -174,6 +174,10 @@ header h1 img         { width: var(--logo-width); height: var(--logo-height); }
 .left-pane ul         { list-style: square; }
 .left-pane ul li      { margin-bottom: 8px; }
 
+/* -- special classes -- */
+.img_highlight        { text-align: center; }
+.img_highlight img    { margin: 40px 0px; box-shadow: 0 0 3px 3px #dedede; }
+
 @media only screen
   and (min-width: 1px)
   and (max-width: 1240px) {
