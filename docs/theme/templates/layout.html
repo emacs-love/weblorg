@@ -8,6 +8,7 @@
       <meta name="description" content="{% block description %}{{ project_description }}{% endblock %}">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+      {% block meta %}{% endblock %}
       <link rel="stylesheet" href="{{ url_for("static", file="css/main.css") }}" />
     {% endblock %}
   </head>
