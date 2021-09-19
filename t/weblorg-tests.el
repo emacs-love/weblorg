@@ -63,7 +63,7 @@
 
     ;; Post is rendered with the URL link
     (should (equal "MY URL IS http://localhost:8000/a-simple-post--2020-09-05.html"
-                   (weblorg--template-render route posts))))
+                   (weblorg--template-render route (car posts)))))
 
   ;; reset the global to its initial state
   (clrhash weblorg--sites))

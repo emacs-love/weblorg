@@ -909,11 +909,15 @@ pipeline again."
          ;; Parse Org-mode files
          (parsed-files
           (mapcar (lambda(input-path)
-                    ;; Append the property `route.name` into each
-                    ;; parsed file
-                    (append
-                      (funcall (gethash :input-parser route) input-path)
-                      `(("route" . (("name" . ,(gethash :name route)))))))
+                    (let ((parsed (funcall (gethash :input-parser route) input-path))
+                          (route-name (gethash :name route)))
+                      ;; Add these properties to each parsed Org-Mode
+                      (append parsed
+                              `(("route" . (("name" . ,route-name)))
+                                ("url" . ,(weblorg--url-for-v
+                                           route-name
+                                           parsed
+                                           (gethash :site route)))))))
                   input-files))
          ;; Apply filters that depend on data read from parser
          (filtered-files
@@ -974,23 +978,18 @@ can be found in the ROUTE."
       (templatel-env-remove-template env name)
       output)))
 
-(defun weblorg--template-render-url (route data)
-  "Render the url property of a post from ROUTE and DATA."
-  `(("url" . ,(weblorg--url-for-v (gethash :name route)
-                                  (cdar data)
-                                  (gethash :site route)))))
-
 (defun weblorg--template-render (route data)
   "Render template within ROUTE passing DATA as template vars."
-  (templatel-env-render
-   (gethash :template-env route)
-   (gethash :template route)
-   (append (gethash :template-vars (gethash :site route))
-           (gethash :template-vars route)
-           weblorg-meta
-           data
-           (weblorg--template-render-url route data)
-           (weblorg--vars-from-route route))))
+  (let* ((template-vars
+          (append data
+                  weblorg-meta
+                  (gethash :template-vars (gethash :site route))
+                  (gethash :template-vars route)
+                  (weblorg--vars-from-route route))))
+    (templatel-env-render
+     (gethash :template-env route)
+     (gethash :template route)
+     template-vars)))
 
 (defun weblorg--export-site-route (site route)
   "Call export function of ROUTE from SITE."
