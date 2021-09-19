@@ -8,11 +8,12 @@
       {% block subtitle %}{% endblock %}
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if site_owner is defined %}<meta name="author" content="{{ site_owner }}" />{% endif %}
+    {% if site_description is defined %}<meta name="description" content="{{ site_description }}" />{% endif %}
+    {% if site_keywords is defined %}<meta name="keywords" content="{{ site_keywords }}" />{% endif %}
+    {% block meta %}{% endblock %}
     <link rel="stylesheet" href="{{ url_for("static", file="style.css") }}" type="text/css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora&family=Space+Mono&display=swap" />
-    {% if site_owner is defined %}<meta name="author" content="{{ site_owner }}" />{% endif %}
-    {% if site_description is defined %}<meta name="description" content="{{ site_description }}" /> {% endif %}
-    {% if site_keywords is defined %}<meta name="keywords" content="{{ site_keywords }}" />{% endif %}
     {% endblock %}
   </head>
   <body>

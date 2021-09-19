@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 
+{% block meta %}
+  <meta property="og:title" content="{{ post.title }}">
+  <meta property="og:url" content="{{ post.url }}">
+  {% if post.description is defined %}
+    <meta property="og:description" content="{{ post.description }}">
+  {% elif project_description is defined %}
+    <meta property="og:description" content="{{ project_description }}">
+  {% endif %}
+  {% if post.image is defined %}
+    <meta property="og:image" content="{{ post.image }}">
+  {% elif project_image is defined %}
+    <meta property="og:image" content="{{ project_image }}">
+  {% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
 {% block main %}
   <article class="post">
     <h1 class="post__title">
