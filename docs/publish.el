@@ -34,6 +34,7 @@
  :theme #'weblorg-theme-autodoc
  :template-vars '(("project_name" . "weblorg")
                   ("project_github" . "https://github.com/emacs-love/weblorg")
+                  ("project_image" . "https://emacs.love/weblorg/static/images/logo.svg")
                   ("project_description" . "A Static HTML Generator for Emacs and Org-Mode")))
 
 ;; Generate index

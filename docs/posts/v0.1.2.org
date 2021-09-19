@@ -1,0 +1,106 @@
+#+TITLE: v0.1.2 - Slowly but Surely
+#+DATE: <2021-09-19 Fri>
+
+* Intro
+
+  After quite a bit of time and work, here is the second public
+  release of *weblorg*, the modern Static HTML Generator for Emacs and
+  Org-Mode.
+
+  The most exciting thing about this release was the contributions to
+  both /templatel/ and /weblorg/ from the following people (in
+  lexicographical order): [[https://github.com/AblatedSprocket][AblatedSprocket]], [[https://github.com/guilhermecomum/][Guilherme Guerra]], [[https://github.com/semente][Guilherme
+  Semente]], [[https://lauragroetzinger.com][Laura Groetzinger]], [[https://github.com/markokocic][Marko Kocić]], [[https://github.com/nanzhong][Nan Zhong]], and [[https://github.com/mrmechko][Rik]].  Thanks
+  a lot, you guys! <3
+
+  The biggest improvements all these folks brought to you were around
+  how themes are structured, how we can have a better blogging
+  experience, and lots of bug fixes.  Both [[url_for:docs,slug=index][documentation]] and [[url_for:api][API]]
+  reference were also improved, but there is still a lot to be covered
+  there. It will continue to be a top priority for the next releases.
+
+  Here's a glimpse of the default theme, in case you are curious
+
+  #+BEGIN_img_highlight
+  [[url_for_img:static,file=posts/slowly-but-surely/default-theme-screenshot.png][New Default Theme]]
+  #+END_img_highlight
+
+* Changelog
+
+** Weblorg 0.1.2
+  
+   - New default theme, thanks to [[https://lauragroetzinger.com/][Laura Groetzinger]]
+   - [[https://github.com/emacs-love/weblorg/issues/17][#17]], [[https://github.com/emacs-love/weblorg/issues/20][#20]], [[https://github.com/emacs-love/weblorg/issues/34][#34]], [[https://github.com/emacs-love/weblorg/issues/54][#54]] - Consolidation of the ~theme~ directory next
+     to a ~publish.el~ file as the first entry in the template search
+     PATH.  Followed by the template directory within the theme being
+     used. (thanks [[https://github.com/nanzhong][Nan Zhong]] and [[https://github.com/guilhermecomum/][Guilherme Guerra]])
+   - [[https://github.com/emacs-love/weblorg/issues/49][#49]] - Addition of the ~url_for_img~ Org-Mode URL link type.
+     Check [[url_for:docs,slug=hyperlinks,anchor=image-urls-in-org-mode-files][the docs]] (thanks to [[https://github.com/AblatedSprocket][AblatedSprocket]]).
+   - [[https://github.com/emacs-love/weblorg/issues/56][#56]], [[https://github.com/emacs-love/weblorg/issues/22][#22]] - Various bug fixes in parsing parameters and rendering
+     URLs in ~url_for~.
+   - [[https://github.com/emacs-love/weblorg/issues/45][#45]] - The property ~post.filetags~, available in the template, is
+     now a list of tags split by ~:~ from the original string. Check
+     [[url_for:docs,slug=file-properties,anchor=filetags][the docs]].  (thanks to [[https://github.com/AblatedSprocket][AblatedSprocket]]).
+   - [[https://github.com/emacs-love/weblorg/issues/26][#26]] - Fix cannot ~#+INCLUDE~ using relative paths. (thanks to
+     [[https://github.com/mrmechko][Rik]])
+   - [[https://github.com/emacs-love/weblorg/issues/29][#29]] - ~post.url~ as a shortcut for ~{{ url_for("post",
+     slug=post.slug) }}~
+
+** Templatel 0.1.6
+
+   On the [[https://clarete.li/templatel][templatel]] side, two new versions were shipped: ~0.1.5~ and
+   ~0.1.6~, which was the biggest release made so far and includes the
+   following highlights:
+
+   * Support ~{% include %}~ statements (Thanks to [[https://github.com/guilhermecomum/][Guilherme Guerra]])
+   * New filters added: ~take~ (Thanks to [[https://github.com/markokocic][Marko Kocić]]), ~abs~,
+     ~capitalize~, ~escape~ (~e~), ~float~, ~join~, ~length~, ~max~,
+     ~min~, ~round~, and ~title~.
+   * Added test operator that is another syntax for passing parameters
+     to functions that have a defined signature, they must return a
+     Boolean value. e.g.: ~{% if something is defined %}~.
+
+* Next Steps
+
+  There's quite a bit of work left to do, but the priorities going
+  forward seem clear: better blogging experience, more themes.  That
+  being said there are other important changes in the works too.
+  Here's a list of some of the planned work ahead:
+
+  - [[https://github.com/emacs-love/weblorg/issues/32#issuecomment-913791560][#32 - Mix input handlers in the same route]]: this will allow
+    *weblorg* to generate websites recursively a directory scanning
+    for Org-Mode and asset files in one route.
+
+  - [[https://github.com/emacs-love/weblorg/issues/27][#27 - Control over file names generation]]: Right now *weblorg* uses
+    either the ~#+SLUG~ file property, or the slugified ~#+TITLE~, or
+    the original file name with the ~.org~ suffix replaced with
+    ~.html~.  This work will allow users to have full control over it,
+    but with very good defaults.
+
+  - [[https://github.com/emacs-love/weblorg/issues/48][#48 - API for interacting with routes from within templates]]:
+    There's an undocumented function ~weblorg_route_posts~ that allows
+    listing posts of any route in the site from any template, however
+    it's far from where we want it to be.  For example, this post is
+    newer than the ~0.1.1~ post, but that function doesn't take a
+    sorting parameter :/ and that's the type of thing we want to fix
+    here.
+
+  - [[https://github.com/emacs-love/weblorg/issues/31][#31 Watch file notifications]]: The goal is to improve the
+    development experience by re-generating automatically upon file
+    changes. (thanks [[https://github.com/nanzhong][Nan Zhong]])
+
+  - [[https://github.com/emacs-love/weblorg/issues/43][#43 - Site specific template filters]]: low hanging fruit for making
+    *weblorg* more extensible.
+
+  - Other core features that still need work: wrap up support for
+    [[https://github.com/emacs-love/weblorg/issues/5][categories]] and [[https://github.com/emacs-love/weblorg/issues/10][tags]]
+
+  - It would be great to start covering the interactive use *weblorg*.
+    Although running from the command line via ~--script~ is still a
+    high priority, this is very important for local development.
+
+  These are top priorities for now, but if you think I missed
+  something, or you thought of something new, please go ahead and let
+  me know by opening a [[https://github.com/emacs-love/weblorg/issues][GitHub issue]]. Thanks in advance :)
+
+  See you next release <o/

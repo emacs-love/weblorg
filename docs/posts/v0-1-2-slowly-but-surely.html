@@ -1,0 +1,279 @@
+
+<!doctype html>
+<html lang="en-us">
+  <head>
+    
+      <meta charset="utf-8">
+      <title>weblorg - v0.1.2 - Slowly but Surely</title>
+      <meta name="description" content="A Static HTML Generator for Emacs and Org-Mode">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="keywords" content="Emacs, org, org-mode, blog, static generator, static blog">
+      
+  <meta property="og:title" content="v0.1.2 - Slowly but Surely">
+  <meta property="og:url" content="https://emacs.love/weblorg/posts/v0-1-2-slowly-but-surely.html">
+  
+    <meta property="og:description" content="A Static HTML Generator for Emacs and Org-Mode">
+  
+  
+    <meta property="og:image" content="https://emacs.love/weblorg/static/images/logo.svg">
+  
+  <meta name="twitter:card" content="summary_large_image">
+
+      <link rel="stylesheet" href="https://emacs.love/weblorg/static/css/main.css" />
+    
+  </head>
+  <body>
+    <div class="document">
+      
+        <header>
+          <h1>
+            <a href="https://emacs.love/weblorg/">
+              <img
+                src="https://emacs.love/weblorg/static/images/logo.svg"
+                alt="weblorg">
+              <div>
+                weblorg
+              </div>
+            </a>
+          </h1>
+
+          <div class="menu">
+            <ul>
+              <li><a href="https://emacs.love/weblorg/">home</a></li>
+              <li>
+                <a href="https://emacs.love/weblorg/doc/index.html">documentation</a>
+              </li>
+              <li>
+                <a href="https://emacs.love/weblorg/api.html">api reference</a>
+              </li>
+              <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+            </ul>
+          </div>
+        </header>
+      
+
+      
+      
+  <div class="page post">
+
+    
+    <div class="left-pane">
+      
+        <h3>
+          <a href="https://emacs.love/weblorg/posts/v0-1-1-we-re-live.html">
+            v0.1.1 - We&#39;re live!
+          </a>
+        </h3>
+      
+        <h3>
+          <a href="https://emacs.love/weblorg/posts/v0-1-2-slowly-but-surely.html">
+            v0.1.2 - Slowly but Surely
+          </a>
+        </h3>
+      
+    </div>
+
+    
+    <div class="content">
+      <article>
+        
+          <div class="title">
+            <h1>v0.1.2 - Slowly but Surely</h1>
+          </div>
+        
+
+        <div class="pubdate">
+          Sep 19, 2021
+        </div>
+
+        <div class="content">
+          <div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#intro">1. Intro</a></li>
+<li><a href="#changelog">2. Changelog</a>
+<ul>
+<li><a href="#weblorg-0-1-2">2.1. Weblorg 0.1.2</a></li>
+<li><a href="#templatel-0-1-6">2.2. Templatel 0.1.6</a></li>
+</ul>
+</li>
+<li><a href="#next-steps">3. Next Steps</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-intro" class="outline-2">
+<h2 id="intro"><span class="section-number-2">1</span> Intro</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+After quite a bit of time and work, here is the second public
+release of <b>weblorg</b>, the modern Static HTML Generator for Emacs and
+Org-Mode.
+</p>
+
+<p>
+The most exciting thing about this release was the contributions to
+both <i>templatel</i> and <i>weblorg</i> from the following people (in
+lexicographical order): <a href="https://github.com/AblatedSprocket">AblatedSprocket</a>, <a href="https://github.com/guilhermecomum/">Guilherme Guerra</a>, <a href="https://github.com/semente">Guilherme
+Semente</a>, <a href="https://lauragroetzinger.com">Laura Groetzinger</a>, <a href="https://github.com/markokocic">Marko Kocić</a>, <a href="https://github.com/nanzhong">Nan Zhong</a>, and <a href="https://github.com/mrmechko">Rik</a>.  Thanks
+a lot, you guys! &lt;3
+</p>
+
+<p>
+The biggest improvements all these folks brought to you were around
+how themes are structured, how we can have a better blogging
+experience, and lots of bug fixes.  Both <a href="https://emacs.love/weblorg/doc/index.html">documentation</a> and <a href="https://emacs.love/weblorg/api.html">API</a>
+reference were also improved, but there is still a lot to be covered
+there. It will continue to be a top priority for the next releases.
+</p>
+
+<p>
+Here's a glimpse of the default theme, in case you are curious
+</p>
+
+<div class="img_highlight" id="orgd529cb1">
+<p>
+<img src="https://emacs.love/weblorg/static/posts/slowly-but-surely/default-theme-screenshot.png" alt="New Default Theme" />
+</p>
+
+</div>
+</div>
+</div>
+
+<div id="outline-container-changelog" class="outline-2">
+<h2 id="changelog"><span class="section-number-2">2</span> Changelog</h2>
+<div class="outline-text-2" id="text-changelog">
+</div>
+<div id="outline-container-weblorg-0-1-2" class="outline-3">
+<h3 id="weblorg-0-1-2"><span class="section-number-3">2.1</span> Weblorg 0.1.2</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>New default theme, thanks to <a href="https://lauragroetzinger.com/">Laura Groetzinger</a></li>
+<li><a href="https://github.com/emacs-love/weblorg/issues/17">#17</a>, <a href="https://github.com/emacs-love/weblorg/issues/20">#20</a>, <a href="https://github.com/emacs-love/weblorg/issues/34">#34</a>, <a href="https://github.com/emacs-love/weblorg/issues/54">#54</a> - Consolidation of the <code>theme</code> directory next
+to a <code>publish.el</code> file as the first entry in the template search
+PATH.  Followed by the template directory within the theme being
+used. (thanks <a href="https://github.com/nanzhong">Nan Zhong</a> and <a href="https://github.com/guilhermecomum/">Guilherme Guerra</a>)</li>
+<li><a href="https://github.com/emacs-love/weblorg/issues/49">#49</a> - Addition of the <code>url_for_img</code> Org-Mode URL link type.
+Check <a href="https://emacs.love/weblorg/doc/hyperlinks.html#image-urls-in-org-mode-files">the docs</a> (thanks to <a href="https://github.com/AblatedSprocket">AblatedSprocket</a>).</li>
+<li><a href="https://github.com/emacs-love/weblorg/issues/56">#56</a>, <a href="https://github.com/emacs-love/weblorg/issues/22">#22</a> - Various bug fixes in parsing parameters and rendering
+URLs in <code>url_for</code>.</li>
+<li><a href="https://github.com/emacs-love/weblorg/issues/45">#45</a> - The property <code>post.filetags</code>, available in the template, is
+now a list of tags split by <code>:</code> from the original string. Check
+<a href="https://emacs.love/weblorg/doc/file-properties.html#filetags">the docs</a>.  (thanks to <a href="https://github.com/AblatedSprocket">AblatedSprocket</a>).</li>
+<li><a href="https://github.com/emacs-love/weblorg/issues/26">#26</a> - Fix cannot <code>#+INCLUDE</code> using relative paths. (thanks to
+<a href="https://github.com/mrmechko">Rik</a>)</li>
+<li><a href="https://github.com/emacs-love/weblorg/issues/29">#29</a> - <code>post.url</code> as a shortcut for <code>{{ url_for("post",
+     slug=post.slug) }}</code></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-templatel-0-1-6" class="outline-3">
+<h3 id="templatel-0-1-6"><span class="section-number-3">2.2</span> Templatel 0.1.6</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+On the <a href="https://clarete.li/templatel">templatel</a> side, two new versions were shipped: <code>0.1.5</code> and
+<code>0.1.6</code>, which was the biggest release made so far and includes the
+following highlights:
+</p>
+
+<ul class="org-ul">
+<li>Support <code>{% include %}</code> statements (Thanks to <a href="https://github.com/guilhermecomum/">Guilherme Guerra</a>)</li>
+<li>New filters added: <code>take</code> (Thanks to <a href="https://github.com/markokocic">Marko Kocić</a>), <code>abs</code>,
+<code>capitalize</code>, <code>escape</code> (<code>e</code>), <code>float</code>, <code>join</code>, <code>length</code>, <code>max</code>,
+<code>min</code>, <code>round</code>, and <code>title</code>.</li>
+<li>Added test operator that is another syntax for passing parameters
+to functions that have a defined signature, they must return a
+Boolean value. e.g.: <code>{% if something is defined %}</code>.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-next-steps" class="outline-2">
+<h2 id="next-steps"><span class="section-number-2">3</span> Next Steps</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+There's quite a bit of work left to do, but the priorities going
+forward seem clear: better blogging experience, more themes.  That
+being said there are other important changes in the works too.
+Here's a list of some of the planned work ahead:
+</p>
+
+<ul class="org-ul">
+<li><a href="https://github.com/emacs-love/weblorg/issues/32#issuecomment-913791560">#32 - Mix input handlers in the same route</a>: this will allow
+<b>weblorg</b> to generate websites recursively a directory scanning
+for Org-Mode and asset files in one route.</li>
+
+<li><a href="https://github.com/emacs-love/weblorg/issues/27">#27 - Control over file names generation</a>: Right now <b>weblorg</b> uses
+either the <code>#+SLUG</code> file property, or the slugified <code>#+TITLE</code>, or
+the original file name with the <code>.org</code> suffix replaced with
+<code>.html</code>.  This work will allow users to have full control over it,
+but with very good defaults.</li>
+
+<li><a href="https://github.com/emacs-love/weblorg/issues/48">#48 - API for interacting with routes from within templates</a>:
+There's an undocumented function <code>weblorg_route_posts</code> that allows
+listing posts of any route in the site from any template, however
+it's far from where we want it to be.  For example, this post is
+newer than the <code>0.1.1</code> post, but that function doesn't take a
+sorting parameter :/ and that's the type of thing we want to fix
+here.</li>
+
+<li><a href="https://github.com/emacs-love/weblorg/issues/31">#31 Watch file notifications</a>: The goal is to improve the
+development experience by re-generating automatically upon file
+changes. (thanks <a href="https://github.com/nanzhong">Nan Zhong</a>)</li>
+
+<li><a href="https://github.com/emacs-love/weblorg/issues/43">#43 - Site specific template filters</a>: low hanging fruit for making
+<b>weblorg</b> more extensible.</li>
+
+<li>Other core features that still need work: wrap up support for
+<a href="https://github.com/emacs-love/weblorg/issues/5">categories</a> and <a href="https://github.com/emacs-love/weblorg/issues/10">tags</a></li>
+
+<li>It would be great to start covering the interactive use <b>weblorg</b>.
+Although running from the command line via <code>--script</code> is still a
+high priority, this is very important for local development.</li>
+</ul>
+
+<p>
+These are top priorities for now, but if you think I missed
+something, or you thought of something new, please go ahead and let
+me know by opening a <a href="https://github.com/emacs-love/weblorg/issues">GitHub issue</a>. Thanks in advance :)
+</p>
+
+<p>
+See you next release &lt;o/
+</p>
+</div>
+</div>
+
+        </div>
+      </article>
+    </div>
+  </div>
+
+
+      
+      
+        <div class="footer">
+          <ul>
+            <li><a href="https://emacs.love/weblorg/">home</a></li>
+            <li><a href="https://emacs.love/weblorg/doc/index.html">documentation</a></li>
+            <li><a href="https://emacs.love/weblorg/api.html">api reference</a></li>
+            <li><a href="https://github.com/emacs-love/weblorg" target="_blank">github</a></li>
+          </ul>
+          <div class="ack">
+            Made with &#x2665; and
+            <a href="https://www.gnu.org/software/emacs/" target="_blank" class="M-x">
+              <img src="https://emacs.love/weblorg/static/emacs-bw.svg" width="16" height="16" />
+            </a>
+            by
+            <a href="https://clarete.li" target="_blank">
+              @clarete
+            </a>
+          </div>
+        </div>
+      
+    </div>
+  </body>
+</html>
