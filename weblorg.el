@@ -2,7 +2,7 @@
 ;;
 ;; Author: Lincoln Clarete <lincoln@clarete.li>
 ;; URL: https://emacs.love/weblorg
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Package-Requires: ((templatel "0.1.6") (emacs "26.1"))
 ;;
 ;; Copyright (C) 2020-2021  Lincoln Clarete
