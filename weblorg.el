@@ -231,10 +231,11 @@ Parameters in ~OPTIONS~:
    files from the input list.  The variables available for the
    template come from the return of this function.
 
- * *:input-source* List of collections of data to be written
-   directly to templates.  In other words, this parameter
-   replaces the pipeline ~pattern~ > ~exclude~ > ~filter~ >
-   ~aggregate~ and will feed data directly into the function that
+ * *:input-source* List of collections or a function that returns
+   a list of collections of data to be written directly to templates.
+   In other words, this parameter replaces the pipeline
+   ~pattern~ > ~exclude~ > ~filter~ > ~aggregate~
+   and will feed data directly into the function that
    writes down templates.  This is useful for generating HTML
    files off template variables read from whatever source you
    want.
@@ -415,9 +416,9 @@ Parameters in ~OPTIONS~:
   (let ((input-source (gethash :input-source route)))
     (weblorg--export-templates
      route
-     (if (null input-source)
-         (weblorg--route-posts route)
-       input-source))))
+     (cond ((null input-source) (weblorg--route-posts route))
+           ((functionp input-source) (funcall input-source))
+           (t input-source)))))
 
 (defun weblorg-export-assets (route)
   "Export static assets ROUTE."
