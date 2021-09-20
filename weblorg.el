@@ -141,14 +141,17 @@ OPTIONS can contain the following parameters:
    tries to register two sites with the same ~:base-url~, an
    error will be raised.
 
+ * *:default-route.* Name of the route to use for resolving org id links.
+
  * *:template-vars* Association list of extra variables to be
    passed down to all templates.
 
- * *:theme* function that returns the base path of a weblorg
+ * *:theme* Function that returns the base path of a weblorg
    theme.  It defaults to
    [[anchor:symbol-weblorg-theme-default][weblorg-theme-default]]."
   (let* ((opt (seq-partition options 2))
          (base-url (weblorg--get opt :base-url weblorg-default-url))
+         (default-route (weblorg--get opt :default-route))
          (theme (weblorg--get opt :theme #'weblorg-theme-default))
          (site (weblorg--site-get base-url)))
     (if (null site)
@@ -159,6 +162,7 @@ OPTIONS can contain the following parameters:
         ;;    parameters of the route.
         (let ((new-site (make-hash-table :size 3)))
           (puthash :base-url base-url new-site)
+          (puthash :default-route default-route new-site)
           (puthash :theme theme new-site)
           (puthash :template-vars (weblorg--get opt :template-vars nil) new-site)
           (puthash :routes (make-hash-table :test 'equal) new-site)
@@ -845,23 +849,14 @@ default templates."
 
 This function also installs an Org-Mode link handler `url_for'
 that is accessible with the same syntax as the template filter."
-  (let ((site (gethash :site route))
-        (env (gethash :template-env route))
-        (name (gethash :name route)))
+  (let* ((site (gethash :site route))
+         (site-default-route (gethash :default-route site))
+         (env (gethash :template-env route)))
     ;; Install link handlers
     (org-link-set-parameters
      "anchor"
      :export (lambda(path desc _backend)
                (format "<a href=\"#%s\">%s</a>" path desc)))
-    (org-link-set-parameters
-     "id"
-     :export (lambda (id desc _backend)
-               (format "<a href=\"%s\">%s</a>"
-                       (weblorg--url-for (format "%s,slug=%s"
-                                                 name
-                                                 (weblorg--slugify (file-name-sans-extension (file-name-nondirectory (org-id-find-id-file id)))))
-                                         site)
-                       desc)))
      (org-link-set-parameters
      "url_for"
      :export (lambda(path desc _backend)
@@ -870,6 +865,16 @@ that is accessible with the same syntax as the template filter."
      "url_for_img"
      :export (lambda(path desc _backend)
                (format "<img src=\"%s\" alt=\"%s\" />" (weblorg--url-for path site) desc)))
+    (if site-default-route
+        (org-link-set-parameters
+         "id"
+         :export (lambda (id desc _backend)
+                   (format "<a href=\"%s\">%s</a>"
+                           (weblorg--url-for (format "%s,slug=%s"
+                                                     site-default-route
+                                                     (weblorg--slugify (file-name-sans-extension (file-name-nondirectory (org-id-find-id-file id)))))
+                                             site)
+                           desc))))
     (templatel-env-add-filter
      env "url_for"
      (lambda(route-name &optional vars)
