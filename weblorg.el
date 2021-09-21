@@ -873,7 +873,13 @@ that is accessible with the same syntax as the template filter."
                    (format "<a href=\"%s\">%s</a>"
                            (weblorg--url-for (format "%s,slug=%s"
                                                      site-default-route
-                                                     (weblorg--slugify (file-name-sans-extension (file-name-nondirectory (org-id-find-id-file id)))))
+                                                     (let* ((where (org-id-find id))
+                                                            (file (car where))
+                                                            (file-slug (weblorg--slugify (file-name-sans-extension (file-name-nondirectory file))))
+                                                            ;; TODO it might be possible to link to a more specific location based on the file and position.
+                                                            ;; Perhaps by using the org-element apis or the org-roam db.
+                                                            (pos (cdr where)))
+                                                       file-slug))
                                              site)
                            desc))))
     (templatel-env-add-filter
