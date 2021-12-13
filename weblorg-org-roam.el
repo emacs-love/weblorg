@@ -1,3 +1,51 @@
+;;; weblorg-org-roam.el --- Extension to adding support for org-roam to weblorg.el  -*- lexical-binding: t -*-
+;;
+;; Author: Nan Zhong <me@nanzho.ng>
+;; URL: https://emacs.love/weblorg
+;; Version: 0.1.2
+;; Package-Requires: ((emacs "27.2") (templatel "0.1.6") (weblorg "0.1.2") (org-roam "2.1.0"))
+;;
+;; Copyright (C) 2020-2021  Lincoln Clarete
+;;
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;;
+;;; Commentary:
+;;
+;; This extension to weblorg introduces a set of input source functions that can
+;; be used with weblorg-route to generate static content from org-roam file
+;; nodes.
+;;
+;; 1. Use-case: route for individual org roam nodes:
+;;
+;;    (weblorg-route
+;;     :name "org-nodes"
+;;     :input-source #'weblorg-input-source-org-roam-nodes)
+;;     :template "org-node.html"
+;;     :output "output/org/{{ slug }}/index.html"
+;;     :url "/org/{{ slug }}/")
+;;
+;; 2. Use-case: route for aggregated list of org roam nodes:
+;;
+;;    (weblorg-route
+;;     :name "org"
+;;     :input-source #'weblorg-input-source-org-roam-nodes-agg)
+;;     :template "org.html"
+;;     :output "output/org/index.html"
+;;     :url "/org")
+;;
+;;; Code:
+
 (require 'weblorg)
 (require 'org-roam)
 
@@ -10,7 +58,7 @@
   "Internal state representing if org-roam db has been synced.")
 
 (defun weblorg--input-source-org-roam-nodes (&optional filter-fn sort-fn limit render-org)
-  "Computes an alist for each org-roam file node and return the list of alists.
+  "Computes returns a list of alists one for each org-roam file node.
 
 A FILTER-FN function taking a org-roam-node and returning a bool can be provided
 to select which nodes to return.
@@ -91,3 +139,4 @@ A LIMIT integer value can be provided to limit how many results are returned."
   `((("nodes" . ,(weblorg--input-source-org-roam-nodes filter-fn sort-fn limit)))))
 
 (provide 'weblorg-org-roam)
+;;; weblorg-org-roam.el ends here
