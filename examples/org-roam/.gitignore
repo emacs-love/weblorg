@@ -1,0 +1,8 @@
+org-id-locations
+org-roam.db
+.emacs/*
+!.emacs/straight
+.emacs/straight/*
+!.emacs/straight/versions
+.emacs/straight/versions/*
+!.emacs/straight/versions/default.el
