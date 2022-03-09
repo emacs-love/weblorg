@@ -16,6 +16,13 @@
      :url "/feed.xml")
   #+END_SRC
 
+  You can optionally set the =site_keywords= template variable:
+  
+   #+begin_src lisp
+   (weblorg-site
+    :template-vars '(("site_keywords" . "kw1, kw2, kw3")))
+   #+end_src
+
   If you are creating your own theme, besides creating the route, you
   will need the ~feed.xml~ as well. For that, you can use this
   snippet:
