@@ -109,9 +109,9 @@
         
 
         <div class="content">
-          <div id="table-of-contents">
+          <div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
 <li><a href="#rss-feed-generation">1. RSS Feed Generation</a></li>
 </ul>
@@ -119,7 +119,7 @@
 </div>
 
 <div id="outline-container-rss-feed-generation" class="outline-2">
-<h2 id="rss-feed-generation"><span class="section-number-2">1</span> RSS Feed Generation</h2>
+<h2 id="rss-feed-generation"><span class="section-number-2">1.</span> RSS Feed Generation</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Weblorg comes with builtin support for RSS feed.  If you are using
@@ -135,6 +135,16 @@ create a route on your <code>publish.el</code> file as follows:
  <span class="org-builtin">:template</span> <span class="org-string">"feed.xml"</span>
  <span class="org-builtin">:output</span> <span class="org-string">"output/feed.xml"</span>
  <span class="org-builtin">:url</span> <span class="org-string">"/feed.xml"</span>)
+</pre>
+</div>
+
+<p>
+You can optionally set the <code>site_keywords</code> template variable:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(weblorg-site
+ <span class="org-builtin">:template-vars</span> '((<span class="org-string">"site_keywords"</span> . <span class="org-string">"kw1, kw2, kw3"</span>)))
 </pre>
 </div>
 
@@ -157,7 +167,7 @@ snippet:
      <span class="org-sgml-namespace">xmlns</span>:<span class="org-variable-name">geo</span>=<span class="org-string">"http://www.w3.org/2003/01/geo/wgs84_pos#"</span>
      <span class="org-sgml-namespace">xmlns</span>:<span class="org-variable-name">media</span>=<span class="org-string">"http://search.yahoo.com/mrss/"</span>&gt;
   &lt;<span class="org-function-name">channel</span>&gt;
-    &lt;<span class="org-function-name">title</span>&gt;<span class="org-underline"><span class="org-bold">Simple Blog</span></span>&lt;/<span class="org-function-name">title</span>&gt;
+    &lt;<span class="org-function-name">title</span>&gt;<span class="org-type">{{</span><span class="org-underline"><span class="org-bold"> </span></span><span class="org-variable-name">site_name </span><span class="org-keyword">| </span><span class="org-function-name">default</span><span class="org-underline"><span class="org-bold">(</span></span><span class="org-string"><span class="org-underline"><span class="org-bold">"Simple Blog"</span></span></span><span class="org-underline"><span class="org-bold">) </span></span><span class="org-type">}}</span>&lt;/<span class="org-function-name">title</span>&gt;
     &lt;<span class="org-sgml-namespace">atom</span>:<span class="org-function-name">link</span>
       <span class="org-variable-name">href</span>=<span class="org-string">"</span><span class="org-type">{{</span><span class="org-string"> </span><span class="org-variable-name">url_for("feed")</span><span class="org-string"> </span><span class="org-type">}}</span><span class="org-string">"</span>
       <span class="org-variable-name">rel</span>=<span class="org-string">"self"</span> <span class="org-variable-name">type</span>=<span class="org-string">"application/rss+xml"</span> /&gt;
@@ -167,7 +177,7 @@ snippet:
     &lt;<span class="org-function-name">pubDate</span>&gt;<span class="org-type">{{</span> <span class="org-variable-name">posts </span><span class="org-keyword">| </span><span class="org-function-name">first</span> <span class="org-keyword">| </span><span class="org-warning">getattr</span>(<span class="org-string">"date"</span>) <span class="org-keyword">| </span><span class="org-warning">strftime</span>(<span class="org-string">"%a, %d %b %Y %H:%M:%S %z"</span>) <span class="org-type">}}</span>&lt;/<span class="org-function-name">pubDate</span>&gt;
     &lt;<span class="org-function-name">lastBuildDate</span>&gt;<span class="org-type">{{</span> <span class="org-variable-name">now() </span><span class="org-keyword">| </span><span class="org-warning">strftime</span>(<span class="org-string">"%a, %d %b %Y %H:%M:%S %z"</span>) <span class="org-type">}}</span>&lt;/<span class="org-function-name">lastBuildDate</span>&gt;
     &lt;<span class="org-function-name">generator</span>&gt;<span class="org-type">{{</span> <span class="org-variable-name">meta.generator</span> <span class="org-type">}}</span>&lt;/<span class="org-function-name">generator</span>&gt;
-    &lt;<span class="org-function-name">webMaster</span>&gt;web@master (Blog Author)&lt;/<span class="org-function-name">webMaster</span>&gt;
+    &lt;<span class="org-function-name">webMaster</span>&gt;<span class="org-type">{{</span> <span class="org-variable-name">site_owner </span><span class="org-keyword">| </span><span class="org-function-name">default</span>(<span class="org-string">"web@master (Blog Author)"</span>) <span class="org-type">}}</span>&lt;/<span class="org-function-name">webMaster</span>&gt;
     &lt;<span class="org-function-name">image</span>&gt;
       &lt;<span class="org-function-name">url</span>&gt;<span class="org-type">{{</span> <span class="org-variable-name">url_for("index")</span> <span class="org-type">}}</span>media/img/8bitme.png&lt;/<span class="org-function-name">url</span>&gt;
       &lt;<span class="org-function-name">title</span>&gt;<span class="org-underline"><span class="org-bold">Blog Author</span></span>&lt;/<span class="org-function-name">title</span>&gt;

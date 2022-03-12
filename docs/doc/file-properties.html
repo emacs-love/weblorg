@@ -109,9 +109,9 @@
         
 
         <div class="content">
-          <div id="table-of-contents">
+          <div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
 <li><a href="#intro">1. Intro</a></li>
 <li><a href="#title">2. title</a></li>
@@ -124,7 +124,7 @@
 </div>
 
 <div id="outline-container-intro" class="outline-2">
-<h2 id="intro"><span class="section-number-2">1</span> Intro</h2>
+<h2 id="intro"><span class="section-number-2">1.</span> Intro</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 When an Org-Mode file is parsed by weblorg, all the file level
@@ -180,7 +180,7 @@ All file properties used to control the Org-Mode rendering via
 </div>
 
 <div id="outline-container-title" class="outline-2">
-<h2 id="title"><span class="section-number-2">2</span> title</h2>
+<h2 id="title"><span class="section-number-2">2.</span> title</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 The <a href="https://en.wikipedia.org/wiki/Clean_URL#Slug">slugified</a> version of the property <code>title</code> is used as the name of
@@ -192,7 +192,7 @@ name.
 </div>
 
 <div id="outline-container-date" class="outline-2">
-<h2 id="date"><span class="section-number-2">3</span> date</h2>
+<h2 id="date"><span class="section-number-2">3.</span> date</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 The <code>date</code> field is parsed and transformed in a time tuple that can
@@ -206,7 +206,7 @@ field is also used by <a href="https://emacs.love/weblorg/api.html#symbol-weblor
 </div>
 
 <div id="outline-container-slug" class="outline-2">
-<h2 id="slug"><span class="section-number-2">4</span> slug</h2>
+<h2 id="slug"><span class="section-number-2">4.</span> slug</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 The <code>slug</code> property takes precedence over the title when generating
@@ -224,7 +224,7 @@ as the output file name, replacing the <code>.org</code> extension by <code>.htm
 </div>
 
 <div id="outline-container-draft" class="outline-2">
-<h2 id="draft"><span class="section-number-2">5</span> draft</h2>
+<h2 id="draft"><span class="section-number-2">5.</span> draft</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 If a given Org-Mode file isn't ready to be published on your
@@ -242,7 +242,7 @@ drafts, set <code>:input-filter</code> to <code>nil</code> on your route.
 </div>
 
 <div id="outline-container-filetags" class="outline-2">
-<h2 id="filetags"><span class="section-number-2">6</span> filetags</h2>
+<h2 id="filetags"><span class="section-number-2">6.</span> filetags</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 To organize posts in categories, use the <code>filetags</code> property.  One

@@ -109,9 +109,9 @@
         
 
         <div class="content">
-          <div id="table-of-contents">
+          <div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
 <li><a href="#installation">1. Installation</a>
 <ul>
@@ -130,11 +130,11 @@
 </div>
 
 <div id="outline-container-installation" class="outline-2">
-<h2 id="installation"><span class="section-number-2">1</span> Installation</h2>
+<h2 id="installation"><span class="section-number-2">1.</span> Installation</h2>
 <div class="outline-text-2" id="text-installation">
 </div>
 <div id="outline-container-via-melpa" class="outline-3">
-<h3 id="via-melpa"><span class="section-number-3">1.1</span> Via Melpa</h3>
+<h3 id="via-melpa"><span class="section-number-3">1.1.</span> Via Melpa</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 The simplest and recommended way to install <code>weblorg</code> is via <a href="https://melpa.org">MELPA</a>.
@@ -159,7 +159,7 @@ done that in a while.
 </div>
 
 <div id="outline-container-manually" class="outline-3">
-<h3 id="manually"><span class="section-number-3">1.2</span> Manually</h3>
+<h3 id="manually"><span class="section-number-3">1.2.</span> Manually</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 If you don't want to use any package installer, you can just clone
@@ -177,7 +177,7 @@ configuration so the library can be found by <code>require</code>.
 </div>
 
 <div id="outline-container-setup-a-website" class="outline-2">
-<h2 id="setup-a-website"><span class="section-number-2">2</span> Setup a website</h2>
+<h2 id="setup-a-website"><span class="section-number-2">2.</span> Setup a website</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 Weblorg is an Emacs-Lisp API rather than a command line tool. The
@@ -189,7 +189,7 @@ Emacs Lisp API, there are some conventions for creating a weblorg.
 </div>
 
 <div id="outline-container-directory-structure" class="outline-3">
-<h3 id="directory-structure"><span class="section-number-3">2.1</span> Directory structure</h3>
+<h3 id="directory-structure"><span class="section-number-3">2.1.</span> Directory structure</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 Here's an example of a directory structure that is known to work
@@ -232,7 +232,7 @@ to generate our website.
 </div>
 
 <div id="outline-container-publish-script" class="outline-3">
-<h3 id="publish-script"><span class="section-number-3">2.2</span> Publish script</h3>
+<h3 id="publish-script"><span class="section-number-3">2.2.</span> Publish script</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 The <code>publish.el</code> file is where we configure the routes and execute
@@ -275,6 +275,18 @@ to generate a blog with the above directory structure.
 
 <span class="org-comment-delimiter">;; </span><span class="org-comment">fire the engine and export all the files declared in the routes above</span>
 (weblorg-export)
+</pre>
+</div>
+
+<p>
+Weblorg supports site global variables. The default theme optionally uses these 3 variables. <b>Make sure to set
+these before calling</b> <code>weblorg-route</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp">(weblorg-site
+ <span class="org-builtin">:template-vars</span> '((<span class="org-string">"site_name"</span> . <span class="org-string">"weblorg website"</span>)
+                  (<span class="org-string">"site_owner"</span> . <span class="org-string">"owner@mail.com (owner)"</span>)
+                  (<span class="org-string">"site_description"</span> . <span class="org-string">"owner's personal blog."</span>)))
 </pre>
 </div>
 
