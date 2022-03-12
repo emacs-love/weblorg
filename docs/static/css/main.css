@@ -78,11 +78,6 @@ code                  { background: var(--cl-preformatted); font-size: 17px; }
                         border-radius: 5px;
                         font-size: 17px; }
 
-h1 span:after,
-h2 span:after,
-h3 span:after,
-h4 span:after { content: "."; }
-
 /* Menu */
 .menu                 { flex-grow: 1; font-size: 1.3rem; display: flex; justify-content: flex-end; align-items: flex-end; }
 .menu ul              { margin: 0; padding: 0; list-style: none; display: flex; }
