@@ -114,6 +114,15 @@
    ;; fire the engine and export all the files declared in the routes above
    (weblorg-export)
    #+end_src
+    
+   Weblorg supports site global variables. The default theme optionally uses these 3 variables. *Make sure to set
+   these before calling* ~weblorg-route~.
+   #+begin_src lisp
+   (weblorg-site
+    :template-vars '(("site_name" . "weblorg website")
+                     ("site_owner" . "owner@mail.com (owner)")
+                     ("site_description" . "owner's personal blog.")))
+   #+end_src
 
    To generate your blog touched by the unicorn, just run the
    following shell command:
