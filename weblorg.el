@@ -103,6 +103,9 @@
 (defvar weblorg-default-url "http://localhost:8000"
   "Default URL for a weblorg.")
 
+(defvar weblorg-default-filters nil
+  "Default custom templatel filters.")
+
 (defconst weblorg--sites (make-hash-table :test 'equal)
   "Hashtable with site metadata indexed by their URL.")
 
@@ -145,10 +148,14 @@ OPTIONS can contain the following parameters:
 
  * *:theme* function that returns the base path of a weblorg
    theme.  It defaults to
-   [[anchor:symbol-weblorg-theme-default][weblorg-theme-default]]."
+   [[anchor:symbol-weblorg-theme-default][weblorg-theme-default]].
+
+ * *:filters* List of custom templatel filters for use in templates
+   Each custom filter is a cons cell of (filter_name . function)."
   (let* ((opt (seq-partition options 2))
          (base-url (weblorg--get opt :base-url weblorg-default-url))
          (theme (weblorg--get opt :theme #'weblorg-theme-default))
+         (filters (weblorg--get opt :filters weblorg-default-filters))
          (site (weblorg--site-get base-url)))
     (if (null site)
         ;; Shape of the weblorg object is the following:
@@ -159,6 +166,7 @@ OPTIONS can contain the following parameters:
         (let ((new-site (make-hash-table :size 3)))
           (puthash :base-url base-url new-site)
           (puthash :theme theme new-site)
+          (puthash :filters filters new-site)
           (puthash :template-vars (weblorg--get opt :template-vars nil) new-site)
           (puthash :routes (make-hash-table :test 'equal) new-site)
           (puthash :cache (make-hash-table :test 'equal) new-site)
@@ -778,8 +786,9 @@ default templates."
 
 This function also installs an Org-Mode link handler `url_for`
 that is accessible with the same syntax as the template filter."
-  (let ((site (gethash :site route))
-        (env (gethash :template-env route)))
+  (let* ((site (gethash :site route))
+         (env (gethash :template-env route))
+         (filters (gethash :filters site)))
     ;; Install link handlers
     (org-link-set-parameters
      "anchor"
@@ -793,25 +802,24 @@ that is accessible with the same syntax as the template filter."
      "url_for_img"
      :export (lambda(path desc _backend)
                (format "<img src=\"%s\" alt=\"%s\" />" (weblorg--url-for path site) desc)))
-    (templatel-env-add-filter
-     env "url_for"
-     (lambda(route-name &optional vars)
-       (weblorg--url-for-v route-name vars site)))
-    ;; Usage: {{ len(listp) }} or {{ listp | len }}
-    (templatel-env-add-filter env "len" #'length)
-    ;; time formatting
-    (templatel-env-add-filter env "strftime" #'weblorg-filters-strftime)
-    ;; current time (not formatted)
-    (templatel-env-add-filter env "now" #'weblorg-filters-now)
-    ;; interact with routes
-    (templatel-env-add-filter
-     env "weblorg_route_posts"
-     (lambda(route-name)
-       (mapcar #'car
-               (weblorg--route-posts
-                ;; find route named `route-name'
-                (weblorg--site-route site route-name)))))))
 
+    (let* ((builtins `(("url_for" . (lambda (route-name &optional vars)
+                                      (weblorg--url-for-v route-name vars ,site)))
+                       ;; Usage: {{ len(listp) }} or {{ listp | len }}
+                       ("len" . length)
+                       ;; time formatting
+                       ("strftime" . weblorg-filters-strftime)
+                       ;; current time (not formatted)
+                       ("now" . weblorg-filters-now)
+                       ;; interact with routes
+                       ("weblorg_route_posts" . (lambda (route-name)
+                                                  (mapcar #'car
+                                                          (weblorg--route-posts
+                                                           ;; find route named `route-name'
+                                                           (weblorg--site-route ,site route-name)))))))
+           (all-filters (append filters builtins)))
+      (dolist (filter all-filters)
+        (templatel-env-add-filter env (car filter) (cdr filter))))))
 
 (defun weblorg-filters-strftime (time format)
   "Display the TIME tuple according to the desired FORMAT.
