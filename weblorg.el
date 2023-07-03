@@ -84,6 +84,7 @@
 (require 'org)
 (require 'ox-html)
 (require 'seq)
+(require 'advice)
 (require 'em-glob)
 (require 'templatel)
 
