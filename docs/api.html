@@ -141,7 +141,7 @@ Add a new route defined with parameters within OPTIONS.
 A route contains enough information to find content to be
 rendered, which template to use to render such content, where to
 save the rendered output and how to create hyperlinks to it.  It
-sounds like it’s a lot of responsibilities for a single
+sounds like it is a lot of responsibilities for a single
 abstraction, but one can think of it as an HTTP route in a
 website with some helpers for also finding which content to
 render in that route.
@@ -163,7 +163,7 @@ used to build summary pages
 <pre class="src src-emacs-lisp">(weblorg-route
  <span class="org-builtin">:name</span> <span class="org-string">"index"</span>
  <span class="org-builtin">:input-pattern</span> <span class="org-string">"posts/*org"</span>
- <span class="org-builtin">:input-aggregate</span> #<span class="org-warning">&#8217;</span>weblorg-input-aggregate-all
+ <span class="org-builtin">:input-aggregate</span> #'weblorg-input-aggregate-all
  <span class="org-builtin">:template</span> <span class="org-string">"blog.html"</span>
  <span class="org-builtin">:output</span> <span class="org-string">"output/index.html"</span>
  <span class="org-builtin">:url</span> <span class="org-string">"/"</span>)
@@ -174,7 +174,7 @@ used to build summary pages
 Route for rendering each Org-Mode file under the directory
 <code>pages</code> as a separate HTML using the template <code>page.html</code>.
 Notice the <code>:output</code> parameter will create all the
-directories in the path that don’t exist
+directories in the path that do not exist
 </p>
 
 <div class="org-src-container">
@@ -211,8 +211,8 @@ template come from the return of this function.</li>
 
 <li><b>:input-source</b> List of collections of data to be written
 directly to templates.  In other words, this parameter
-replaces the pipeline ‘pattern‘ &gt; ‘exclude‘ &gt; ‘filter‘ &gt;
-‘aggregate‘ and will feed data directly into the function that
+replaces the pipeline <code>pattern</code> &gt; <code>exclude</code> &gt; <code>filter</code> &gt;
+<code>aggregate</code> and will feed data directly into the function that
 writes down templates.  This is useful for generating HTML
 files off template variables read from whatever source you
 want.</li>
@@ -225,12 +225,12 @@ item of a collection returned by ‘:input-aggregate’.</li>
 template string as input and returns the URL of an entry of a
 given entry in this route.</li>
 
-<li><b>:template</b> Name of the template that should be used to
-render a collection of files.  Notice that this is the name of
-the template, not its path (neither relative or absolute).
-The value provided here will be searched within 1. the
-directory <b>template</b> within ‘:base-dir’ 2. the directory
-<b>templates</b> within weblorg’s source code.</li>
+<li><b>:template</b> Name of the template that should be used to render
+a collection of files.  Notice that this is the name of the
+template, not its path (neither relative or absolute).  The
+value provided here will be searched within 1. the directory
+<b>template</b> within ‘:base-dir’ 2. the directory <b>templates</b>
+within weblorg's source code.</li>
 
 <li><b>:template-vars</b> Association list of extra variables to be
 passed down to the template.</li>
@@ -239,11 +239,11 @@ passed down to the template.</li>
 not provided, will default to the ‘:base-dir’ of the website;</li>
 
 <li><b>:site</b> Instance of a weblorg site created by the function
-<a href="#symbol-weblorg-site">weblorg-site</a>.  If not provided, it
-will use a default value.  The most valuable information a
-site carries is its base URL, and that’s why it’s relevant for
-routes.  That way one can have multiple sites in one single
-program.</li>
+<a href="#symbol-weblorg-site">weblorg-site</a>.  If not
+provided, it will use a default value.  The most valuable
+information a site carries is its base URL, and that is why it
+is relevant for routes.  That way one can have multiple sites
+in one single program.</li>
 </ul>
 
                   </div>
@@ -282,7 +282,7 @@ Examples:
 <ol class="org-ol">
 <li><p>
 Add static route to the default site.  That will allow
-‘url<sub>for</sub>’ to find the route <code>"static"</code>.
+‘url_for’ to find the route <code>"static"</code>.
 </p>
 
 <div class="org-src-container">
@@ -509,11 +509,11 @@ It returns a list in the following format:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-emacs-lisp"><span class="org-warning">&#8217;</span>((<span class="org-string">"post"</span> . ((<span class="org-string">"title"</span> . <span class="org-string">"My post"</span>)
-               (<span class="org-string">"slug"</span> . <span class="org-string">"my-post"</span>))
+<pre class="src src-emacs-lisp">'((<span class="org-string">"post"</span> . ((<span class="org-string">"title"</span> . <span class="org-string">"My post"</span>)
+             (<span class="org-string">"slug"</span> . <span class="org-string">"my-post"</span>))
                ...)
   (<span class="org-string">"post"</span> . ((<span class="org-string">"title"</span> . <span class="org-string">"Another Post"</span>)
-               (<span class="org-string">"slug"</span> . <span class="org-string">"another-post"</span>)
+             (<span class="org-string">"slug"</span> . <span class="org-string">"another-post"</span>)
                ...))
   ...)
 </pre>
@@ -581,7 +581,7 @@ returned.
 </p>
 
 <p>
-PATTERN can be either a string or a list of strings.  If it’s a
+PATTERN can be either a string or a list of strings.  If it is a
 string, we parse all symbols found by ‘apropos-internal’:
 </p>
 
@@ -596,15 +596,15 @@ string, we parse all symbols found by ‘apropos-internal’:
 </div>
 
 <p>
-If PATTERN a list of strings, we’ll build a list of all calls to
-‘apropos-internal’ for each of the strings in the list.  e.g.:
+If PATTERN a list of strings, we will build a list of all calls
+to ‘apropos-internal’ for each of the strings in the list.  e.g.:
 </p>
 
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(weblorg-route
  <span class="org-builtin">:name</span> <span class="org-string">"templatel-api"</span>
  <span class="org-builtin">:input-source</span> (weblorg-input-source-autodoc
-                <span class="org-warning">&#8217;</span>(<span class="org-string">"^templatel-env"</span> <span class="org-string">"^templatel-filter"</span>))
+                '(<span class="org-string">"^templatel-env"</span> <span class="org-string">"^templatel-filter"</span>))
  <span class="org-builtin">:template</span> <span class="org-string">"autodoc.html"</span>
  <span class="org-builtin">:output</span> <span class="org-string">"api.html"</span>
  <span class="org-builtin">:url</span> <span class="org-string">"/api.html"</span>)
@@ -613,7 +613,8 @@ If PATTERN a list of strings, we’ll build a list of all calls to
 
 <p>
 If you want to group functions into sections, take a look at
-<a href="#symbol-weblorg-input-source-autodoc-sections">weblorg-input-source-autodoc-sections</a>.</p>
+<a href="#symbol-weblorg-input-source-autodoc-sections">
+weblorg-input-source-autodoc-sections</a>.</p>
 
                   </div>
                 

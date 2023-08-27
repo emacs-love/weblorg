@@ -173,7 +173,7 @@ OPTIONS can contain the following parameters:
 A route contains enough information to find content to be
 rendered, which template to use to render such content, where to
 save the rendered output and how to create hyperlinks to it.  It
-sounds like it's a lot of responsibilities for a single
+sounds like it is a lot of responsibilities for a single
 abstraction, but one can think of it as an HTTP route in a
 website with some helpers for also finding which content to
 render in that route.
@@ -189,7 +189,7 @@ Examples:
     (weblorg-route
      :name \"index\"
      :input-pattern \"posts/*org\"
-     :input-aggregate #'weblorg-input-aggregate-all
+     :input-aggregate #\\='weblorg-input-aggregate-all
      :template \"blog.html\"
      :output \"output/index.html\"
      :url \"/\")
@@ -198,7 +198,7 @@ Examples:
  2. Route for rendering each Org-Mode file under the directory
     ~pages~ as a separate HTML using the template ~page.html~.
     Notice the ~:output~ parameter will create all the
-    directories in the path that don't exist
+    directories in the path that do not exist
 
     #+BEGIN_SRC emacs-lisp
     (weblorg-route
@@ -229,8 +229,8 @@ Parameters in ~OPTIONS~:
 
  * *:input-source* List of collections of data to be written
    directly to templates.  In other words, this parameter
-   replaces the pipeline `pattern` > `exclude` > `filter` >
-   `aggregate` and will feed data directly into the function that
+   replaces the pipeline ~pattern~ > ~exclude~ > ~filter~ >
+   ~aggregate~ and will feed data directly into the function that
    writes down templates.  This is useful for generating HTML
    files off template variables read from whatever source you
    want.
@@ -243,12 +243,12 @@ Parameters in ~OPTIONS~:
    template string as input and returns the URL of an entry of a
    given entry in this route.
 
- * *:template* Name of the template that should be used to
-   render a collection of files.  Notice that this is the name of
-   the template, not its path (neither relative or absolute).
-   The value provided here will be searched within 1. the
-   directory *template* within `:base-dir' 2. the directory
-   *templates* within weblorg's source code.
+ * *:template* Name of the template that should be used to render
+   a collection of files.  Notice that this is the name of the
+   template, not its path (neither relative or absolute).  The
+   value provided here will be searched within 1. the directory
+   *template* within `:base-dir' 2. the directory *templates*
+   within weblorg\\='s source code.
 
  * *:template-vars* Association list of extra variables to be
    passed down to the template.
@@ -257,11 +257,11 @@ Parameters in ~OPTIONS~:
     not provided, will default to the `:base-dir' of the website;
 
  * *:site* Instance of a weblorg site created by the function
-   [[anchor:symbol-weblorg-site][weblorg-site]].  If not provided, it
-   will use a default value.  The most valuable information a
-   site carries is its base URL, and that's why it's relevant for
-   routes.  That way one can have multiple sites in one single
-   program."
+   [[anchor:symbol-weblorg-site][weblorg-site]].  If not
+   provided, it will use a default value.  The most valuable
+   information a site carries is its base URL, and that is why it
+   is relevant for routes.  That way one can have multiple sites
+   in one single program."
   (weblorg--with-error
    (let* ((opt (seq-partition options 2))
           (route (make-hash-table))
@@ -468,11 +468,11 @@ collection per input file.
 It returns a list in the following format:
 
 #+BEGIN_SRC emacs-lisp
-'((\"post\" . ((\"title\" . \"My post\")
-               (\"slug\" . \"my-post\"))
+\\='((\"post\" . ((\"title\" . \"My post\")
+             (\"slug\" . \"my-post\"))
                ...)
   (\"post\" . ((\"title\" . \"Another Post\")
-               (\"slug\" . \"another-post\")
+             (\"slug\" . \"another-post\")
                ...))
   ...)
 #+END_SRC"
@@ -562,7 +562,7 @@ This function is one of these input sources.  Its input, PATTERN,
 is used to find which Emacs Lisp symbols should have its metadata
 returned.
 
-PATTERN can be either a string or a list of strings.  If it's a
+PATTERN can be either a string or a list of strings.  If it is a
 string, we parse all symbols found by `apropos-internal':
 
   #+BEGIN_SRC emacs-lisp
@@ -574,21 +574,22 @@ string, we parse all symbols found by `apropos-internal':
    :url \"/api.html\")
   #+END_SRC
 
-If PATTERN a list of strings, we'll build a list of all calls to
-`apropos-internal' for each of the strings in the list.  e.g.:
+If PATTERN a list of strings, we will build a list of all calls
+to `apropos-internal' for each of the strings in the list.  e.g.:
 
   #+BEGIN_SRC emacs-lisp
   (weblorg-route
    :name \"templatel-api\"
    :input-source (weblorg-input-source-autodoc
-                  '(\"^templatel-env\" \"^templatel-filter\"))
+                  \\='(\"^templatel-env\" \"^templatel-filter\"))
    :template \"autodoc.html\"
    :output \"api.html\"
    :url \"/api.html\")
   #+END_SRC
 
 If you want to group functions into sections, take a look at
-[[anchor:symbol-weblorg-input-source-autodoc-sections][weblorg-input-source-autodoc-sections]]."
+[[anchor:symbol-weblorg-input-source-autodoc-sections][
+weblorg-input-source-autodoc-sections]]."
   `((("symbols" . ,(mapcar
                     (lambda(sym)
                       (cons
@@ -617,9 +618,10 @@ If you want to group functions into sections, take a look at
 
 (defun weblorg--input-source-autodoc-documentation (sym)
   "Generate HTML documentation of the docstring of a symbol SYM."
-  (let* ((doc (documentation sym))
+  (let* ((header "#+OPTIONS: ^:{}")
+         (doc (documentation sym))
          (doc (replace-regexp-in-string "\n\n(fn[^)]*)$" "" doc)))
-    (cdr (assoc "html" (weblorg--parse-org doc)))))
+    (cdr (assoc "html" (weblorg--parse-org (format "%s\n%s" header doc))))))
 
 
 
@@ -777,7 +779,7 @@ default templates."
 (defun weblorg--route-install-template-filters (route)
   "Install template filters in the template environment of a ROUTE.
 
-This function also installs an Org-Mode link handler `url_for`
+This function also installs an Org-Mode link handler `url_for'
 that is accessible with the same syntax as the template filter."
   (let ((site (gethash :site route))
         (env (gethash :template-env route)))
