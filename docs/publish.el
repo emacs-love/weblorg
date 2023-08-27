@@ -27,7 +27,7 @@
 (if (string= (getenv "ENV") "prod")
     (setq weblorg-default-url "https://emacs.love/weblorg"))
 (if (string= (getenv "ENV") "local")
-    (setq weblorg-default-url "http://guinho.local:8000"))
+    (setq weblorg-default-url "http://localhost:8000"))
 
 ;; Set site wide configuration
 (weblorg-site
