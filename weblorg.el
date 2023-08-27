@@ -517,7 +517,7 @@ the posts."
   (let (output
         (ht (make-hash-table :test 'equal)))
     (dolist (post posts)
-      (dolist (tag (assoc "filetags" post))
+      (dolist (tag (cdr (assoc "filetags" post)))
         ;; Append post to the list under each tag
         (puthash (downcase tag)
                  (cons post (gethash (downcase tag) ht))
