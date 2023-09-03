@@ -1058,7 +1058,7 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
     ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
       (insert input-data)
-      (if input-path (set-visited-file-name input-path t t))
+      ;; (if input-path (set-visited-file-name input-path t t))
       (org-html-export-as-html))
     ;; Uninstall advices
     (ad-unadvise 'org-html-template)
