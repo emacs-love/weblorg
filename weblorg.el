@@ -1017,6 +1017,12 @@ can be found in the ROUTE."
     (weblorg--prepend keywords (cons "file_slug" file-slug))
     keywords))
 
+(defun weblorg--org-element-properties-resolve (node)
+  (if (version<= "9.7-pre" org-version)
+      (with-no-warnings
+        (org-element-properties-resolve node t))
+    node))
+
 (defun weblorg--parse-org (input-data &optional input-path)
   "Parse INPUT-DATA as an Org-Mode file & generate its HTML.
 
@@ -1045,6 +1051,7 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
      (lambda(fn headline contents info)
        ;; Don't override existing value, so users can still put
        ;; whatever they want
+       (setf headline (weblorg--org-element-properties-resolve headline))
        (unless (org-element-property :CUSTOM_ID headline)
          (let ((headline-slug (weblorg--slugify (org-element-property :raw-value headline))))
            (org-element-put-property headline :CUSTOM_ID headline-slug)))
@@ -1078,8 +1085,9 @@ template filter to display a nicely formatted string.
 
 If it's a filetag field, it will return a collection of strings.
 The user will have to iterate over the collection to get all keywords."
-  (let ((key (downcase (org-element-property :key keyword)))
-        (value (org-element-property :value keyword)))
+  (let* ((keyword (weblorg--org-element-properties-resolve keyword))
+         (key (downcase (org-element-property :key keyword)))
+         (value (org-element-property :value keyword)))
     (cons
      key
      (cond ((string= key "date")
