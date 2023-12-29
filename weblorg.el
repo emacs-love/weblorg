@@ -1063,7 +1063,7 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
     ;; Uninstall advices
     (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
-    (ad-unadvise 'org-element-property)
+    (ad-unadvise 'org-html-headline)
     ;; Add the generated HTML as a property to the collected keywords
     ;; as well
     (weblorg--prepend keywords (cons "html" html))
