@@ -1031,11 +1031,6 @@ from the file, like TITLE, OPTIONS etc.  The generated HTML will
 be added ad an entry to the returned assoc.  Optionally, provide
 an INPUT-PATH to resolve relative links and INCLUDES from."
   (let (html keywords)
-    ;; Replace the HTML generation code to prevent ox-html from adding
-    ;; headers and stuff around the HTML generated for the `body` tag.
-    (advice-add
-     #'org-html-template :override
-     (lambda(contents _i) (setq html contents)))
     ;; Watch collection of keywords, which are file-level properties,
     ;; like #+TITLE, #+FILETAGS, etc.
     (advice-add
@@ -1066,9 +1061,8 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
     (with-temp-buffer
       (insert input-data)
       (if input-path (set-visited-file-name input-path t t))
-      (org-html-export-as-html))
+      (setq html (org-export-as 'html nil nil t)))
     ;; Uninstall advices
-    (ad-unadvise 'org-html-template)
     (ad-unadvise 'org-html-keyword)
     (ad-unadvise 'org-html-headline)
     ;; Add the generated HTML as a property to the collected keywords
