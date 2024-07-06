@@ -26,7 +26,7 @@
    :HTML_CONTAINER_CLASS: feature templating
    :END:
 
-   with [[https://clarete.li/templatel/][templatel]], weblorg can be themed with a language that provides
+   with [[https://emacs.love/templatel/][templatel]], weblorg can be themed with a language that provides
    variable substitution and control flow, inspired by Python's Jinja.
 
 ** Blog Ready

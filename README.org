@@ -20,5 +20,5 @@
 ** Websites built with Weblorg:
 
    * https://emacs.love/weblorg
-   * https://clarete.li/templatel
+   * https://emacs.love/templatel
    * https://clarete.li and https://clarete.li/blog
