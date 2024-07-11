@@ -1061,6 +1061,7 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
     (with-temp-buffer
       (insert input-data)
       (if input-path (set-visited-file-name input-path t t))
+      (set-buffer-modified-p nil)
       (setq html (org-export-as 'html nil nil t)))
     ;; Uninstall advices
     (ad-unadvise 'org-html-keyword)
