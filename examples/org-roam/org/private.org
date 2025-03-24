@@ -1,0 +1,7 @@
+:PROPERTIES:
+:ID:       8de1fa5e-7fed-4893-b7d1-0a2ca1c49840
+:END:
+#+title: Private
+#+filetags: :private:
+
+This is a private note that should not be published.

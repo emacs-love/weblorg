@@ -1,0 +1,7 @@
+:PROPERTIES:
+:ID:       ff7ef0a2-8988-4634-b7fa-40664c3da8e4
+:END:
+#+title: Public 1
+#+filetags: :public:
+
+This is public note #1.
