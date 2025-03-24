@@ -22,3 +22,4 @@
    * https://emacs.love/weblorg
    * https://emacs.love/templatel
    * https://clarete.li and https://clarete.li/blog
+   * https://cmc.pub
