@@ -23,3 +23,4 @@
    * https://emacs.love/templatel
    * https://clarete.li and https://clarete.li/blog
    * https://cmc.pub
+   * https://marko.euptera.com
