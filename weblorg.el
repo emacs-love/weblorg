@@ -1040,23 +1040,21 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
         keywords
         (weblorg--parse-org-keyword keyword))))
     ;; Opinionated setting for generating headline anchor links with
-    ;; the headline text and to strip away the auto-generated IDs
+    ;; the headline text and to strip away the auto-generated IDs. We
+    ;; override `org-html--reference' to capture all instances of
+    ;; references being generated, such as table of contents.
     (advice-add
-     #'org-html-headline :around
-     (lambda(fn headline contents info)
-       ;; Don't override existing value, so users can still put
-       ;; whatever they want
-       (setf headline (weblorg--org-element-properties-resolve headline))
-       (unless (org-element-property :CUSTOM_ID headline)
-         (let ((headline-slug (weblorg--slugify (org-element-property :raw-value headline))))
-           (org-element-put-property headline :CUSTOM_ID headline-slug)))
+     #'org-html--reference :around
+     (lambda(fn datum info &optional named-only)
+       (if (and
+	    (memq (org-element-type datum) '(headline))
+	    (not (org-element-property :CUSTOM_ID datum)))
+           (if-let ((headline-slug (weblorg--slugify (org-element-property :raw-value datum))))
+               (org-element-put-property datum :CUSTOM_ID headline-slug)))
        ;; Replace these IDs that don't have much use within weblorg. That
        ;; will cause way less noise when re-generating a project without
        ;; any changes.
-       (replace-regexp-in-string
-        " id=\".+-org[0-9a-f]\\{7\\}\""
-        ""
-        (funcall fn headline contents info))))
+       (funcall fn datum info named-only)))
     ;; Trigger Org-Mode to generate the HTML off of the input data
     (with-temp-buffer
       (insert input-data)
@@ -1065,7 +1063,7 @@ an INPUT-PATH to resolve relative links and INCLUDES from."
       (setq html (org-export-as 'html nil nil t)))
     ;; Uninstall advices
     (ad-unadvise 'org-html-keyword)
-    (ad-unadvise 'org-html-headline)
+    (ad-unadvise 'org-html--reference)
     ;; Add the generated HTML as a property to the collected keywords
     ;; as well
     (weblorg--prepend keywords (cons "html" html))
