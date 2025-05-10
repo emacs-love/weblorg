@@ -1,0 +1,9 @@
+:PROPERTIES:
+:ID:       a850226a-01fc-4b14-abdd-525e93906090
+:END:
+#+title: Public 2
+#+filetags: :public:
+
+This is public note #2.
+
+Link to [[id:ff7ef0a2-8988-4634-b7fa-40664c3da8e4][Public 1]].

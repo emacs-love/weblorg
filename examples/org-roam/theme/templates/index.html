@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}Example org-roam site{% endblock %}
+
+{% block main %}
+
+<h1>Org Notes</h1>
+<ul>
+  {% for node in nodes %}
+  <li>
+    [{{ node.mtime | strftime("%Y-%m-%d") }}] <a href="{{ url_for("org-nodes", slug=node.slug) }}">{{ node.title }}</a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
